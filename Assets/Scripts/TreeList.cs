@@ -26,14 +26,14 @@ namespace Silentor.TreeControl
             {
                 if ( _nodesInternal.Count > 0 )
                     throw new InvalidOperationException( "Root node already exists" );
-                var newNode = new TreeNode ( null, 0, this ) { Value = value };
+                var newNode = new TreeNode ( null, this ) { Value = value };
                 _nodesInternal.Add( newNode );
                 return newNode;
             }
             else
             {
                 var (parentIndex, childIndex) = GetIndexToAppendChild( parent );
-                var newNode = new TreeNode( parent, parent.Level + 1, this ){ Value = value };
+                var newNode = new TreeNode( parent, this ){ Value = value };
                 _nodesInternal.Insert( childIndex, newNode );
 
                 return newNode;
@@ -199,12 +199,12 @@ namespace Silentor.TreeControl
             public T           Value;
             public TreeNode    Parent { get; internal set; }
             public Int32       Level  { get; internal set; }
-            public TreeList<T> Owner  { get; private set; }
+            public TreeList<T> Owner  { get;  }
 
-            public TreeNode( TreeNode parent, Int32 level, TreeList<T> owner )
+            public TreeNode( TreeNode parent, TreeList<T> owner )
             {
                 Parent = parent;
-                Level  = level;
+                Level  = parent != null ? parent.Level + 1 : 0;
                 Owner  = owner;
             }
 
@@ -218,7 +218,7 @@ namespace Silentor.TreeControl
                 return GetParent().AddChild( value );
             }
 
-            public void AddChilds( IEnumerable<T> values )
+            public void AddChildren( params T[] values )
             {
                 foreach ( var v in values )
                 {
@@ -226,7 +226,7 @@ namespace Silentor.TreeControl
                 }
             }
 
-            public IEnumerable<TreeNode> GetChilds( Boolean includeSelf )
+            public IEnumerable<TreeNode> GetChildren( Boolean includeSelf )
             {
                 return Owner.GetChilds( this, includeSelf );
             }

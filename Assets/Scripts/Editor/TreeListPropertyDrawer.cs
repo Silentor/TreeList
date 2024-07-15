@@ -1,71 +1,87 @@
 ﻿using System;
 using MyBox.EditorTools;
 using UnityEditor;
+using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using Object = System.Object;
 
 namespace Silentor.TreeControl.Editor
 {
-    //[CustomPropertyDrawer( typeof(TreeList<>), true )]
+    [CustomPropertyDrawer( typeof(TreeList<>), true )]
     public class TreeListPropertyDrawer : PropertyDrawer
     {
+        private TreeViewState          _treeViewState;
+        private MyTreeView             _tree;
+        private MultiColumnHeaderState _multiColumnHeaderState;
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label )
         {
-            var labelX = position.x;
             position    = EditorGUI.PrefixLabel( position, label );
 
-            SerializedProperty array = property.FindPropertyRelative( "SerializableNodes" );
-            position.height = EditorGUIUtility.singleLineHeight;
-
-            if( array.arraySize == 0 )
+            if( _treeViewState == null )
+                _treeViewState = new TreeViewState();
+            if( _multiColumnHeaderState == null )
             {
-                GUI.Label( position, $"Empty {property.type}" );
-                return;
+                _multiColumnHeaderState = new MultiColumnHeaderState( 
+                        new MultiColumnHeaderState.Column[]
+                        {
+                            new ()
+                            {
+                                    //headerContent         = new GUIContent( "Tree" ), 
+                                    width                 = 30,
+                                    minWidth = 30,
+                                    maxWidth = 30,
+                                    allowToggleVisibility = false,
+                                    autoResize            = false,
+                            },
+                            new ()
+                            {
+                                    headerContent         = new GUIContent( "Value" ),
+                                    width                 = position.width - 50,
+                                    allowToggleVisibility = false,
+                                    autoResize            = true,
+                            },
+                        
+                        } );
+
+            }
+            else
+            {
+                _multiColumnHeaderState.columns[1].width = position.width - 50;
             }
 
-            var index = 0;
-            DrawLevel( labelX, ref position, 0, array, ref index );
-        }
-
-        private void DrawLevel( Single labelX, ref Rect position, Int32 level, SerializedProperty array, ref Int32 index )
-        {
-            var childIndex = 0;
-
-            for ( ; index < array.arraySize; index++ )
+            if ( _tree == null )
             {
-                var nodeItem   = array.GetArrayElementAtIndex( index );
-                var valueProp  = nodeItem.FindPropertyRelative( "Value" );
-                var parentProp = nodeItem.FindPropertyRelative( "ParentIndex" );
-                var levelProp  = nodeItem.FindPropertyRelative( "Level" );
-
-                if ( levelProp.intValue > level )
-                {
-                    DrawLevel( labelX, ref position, levelProp.intValue, array, ref index );
-                }
-                else if ( levelProp.intValue < level )
-                {
-                    index--;
-                    return;
-                }
-                else
-                {
-                    if ( index > 0 )
-                    {
-                        var labelPos = new Rect( labelX + level * 16, position.y, position.width, position.height );
-                        GUI.Label( labelPos, $"Child{level}.{childIndex++}" );
-                    }
-
-                    GUI.Label( position, valueProp.GetValue().ToString() );
-                    position.y += EditorGUIUtility.singleLineHeight;
-                }
+                _tree = new MyTreeView( _treeViewState, new MyMultiColumnHeader(_multiColumnHeaderState), property.FindPropertyRelative( "SerializableNodes" )) ;
+                _tree.Reload();
             }
+
+            
+            _tree.OnGUI( position );
+
+            // var labelX = position.x;
+            // position    = EditorGUI.PrefixLabel( position, label );
+            //
+            // SerializedProperty array = property.FindPropertyRelative( "SerializableNodes" );
+            // position.height = EditorGUIUtility.singleLineHeight;
+            //
+            // if( array.arraySize == 0 )
+            // {
+            //     GUI.Label( position, $"Empty {property.type}" );
+            //     return;
+            // }
+            //
+            // var index = 0;
+            // DrawLevel( labelX, ref position, 0, array, ref index );
         }
+
 
         public override Single GetPropertyHeight(SerializedProperty property, GUIContent label )
         {
-            var itemsCount = property.FindPropertyRelative( "SerializableNodes" ).arraySize;
-            return itemsCount > 0 
-                    ? EditorGUIUtility.singleLineHeight * (property.FindPropertyRelative( "SerializableNodes" ).arraySize )
-                    : EditorGUIUtility.singleLineHeight;    
+            if( _tree == null )
+                return EditorGUIUtility.singleLineHeight;
+
+            return Mathf.Clamp( _tree.GetContentHeight() + _tree.multiColumnHeader.height + 5, EditorGUIUtility.singleLineHeight, 500 );
         }
     }
 }
