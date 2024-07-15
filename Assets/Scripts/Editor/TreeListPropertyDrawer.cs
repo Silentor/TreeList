@@ -28,9 +28,9 @@ namespace Silentor.TreeControl.Editor
                             new ()
                             {
                                     //headerContent         = new GUIContent( "Tree" ), 
-                                    width                 = 30,
-                                    minWidth = 30,
-                                    maxWidth = 30,
+                                    width                 = 50,
+                                    minWidth = 50,
+                                    maxWidth = 50,
                                     allowToggleVisibility = false,
                                     autoResize            = false,
                             },

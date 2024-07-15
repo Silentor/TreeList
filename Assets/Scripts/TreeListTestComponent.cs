@@ -10,8 +10,10 @@ namespace Silentor.TreeControl
 {
     public class TreeListTestComponent : MonoBehaviour
     {
+        [HideInInspector]
         public TreeList<String>             PrimitiveTree;
         public TreeList<CustomNode>         CustomTree;
+        [HideInInspector]
         public TreeList<VoidNode>           VoidTree;
 
 #if UNITY_EDITOR
@@ -30,7 +32,13 @@ namespace Silentor.TreeControl
                 var root = CustomTree.Add( new CustomNode { CustomText = "root", CustomInt        = 1 }, null );
                 var ch1  = root.AddChild( new CustomNode { CustomText  = "child1", CustomInt      = 2, CustomBool = true } );
                 var gch1 = ch1.AddChild( new CustomNode { CustomText   = "grandChild1", CustomInt = 3, CustomBool = false } );
-                var ch2  = root.AddChild( new CustomNode { CustomText  = "child1", CustomInt      = 2, CustomBool = true } );
+                var ch2  = root.AddChild( new CustomNode { CustomText  = "child2", CustomInt      = 2, CustomBool = true } );
+
+                //Test deep hierarchy
+                for ( int i = 0; i < 10; i++ )
+                {
+                    gch1 = gch1.AddChild( new CustomNode() { CustomText = $"grandchild{i + 2}", CustomInt = i } );
+                }
             }
             {
                 VoidTree = new TreeList<VoidNode>();
