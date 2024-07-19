@@ -189,7 +189,6 @@ namespace Silentor.TreeControl
         public class TreeNodeSerializable
         {
             public T     Value;
-            public Int32 ParentIndex = 0;
             public Int32 Level;
         }
 
@@ -264,7 +263,7 @@ namespace Silentor.TreeControl
             for ( var i = 0; i < Nodes.Count; i++ )
             {
                 var node = Nodes[ i ];
-                SerializableNodes[i] = new TreeNodeSerializable { ParentIndex = _nodesInternal.IndexOf( node.Parent ), Value = node.Value, Level = node.Level };
+                SerializableNodes[i] = new TreeNodeSerializable { Value = node.Value, Level = node.Level };
             }
 
             //UnityEngine.Debug.Log( $"Serialize to {SerializableNodes.JoinToString( n => $"{n.Value}/{n.ParentIndex}" )}" );
@@ -275,19 +274,29 @@ namespace Silentor.TreeControl
             //UnityEngine.Debug.Log( $"Deserialize from {SerializableNodes.JoinToString( n => $"{n.Value}/{n.ParentIndex}" )}" );
 
             _nodesInternal.Clear();
+            var parentsList = new List<TreeNode>();
 
             for ( var i = 0; i < SerializableNodes.Length; i++ )        
             {
-                if ( i == 0 )
+                //Reconstruct parent from level
+                var      serializedNode = SerializableNodes[ i ];
+                TreeNode newNode;
+                if( serializedNode.Level == 0 )
                 {
-                    Add( SerializableNodes[ i ].Value, null );
+                    newNode = new TreeNode( null, this ) { Value = serializedNode.Value };
+                    _nodesInternal.Add( newNode );
                 }
                 else
                 {
-                    var parent = _nodesInternal[ SerializableNodes[i].ParentIndex ];
-                    var newNode = Add( SerializableNodes[i].Value, parent );
-                    newNode.Level = parent.Level + 1;
+                    var parent = parentsList[ serializedNode.Level - 1 ];
+                    newNode = new TreeNode( parent, this ) { Value = serializedNode.Value };
+                    _nodesInternal.Add( newNode );
                 }
+
+                if( parentsList.Count == newNode.Level )
+                    parentsList.Add( newNode );                          //New level
+                else 
+                    parentsList[ newNode.Level ] = newNode;              //Existing level
             }
         }
     }

@@ -1,25 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using MyBox.EditorTools;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
-using Object = System.Object;
 
 namespace Silentor.TreeControl.Editor
 {
     public class MyTreeView : TreeView
     {
         private readonly SerializedProperty _itemsProp;
-        private          Single              _totalContentHeight;
 
         public MyTreeView(TreeViewState state, SerializedProperty itemsProp ) : base( state )
         {
             _itemsProp = itemsProp;
         }
 
-        public MyTreeView(TreeViewState state, MultiColumnHeader multiColumnHeader, SerializedProperty itemsProp  ) : base( state, multiColumnHeader )
+        public MyTreeView(TreeViewState state, MultiColumnHeader multiColumnHeader, SerializedProperty itemsProp  ) : base( state , multiColumnHeader  )
         {
             _itemsProp                   = itemsProp;
             showBorder                   = true;
@@ -34,23 +31,15 @@ namespace Silentor.TreeControl.Editor
             {
                 var itemProp = _itemsProp.GetArrayElementAtIndex( i );
                 var depth    = itemProp.FindPropertyRelative( "Level" ).intValue;
-                //var value    = itemProp.FindPropertyRelative( "Value" ).GetValue().ToString();
 
-                itemsList.Add( new TreeViewItem {id = i, depth = depth, /*displayName = value */} );
+                itemsList.Add( new TreeViewItem { id = i, depth = depth } );
             }
-            
             
             // Utility method that initializes the TreeViewItem.children and .parent for all items.
             SetupParentsAndChildrenFromDepths (root, itemsList);
             
             // Return root of the tree
             return root;
-        }
-
-        protected override void BeforeRowsGUI( )
-        {
-            base.BeforeRowsGUI();
-            _totalContentHeight = 0;
         }
 
         protected override void RowGUI(RowGUIArgs args )
@@ -63,7 +52,13 @@ namespace Silentor.TreeControl.Editor
 
                 if ( colIndex == 0 )
                 {
-                    base.RowGUI( args );      //Foldout
+                    base.RowGUI( args );                    //Foldout
+
+                    //Print depth also
+                    var rect = args.GetCellRect( i );
+                    
+                    if( item.depth > 0 )
+                        DefaultGUI.Label( rect, item.depth.ToString(), args.selected, args.focused );     
                 }
                 else
                 {
@@ -99,9 +94,6 @@ namespace Silentor.TreeControl.Editor
                         var label =  String.Concat( Enumerable.Repeat( "    ", levelProp.intValue )) + valueProp.displayName;
                         EditorGUI.PropertyField( oneLineRect, valueProp, new GUIContent( label ) );
                     }
-
-                    _totalContentHeight += totalRect.y;
-
                 }
             }
         }
@@ -131,20 +123,16 @@ namespace Silentor.TreeControl.Editor
             return GetCustomRowHeight( 0, GetRows()[ 0 ] );
         }
 
-        public Single GetContentHeight( )
+        private static class Resources
         {
-            var expandedItemsHeight = GetExpandedItemHeight();
-            var totalContentHeight  = 0f;
-            foreach ( var treeViewItem in GetRows() )
-            {
-                if( treeViewItem == rootItem )
-                    continue;
-
-                //Root items and expanded items should draw all content
-                if ( treeViewItem.depth == 0 || state.expandedIDs.Contains( treeViewItem.parent.id ) ) 
-                    totalContentHeight += expandedItemsHeight;
-            }
-            return totalContentHeight;
+            public static readonly GUIStyle DepthLabelStyle0 = new (GUI.skin.label) {alignment = TextAnchor.UpperRight, 
+                                                                                            normal = new GUIStyleState(){textColor = Color.gray},
+                                                                                            hover = new GUIStyleState(){textColor = Color.gray},
+                                                                                    };
+            public static readonly GUIStyle DepthLabelStyle = new (GUI.skin.label) {alignment = TextAnchor.UpperLeft, 
+                                                                                           normal = new GUIStyleState(){textColor = Color.gray},
+                                                                                           hover = new GUIStyleState(){textColor = Color.gray},
+                                                                                   };
         }
     }
 
