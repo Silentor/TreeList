@@ -9,6 +9,8 @@ namespace Silentor.TreeControl.Editor
 {
     public class MyTreeView : TreeView
     {
+        public Boolean IsInitialized => base.isInitialized;
+
         private readonly SerializedProperty _itemsProp;
 
         public MyTreeView(TreeViewState state, SerializedProperty itemsProp ) : base( state )
@@ -37,7 +39,9 @@ namespace Silentor.TreeControl.Editor
             
             // Utility method that initializes the TreeViewItem.children and .parent for all items.
             SetupParentsAndChildrenFromDepths (root, itemsList);
-            
+
+            Debug.Log( "Reload tree" );
+
             // Return root of the tree
             return root;
         }
@@ -113,6 +117,17 @@ namespace Silentor.TreeControl.Editor
                 enterChildren =  false;
             }
             return Math.Max( count, 1) * EditorGUIUtility.singleLineHeight;
+        }
+
+        public (SerializedProperty item, Int32 index) GetSelectedItem( )
+        {
+            if ( HasSelection() )
+            {
+                var id  = GetSelection().First();
+                return ( _itemsProp.GetArrayElementAtIndex( id ), id );
+            }
+
+            return (null, -1);
         }
 
         public Single GetExpandedItemHeight( )

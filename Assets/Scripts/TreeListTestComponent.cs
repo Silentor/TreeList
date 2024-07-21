@@ -9,18 +9,18 @@ namespace Silentor.TreeControl
 {
     public class TreeListTestComponent : MonoBehaviour
     {
-        public Int32                        FirstInspector;
+        //public Int32                        FirstInspector;
         //[HideInInspector]
         public TreeList<String>             PrimitiveTree;
-        public TreeList<CustomNode>         CustomTree;
+        //public TreeList<CustomNode>         CustomTree;
         //[HideInInspector]
-        public TreeList<VoidNode>           VoidTree;
+        //public TreeList<VoidNode>           VoidTree;
 
         public Int32[] TestCollection;
 
         private void Awake( )
         {
-            Debug.Log( CustomTree.ToHierarchyString() );
+            //Debug.Log( CustomTree.ToHierarchyString() );
         }
 
     }
@@ -69,30 +69,30 @@ namespace Silentor.TreeControl
             // }
 
 
-            if ( GUILayout.Button( "Fill custom tree" ) )
-            {
-                _target.CustomTree = new TreeList<CustomNode>();
-                var root = _target.CustomTree.Add( new CustomNode { CustomText = "root", CustomInt        = 1 }, null );
-                var ch1  = root.AddChild( new CustomNode { CustomText  = "child1", CustomInt      = 2, CustomBool = true } );
-                var gch1 = ch1.AddChild( new CustomNode { CustomText   = "grandChild1", CustomInt = 3, CustomBool = false } );
-                var ch2  = root.AddChild( new CustomNode { CustomText  = "child2", CustomInt      = 2, CustomBool = true } );
-            }
-
-            
-            if ( GUILayout.Button( "Fill custom deep tree" ) )
-            {
-                _target.CustomTree = new TreeList<CustomNode>();
-                var root = _target.CustomTree.Add( new CustomNode { CustomText = "root deep", CustomInt        = 1 }, null );
-                var ch1  = root.AddChild( new CustomNode { CustomText          = "child1", CustomInt      = 2, CustomBool = true } );
-                var gch1 = ch1.AddChild( new CustomNode { CustomText           = "grandChild1", CustomInt = 3, CustomBool = false } );
-                var ch2  = root.AddChild( new CustomNode { CustomText          = "child2", CustomInt      = 2, CustomBool = true } );
-
-                //Test deep hierarchy
-                for ( int i = 0; i < 10; i++ )
-                {
-                    gch1 = gch1.AddChild( new CustomNode() { CustomText = $"grandchild{i + 2}", CustomInt = i } );
-                }
-            }
+            // if ( GUILayout.Button( "Fill custom tree" ) )
+            // {
+            //     _target.CustomTree = new TreeList<CustomNode>();
+            //     var root = _target.CustomTree.Add( new CustomNode { CustomText = "root", CustomInt        = 1 }, null );
+            //     var ch1  = root.AddChild( new CustomNode { CustomText  = "child1", CustomInt      = 2, CustomBool = true } );
+            //     var gch1 = ch1.AddChild( new CustomNode { CustomText   = "grandChild1", CustomInt = 3, CustomBool = false } );
+            //     var ch2  = root.AddChild( new CustomNode { CustomText  = "child2", CustomInt      = 2, CustomBool = true } );
+            // }
+            //
+            //
+            // if ( GUILayout.Button( "Fill custom deep tree" ) )
+            // {
+            //     _target.CustomTree = new TreeList<CustomNode>();
+            //     var root = _target.CustomTree.Add( new CustomNode { CustomText = "root deep", CustomInt        = 1 }, null );
+            //     var ch1  = root.AddChild( new CustomNode { CustomText          = "child1", CustomInt      = 2, CustomBool = true } );
+            //     var gch1 = ch1.AddChild( new CustomNode { CustomText           = "grandChild1", CustomInt = 3, CustomBool = false } );
+            //     var ch2  = root.AddChild( new CustomNode { CustomText          = "child2", CustomInt      = 2, CustomBool = true } );
+            //
+            //     //Test deep hierarchy
+            //     for ( int i = 0; i < 10; i++ )
+            //     {
+            //         gch1 = gch1.AddChild( new CustomNode() { CustomText = $"grandchild{i + 2}", CustomInt = i } );
+            //     }
+            // }
 
             // if ( GUILayout.Button( "Fill void tree" ) )
             // {
