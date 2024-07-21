@@ -11,10 +11,10 @@ namespace Silentor.TreeControl.Editor
     public class TreeListPropertyDrawer : PropertyDrawer
     {                                   
         private static readonly Dictionary<Int32, TreeEditorState> _treeViewStates = new ();
-        private                 MyTreeView                   _tree;
-        private                 MultiColumnHeaderState       _multiColumnHeaderState;
-        private                 Int32                        _structuralHash;
-        private Single _headerHeight = EditorGUIUtility.singleLineHeight + 2;
+        private                 MyTreeView                         _tree;
+        private                 MultiColumnHeaderState             _multiColumnHeaderState;
+        private                 Int32                              _structuralHash;
+        private readonly        Single                             _headerHeight = EditorGUIUtility.singleLineHeight + 2;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label )
         {
@@ -46,7 +46,7 @@ namespace Silentor.TreeControl.Editor
                 _tree = new MyTreeView( state.TreeViewState, new MyMultiColumnHeader(_multiColumnHeaderState), nodesProp ) ;
             }
 
-            position = DrawHeader( position, label, state, nodesProp );
+            position = DrawHeader( position, label, state, nodesProp, property );
 
             if ( !state.IsTreeExpanded )
             {
@@ -73,13 +73,14 @@ namespace Silentor.TreeControl.Editor
             _multiColumnHeaderState.columns[1].width = position.width - _multiColumnHeaderState.columns[0].width - 20;
 
             _tree.OnGUI( position );
+
         }
 
-        private Rect DrawHeader( Rect totalRect, GUIContent label, TreeEditorState state, SerializedProperty nodesProp )
+        private Rect DrawHeader( Rect totalRect, GUIContent label, TreeEditorState state, SerializedProperty nodesProp, SerializedProperty mainProperty )
         {
             var headerRect  = new Rect( totalRect.x, totalRect.y,                totalRect.width, _headerHeight );
             var contentRect = new Rect( totalRect.x, totalRect.y + _headerHeight, totalRect.width, totalRect.height - _headerHeight );
-            
+
             //Draw items count
             var itemsCountRect = new Rect( headerRect.x + headerRect.width - 50, headerRect.y, 50, _headerHeight );
             GUI.enabled = false;
@@ -123,14 +124,61 @@ namespace Silentor.TreeControl.Editor
             var prefixLabelRect = headerRect;
             prefixLabelRect.xMax = btnRect.x - 5;
             if( nodesProp.arraySize > 0 )
-                state.IsTreeExpanded = EditorGUI.Foldout( headerRect, state.IsTreeExpanded, label, true, Resources.HeaderStyle );   
+                state.IsTreeExpanded = EditorGUI.Foldout( prefixLabelRect, state.IsTreeExpanded, label, true, Resources.HeaderStyle );   
             else
             {
-                EditorGUI.Foldout( headerRect, false, label, true, Resources.HeaderStyle);
+                EditorGUI.Foldout( prefixLabelRect, false, label, true, Resources.HeaderStyle);
                 state.IsTreeExpanded = false;
-            }   
+            }
 
-            
+            //Draw blue margin if tree value is overriden
+            if ( nodesProp.prefabOverride && Event.current.type == EventType.Repaint )
+            {
+                EditorGUI.DrawRect( new Rect(headerRect.x - 18, headerRect.y, 2, headerRect.height), Resources.PrefabOverrideMarginColor);
+            }
+
+            //Simulate default property context menu
+            if (Event.current.type == EventType.MouseUp && prefixLabelRect.Contains (Event.current.mousePosition) && Event.current.button == 1)
+            {
+                var menu = new GenericMenu();
+                menu.AddItem( new GUIContent( "Copy property path" ), false, () => EditorGUIUtility.systemCopyBuffer = mainProperty.propertyPath );
+                if ( nodesProp.prefabOverride )
+                {
+                    //Find prefabs where this property may be overriden
+                    var  obj     = ((Component)nodesProp.serializedObject.targetObject).gameObject;
+                    var  prefab  = PrefabUtility.GetCorrespondingObjectFromSource( obj );  //Make sure we in prefab space
+
+                    List<GameObject> prefabAssets = new();
+                    do
+                    {
+                        var originalPrefabAsset = PrefabUtility.GetCorrespondingObjectFromOriginalSource( prefab );
+                        prefabAssets.Add( originalPrefabAsset );
+                        prefab = prefab.transform.parent?.gameObject;
+                    } while ( prefab );
+
+                    prefabAssets.Reverse();
+                    foreach ( var prefabAsset in prefabAssets )
+                    {
+                        var title = prefabAsset == prefabAssets.Last() ? $"Apply to Prefab '{prefabAsset.name}'" : $"Apply as Override in Prefab '{prefabAsset.name}'";
+                        if( prefabAsset == prefabAssets.Last() )
+                            menu.AddItem( new GUIContent( title ), false, 
+                                    () => PrefabUtility.ApplyPropertyOverride( nodesProp, AssetDatabase.GetAssetPath( prefabAsset ), InteractionMode.UserAction ) );
+                        else
+                            menu.AddItem( new GUIContent( title ), false, 
+                                    () => PrefabUtility.ApplyPropertyOverride( nodesProp, AssetDatabase.GetAssetPath( prefabAsset ), InteractionMode.UserAction ) );
+                    }
+
+                    menu.AddItem( new GUIContent( "Revert" ), false, ( ) => nodesProp.prefabOverride = false );
+                }
+                menu.AddSeparator( String.Empty );
+
+                menu.AddItem( new GUIContent( "Copy" ), false, () => Debug.Log( EditorJsonUtility.ToJson( nodesProp.Copy() ) ) );
+                //menu.AddItem( new GUIContent( "Paste" ), false, () => nodesProp.Paste( EditorGUIUtility.systemCopyBuffer ) ;
+                //GenericPropertyJSON:{"name":"TestCollection","type":-1,"arraySize":3,"arrayType":"CustomNode","children":[{"name":"Array","type":-1,"arraySize":3,"arrayType":"CustomNode","children":[{"name":"size","type":12,"val":3},{"name":"data","type":-1,"children":[{"name":"CustomText","type":3,"val":"1"},{"name":"CustomBool","type":1,"val":false},{"name":"CustomInt","type":0,"val":0}]},{"name":"data","type":-1,"children":[{"name":"CustomText","type":3,"val":"2"},{"name":"CustomBool","type":1,"val":false},{"name":"CustomInt","type":0,"val":0}]},{"name":"data","type":-1,"children":[{"name":"CustomText","type":3,"val":"3"},{"name":"CustomBool","type":1,"val":false},{"name":"CustomInt","type":0,"val":0}]}]}]}
+                //SerializedPropertyType
+                menu.ShowAsContext();
+                Event.current.Use ();
+            }
 
             return contentRect;
         }
@@ -206,7 +254,14 @@ namespace Silentor.TreeControl.Editor
 
         private static class Resources
         {
-             public static readonly GUIStyle HeaderStyle = new (EditorStyles.foldoutHeader) { };
+            public static readonly GUIStyle HeaderStyle = new (EditorStyles.foldoutHeader)
+                                                          {
+                                                                  // hover =
+                                                                  // {
+                                                                  //         textColor = Color.red,
+                                                                  //         background = Texture2D.redTexture,
+                                                                  // }
+                                                          };
             public static readonly GUIStyle ToolBarBtnStyle = new (GUI.skin.button) {       
                                                                                             alignment = TextAnchor.MiddleCenter,
                                                                                             fontSize = 16,
@@ -215,6 +270,8 @@ namespace Silentor.TreeControl.Editor
 
             public static readonly GUIContent Plus  = new  (EditorGUIUtility.IconContent("Toolbar Plus").image, "Add child node") ;
             public static readonly GUIContent Minus = new  (EditorGUIUtility.IconContent("Toolbar Minus").image, "Remove node") ;
+
+            public static Color PrefabOverrideMarginColor = new (0.003921569f, 0.6f, 0.92156863f, 0.75f);
 
         }
     }

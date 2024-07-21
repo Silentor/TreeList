@@ -16,7 +16,7 @@ namespace Silentor.TreeControl
         //[HideInInspector]
         //public TreeList<VoidNode>           VoidTree;
 
-        public Int32[] TestCollection;
+        public CustomNode[] TestCollection;
 
         private void Awake( )
         {
