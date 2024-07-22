@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using Object = System.Object;
 
 namespace Silentor.TreeControl.Editor
 {
@@ -13,11 +15,13 @@ namespace Silentor.TreeControl.Editor
         private static readonly Dictionary<Int32, TreeEditorState> _treeViewStates = new ();
         private                 MyTreeView                         _tree;
         private                 MultiColumnHeaderState             _multiColumnHeaderState;
-        private                 Int32                              _structuralHash;
         private readonly        Single                             _headerHeight = EditorGUIUtility.singleLineHeight + 2;
+        private Int32 _structuralHash;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label )
         {
+            //Debug.Log( $"{property.displayName}, evt {Event.current.type}, hash {this.GetHashCode()}" );
+
             var state     = GetPersistentTreeViewState( property );
             var nodesProp = property.FindPropertyRelative( "SerializableNodes" );
             if( nodesProp.arraySize == 0 )
@@ -52,8 +56,8 @@ namespace Silentor.TreeControl.Editor
             {
                 return;
             }
-            
-            if ( _structuralHash != GetStructuralHash( nodesProp ) )
+
+            if ( !_tree.IsInitialized || _structuralHash != GetStructuralHash( nodesProp ) )
             {
                 _tree.Reload();
                 _structuralHash = GetStructuralHash( nodesProp );
@@ -101,7 +105,7 @@ namespace Silentor.TreeControl.Editor
             EditorGUI.EndDisabledGroup();
 
             //Draw add button
-            btnRect = new Rect( btnRect.x - btnRect.width - 5, btnRect.y, btnRect.width, btnRect.height );
+            btnRect = new Rect( btnRect.x - btnRect.width - 15, btnRect.y, btnRect.width, btnRect.height );
             var isEmptyTree = nodesProp.arraySize == 0;
             isBtnEnabled = isEmptyTree || _tree.HasSelection();
             EditorGUI.BeginDisabledGroup( !isBtnEnabled );
@@ -152,7 +156,8 @@ namespace Silentor.TreeControl.Editor
                     do
                     {
                         var originalPrefabAsset = PrefabUtility.GetCorrespondingObjectFromOriginalSource( prefab );
-                        prefabAssets.Add( originalPrefabAsset );
+                        if( originalPrefabAsset )
+                            prefabAssets.Add( originalPrefabAsset );
                         prefab = prefab.transform.parent?.gameObject;
                     } while ( prefab );
 
@@ -172,10 +177,19 @@ namespace Silentor.TreeControl.Editor
                 }
                 menu.AddSeparator( String.Empty );
 
-                menu.AddItem( new GUIContent( "Copy" ), false, () => Debug.Log( EditorJsonUtility.ToJson( nodesProp.Copy() ) ) );
-                //menu.AddItem( new GUIContent( "Paste" ), false, () => nodesProp.Paste( EditorGUIUtility.systemCopyBuffer ) ;
-                //GenericPropertyJSON:{"name":"TestCollection","type":-1,"arraySize":3,"arrayType":"CustomNode","children":[{"name":"Array","type":-1,"arraySize":3,"arrayType":"CustomNode","children":[{"name":"size","type":12,"val":3},{"name":"data","type":-1,"children":[{"name":"CustomText","type":3,"val":"1"},{"name":"CustomBool","type":1,"val":false},{"name":"CustomInt","type":0,"val":0}]},{"name":"data","type":-1,"children":[{"name":"CustomText","type":3,"val":"2"},{"name":"CustomBool","type":1,"val":false},{"name":"CustomInt","type":0,"val":0}]},{"name":"data","type":-1,"children":[{"name":"CustomText","type":3,"val":"3"},{"name":"CustomBool","type":1,"val":false},{"name":"CustomInt","type":0,"val":0}]}]}]}
-                //SerializedPropertyType
+                if( !mainProperty.hasMultipleDifferentValues )
+                    menu.AddItem( new GUIContent( "Copy" ), false, () => Resources.Clipboard.Copy( mainProperty ) );
+                else
+                    menu.AddDisabledItem( new GUIContent( "Copy" ) );
+                if( !mainProperty.hasMultipleDifferentValues && GUI.enabled && Resources.Clipboard.IsPropertyPresent() )
+                    menu.AddItem( new GUIContent( "Paste" ), false, () =>
+                    {
+                        Resources.Clipboard.Paste( mainProperty );
+                        mainProperty.serializedObject.ApplyModifiedProperties();
+                    } );
+                else
+                    menu.AddDisabledItem( new GUIContent( "Paste" ) );
+
                 menu.ShowAsContext();
                 Event.current.Use ();
             }
@@ -248,8 +262,8 @@ namespace Silentor.TreeControl.Editor
         [Serializable]
         private class TreeEditorState
         {
-            public TreeViewState    TreeViewState = new();
-            public Boolean          IsTreeExpanded;
+            public TreeViewState TreeViewState = new();
+            public Boolean       IsTreeExpanded;
         }
 
         private static class Resources
@@ -271,7 +285,32 @@ namespace Silentor.TreeControl.Editor
             public static readonly GUIContent Plus  = new  (EditorGUIUtility.IconContent("Toolbar Plus").image, "Add child node") ;
             public static readonly GUIContent Minus = new  (EditorGUIUtility.IconContent("Toolbar Minus").image, "Remove node") ;
 
-            public static Color PrefabOverrideMarginColor = new (0.003921569f, 0.6f, 0.92156863f, 0.75f);
+            
+
+            public static readonly Color PrefabOverrideMarginColor = new (0.003921569f, 0.6f, 0.92156863f, 0.75f);
+
+            public static class Clipboard
+            {
+                private static readonly Type       ClipboardType = typeof(ClipboardUtility).Assembly.GetType("UnityEditor.Clipboard");
+                private static readonly MethodInfo SetSerializedPropertyMethod   = ClipboardType.GetMethod("SetSerializedProperty", BindingFlags.Static | BindingFlags.Public);
+                private static readonly MethodInfo GetSerializedPropertyMethod    = ClipboardType.GetMethod("GetSerializedProperty", BindingFlags.Static | BindingFlags.Public);
+                private static readonly MethodInfo CheckMethod   = ClipboardType.GetMethod("HasSerializedProperty", BindingFlags.Static | BindingFlags.Public);
+
+                public static void Copy( SerializedProperty property )
+                {
+                    SetSerializedPropertyMethod.Invoke( null, new Object[] { property } );
+                }
+
+                public static void Paste( SerializedProperty property )
+                {
+                    GetSerializedPropertyMethod.Invoke( null, new Object[] { property } );
+                }
+
+                public static Boolean IsPropertyPresent( )
+                {
+                    return (Boolean)CheckMethod.Invoke( null, Array.Empty<Object>() );
+                }
+            }
 
         }
     }

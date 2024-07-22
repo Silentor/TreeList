@@ -12,11 +12,14 @@ namespace Silentor.TreeControl
         //public Int32                        FirstInspector;
         //[HideInInspector]
         public TreeList<String>             PrimitiveTree;
-        //public TreeList<CustomNode>         CustomTree;
+        public TreeList<String>             PrimitiveTree2;
+        public TreeList<CustomNode>         CustomTree;
+        public TreeList<CustomNode>         CustomTree2;
         //[HideInInspector]
         //public TreeList<VoidNode>           VoidTree;
 
         public CustomNode[] TestCollection;
+        public CustomNode[] TestCollection2;
 
         private void Awake( )
         {
@@ -44,7 +47,7 @@ namespace Silentor.TreeControl
     }
 
 #if UNITY_EDITOR
-    [CustomEditor( typeof(TreeListTestComponent) )]
+    //[CustomEditor( typeof(TreeListTestComponent) )]
     public class TreeListTestComponentEditor : Editor
     {
         private TreeListTestComponent _target;
