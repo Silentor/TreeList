@@ -16,7 +16,7 @@ namespace Silentor.TreeControl
         public TreeList<CustomNode>         CustomTree;
         public TreeList<CustomNode>         CustomTree2;
         //[HideInInspector]
-        //public TreeList<VoidNode>           VoidTree;
+        public TreeList<VoidNode>           VoidTree;
 
         public CustomNode[] TestCollection;
         public CustomNode[] TestCollection2;

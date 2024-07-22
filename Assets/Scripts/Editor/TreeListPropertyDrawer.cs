@@ -16,7 +16,8 @@ namespace Silentor.TreeControl.Editor
         private                 MyTreeView                         _tree;
         private                 MultiColumnHeaderState             _multiColumnHeaderState;
         private readonly        Single                             _headerHeight = EditorGUIUtility.singleLineHeight + 2;
-        private Int32 _structuralHash;
+        private                 Int32                              _structuralHash;
+        private                 String                             _treeTypeHint;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label )
         {
@@ -82,6 +83,9 @@ namespace Silentor.TreeControl.Editor
         {
             var headerRect  = new Rect( totalRect.x, totalRect.y,                totalRect.width, _headerHeight );
             var contentRect = new Rect( totalRect.x, totalRect.y + _headerHeight, totalRect.width, totalRect.height - _headerHeight );
+
+            //Draw header hint
+            GUI.Label( headerRect, GetTreeHint( nodesProp ), EditorStyles.centeredGreyMiniLabel );
 
             //Draw items count
             var itemsCountRect = new Rect( headerRect.x + headerRect.width - 50, headerRect.y, 50, _headerHeight );
@@ -257,6 +261,30 @@ namespace Silentor.TreeControl.Editor
 
             return hash.ToHashCode();
         }
+
+        private String GetTreeHint( SerializedProperty nodesProp )
+        {
+            if ( nodesProp.arraySize == 0 )
+                return "Press + to add root item";
+            else
+            {
+                if ( _treeTypeHint == null )
+                {
+                    var node      = nodesProp.GetArrayElementAtIndex( 0 );
+                    var valueProp = node.FindPropertyRelative( "Value" );
+                    if( valueProp == null )
+                        _treeTypeHint = "Value is not serializable";
+                    else
+                    {
+                        var valueType = valueProp.type;
+                        _treeTypeHint =  $"Tree of {valueType}";
+                    }
+                }
+
+                return _treeTypeHint;
+            }
+        }
+       
 
         [Serializable]
         private class TreeEditorState
