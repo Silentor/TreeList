@@ -34,15 +34,11 @@ namespace Silentor.TreeControl.Editor
                         {
                                 new ()
                                 {
-                                        //headerContent         = new GUIContent( "Tree" ), 
-                                        allowToggleVisibility = false,
                                         autoResize            = false,
                                 },
                                 new ()
                                 {
-                                        headerContent         = new GUIContent( "Value" ),
-                                        allowToggleVisibility = false,
-                                        autoResize            = true,
+                                        autoResize            = false,
                                 },
                         
                         } );
@@ -69,15 +65,17 @@ namespace Silentor.TreeControl.Editor
             {
                 //Expand foldouts column to fit the deepest expanded item
                 var deepestExpandedItem = expandedItems.MaxBy( tvi => tvi.depth );
-                _multiColumnHeaderState.columns[0].width = deepestExpandedItem.depth * 15 + 30;
+                var depth               = deepestExpandedItem.depth * 15 + 30;
+                _multiColumnHeaderState.columns[0].width = depth;
             }
             else
-                _multiColumnHeaderState.columns[0].width = 30;
+            {
+                _multiColumnHeaderState.columns[0].width           = 30;
+            }
                     
-            _multiColumnHeaderState.columns[1].width = position.width - _multiColumnHeaderState.columns[0].width - 20;
+            _multiColumnHeaderState.columns[1].width = position.width - _multiColumnHeaderState.columns[0].width - 20;  
 
             _tree.OnGUI( position );
-
         }
 
         private Rect DrawHeader( Rect totalRect, GUIContent label, TreeEditorState state, SerializedProperty nodesProp, SerializedProperty mainProperty )
@@ -127,11 +125,12 @@ namespace Silentor.TreeControl.Editor
             //Custom prefix label because TreeView with header hides it. wtf?
             var prefixLabelRect = headerRect;
             prefixLabelRect.xMax = btnRect.x - 5;
+            var headerStyle = nodesProp.prefabOverride ? Resources.HeaderOverridenStyle : Resources.HeaderStyle;
             if( nodesProp.arraySize > 0 )
-                mainProperty.isExpanded = EditorGUI.Foldout( prefixLabelRect, mainProperty.isExpanded, label, true, Resources.HeaderStyle );   
+                mainProperty.isExpanded = EditorGUI.Foldout( prefixLabelRect, mainProperty.isExpanded, label, true, headerStyle );   
             else
             {
-                EditorGUI.Foldout( prefixLabelRect, false, label, true, Resources.HeaderStyle);
+                EditorGUI.Foldout( prefixLabelRect, false, label, true, headerStyle );
                 mainProperty.isExpanded = false;
             }
 
@@ -270,11 +269,11 @@ namespace Silentor.TreeControl.Editor
         {
             public static readonly GUIStyle HeaderStyle = new (EditorStyles.foldoutHeader)
                                                           {
-                                                                  // hover =
-                                                                  // {
-                                                                  //         textColor = Color.red,
-                                                                  //         background = Texture2D.redTexture,
-                                                                  // }
+                                                                  fontStyle = FontStyle.Normal,
+                                                          };
+            public static readonly GUIStyle HeaderOverridenStyle = new (EditorStyles.foldoutHeader)
+                                                          {
+                                                                  fontStyle = FontStyle.Bold,
                                                           };
             public static readonly GUIStyle ToolBarBtnStyle = new (GUI.skin.button) {       
                                                                                             alignment = TextAnchor.MiddleCenter,
@@ -284,6 +283,9 @@ namespace Silentor.TreeControl.Editor
 
             public static readonly GUIContent Plus  = new  (EditorGUIUtility.IconContent("Toolbar Plus").image, "Add child node") ;
             public static readonly GUIContent Minus = new  (EditorGUIUtility.IconContent("Toolbar Minus").image, "Remove node") ;
+            public static readonly GUIContent Depth =  EditorGUIUtility.isProSkin 
+                    ? new ("Depth", EditorGUIUtility.IconContent("d_BlendTree Icon").image) 
+                    : new ("Depth", EditorGUIUtility.IconContent("BlendTree Icon").image) ;
 
             
 

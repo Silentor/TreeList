@@ -169,14 +169,14 @@ namespace Silentor.TreeControl.Editor
 
         private static class Resources
         {
-            public static readonly GUIStyle DepthLabelStyle0 = new (GUI.skin.label) {alignment = TextAnchor.UpperRight, 
-                                                                                            normal = new GUIStyleState(){textColor = Color.gray},
-                                                                                            hover = new GUIStyleState(){textColor = Color.gray},
-                                                                                    };
-            public static readonly GUIStyle DepthLabelStyle = new (GUI.skin.label) {alignment = TextAnchor.UpperLeft, 
-                                                                                           normal = new GUIStyleState(){textColor = Color.gray},
-                                                                                           hover = new GUIStyleState(){textColor = Color.gray},
-                                                                                   };
+            // public static readonly GUIStyle DepthLabelStyle0 = new (GUI.skin.label) {alignment = TextAnchor.UpperRight, 
+            //                                                                                 normal = new GUIStyleState(){textColor = Color.gray},
+            //                                                                                 hover = new GUIStyleState(){textColor = Color.gray},
+            //                                                                         };
+            // public static readonly GUIStyle DepthLabelStyle = new (GUI.skin.label) {alignment = TextAnchor.UpperLeft, 
+            //                                                                                normal = new GUIStyleState(){textColor = Color.gray},
+            //                                                                                hover = new GUIStyleState(){textColor = Color.gray},
+            //                                                                       };
         }
     }
 
@@ -184,7 +184,7 @@ namespace Silentor.TreeControl.Editor
     {
         public MyMultiColumnHeader(MultiColumnHeaderState state) : base(state)
         {
-            height                        = 16;
+            height                        = 0;              //Hide header
             canSort                       = false;
             allowDraggingColumnsToReorder = false;
         }
