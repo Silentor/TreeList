@@ -26,15 +26,17 @@ namespace Silentor.TreeControl.Editor
 
         protected override TreeViewItem BuildRoot( )
         {
-            var root = new TreeViewItem {id = -1, depth = -1, displayName = "Root"};
+            var root = new TreeViewItem { id = -1, depth = -1, displayName = "Root" };
 
-            var itemsList = new List<TreeViewItem>();
-            for ( int i = 0; i < _itemsProp.arraySize; i++ )
+            var idLevelList = new List<Int32>( 16 );
+            var itemsList   = new List<TreeViewItem>();
+            for ( var i = 0; i < _itemsProp.arraySize; i++ )
             {
                 var itemProp = _itemsProp.GetArrayElementAtIndex( i );
                 var depth    = itemProp.FindPropertyRelative( "Level" ).intValue;
 
-                itemsList.Add( new TreeViewItem { id = i, depth = depth } );
+                var semiPermanentId = (depth << 16) | GetIndexForDepth( depth );
+                itemsList.Add( new TreeViewItem { id = semiPermanentId, depth = depth } );
             }
             
             // Utility method that initializes the TreeViewItem.children and .parent for all items.
@@ -44,6 +46,16 @@ namespace Silentor.TreeControl.Editor
 
             // Return root of the tree
             return root;
+
+            Int32 GetIndexForDepth( Int32 depth )
+            {
+                while( idLevelList.Count <= depth )
+                    idLevelList.Add( 0 );
+                
+                var id = idLevelList[ depth ];
+                idLevelList[ depth ] += 1;
+                return id;
+            }
         }
 
         protected override void RowGUI(RowGUIArgs args )
@@ -67,8 +79,9 @@ namespace Silentor.TreeControl.Editor
                 else
                 {
                     //Draw serialized property value
-                    var levelProp = _itemsProp.GetArrayElementAtIndex( item.id ).FindPropertyRelative( "Level" );
-                    var valueProp = _itemsProp.GetArrayElementAtIndex( item.id ).FindPropertyRelative( "Value" );
+                    var (nodeProp, _)  = GetNodePropForId( item.id );
+                    var levelProp = nodeProp.FindPropertyRelative( "Level" );
+                    var valueProp = nodeProp.FindPropertyRelative( "Value" );
                     var totalRect = args.GetCellRect( i );
 
                     if ( valueProp == null )
@@ -104,38 +117,54 @@ namespace Silentor.TreeControl.Editor
 
         protected override Single GetCustomRowHeight(Int32 row, TreeViewItem item )
         {
-            var valueProp     = _itemsProp.GetArrayElementAtIndex( item.id ).FindPropertyRelative( "Value" );
+            var (nodeProp, _) = GetNodePropForId( item.id );
+            var valueProp     = nodeProp.FindPropertyRelative( "Value" );
             if( valueProp == null )              //Value is not serializable
                 return EditorGUIUtility.singleLineHeight;
 
             var enterChildren = true;
             var endProp       = valueProp.GetEndProperty();
-            var count         = 0;
+            //var count         = 0;
+            var height        = 0f;
             while ( valueProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( valueProp, endProp ) )
             {
-                count++;
+                height += EditorGUI.GetPropertyHeight( valueProp, true );
+                //count++;
                 enterChildren =  false;
             }
-            return Math.Max( count, 1) * EditorGUIUtility.singleLineHeight;
+            //return Math.Max( count, 1) * EditorGUIUtility.singleLineHeight;
+            return Math.Max( height, EditorGUIUtility.singleLineHeight );
         }
 
-        public (SerializedProperty item, Int32 index) GetSelectedItem( )
+        public (SerializedProperty nodeProp, Int32 index) GetSelectedItem( )
         {
             if ( HasSelection() )
             {
-                var id  = GetSelection().First();
-                return ( _itemsProp.GetArrayElementAtIndex( id ), id );
+                var id       = GetSelection().First();
+                var nodeProp = GetNodePropForId( id );
+                return nodeProp;
             }
 
             return (null, -1);
         }
 
-        public Single GetExpandedItemHeight( )
+        private (SerializedProperty nodeProp, Int32 index) GetNodePropForId( Int32 id )
         {
-            if( _itemsProp.arraySize == 0 || GetRows().Count == 0 )
-                return EditorGUIUtility.singleLineHeight;
+            var depth        = id >> 16;
+            var indexInDepth = id & 0xFFFF;
+            var localIndex        = 0;
+            for ( int i = 0; i < _itemsProp.arraySize; i++ )
+            {
+                var nodeProp = _itemsProp.GetArrayElementAtIndex( i );
+                var nodeDepth = nodeProp.FindPropertyRelative( "Level" ).intValue;
+                if ( nodeDepth == depth )
+                {
+                    if ( localIndex++ == indexInDepth )
+                        return ( nodeProp, i );
+                }
+            }
 
-            return GetCustomRowHeight( 0, GetRows()[ 0 ] );
+            return (null, -1);
         }
 
         private static class Resources

@@ -25,7 +25,7 @@ namespace Silentor.TreeControl.Editor
             var state     = GetPersistentTreeViewState( property );
             var nodesProp = property.FindPropertyRelative( "SerializableNodes" );
             if( nodesProp.arraySize == 0 )
-                state.IsTreeExpanded = false;
+                property.isExpanded = false;
 
             if ( _tree == null )
             {
@@ -52,7 +52,7 @@ namespace Silentor.TreeControl.Editor
 
             position = DrawHeader( position, label, state, nodesProp, property );
 
-            if ( !state.IsTreeExpanded )
+            if ( !property.isExpanded )
             {
                 return;
             }
@@ -93,14 +93,14 @@ namespace Silentor.TreeControl.Editor
 
             //Draw remove button
             var btnRect      = new Rect( itemsCountRect.x - _headerHeight - 5, headerRect.y, _headerHeight, _headerHeight );
-            var isBtnEnabled = state.IsTreeExpanded && _tree.HasSelection();
+            var isBtnEnabled = mainProperty.isExpanded && _tree.HasSelection();
             EditorGUI.BeginDisabledGroup( !isBtnEnabled );
             if ( GUI.Button( btnRect, Resources.Minus, Resources.ToolBarBtnStyle ) )
             {
                 var (_, selectedIndex) = _tree.GetSelectedItem();
                 RemoveItem( selectedIndex, nodesProp );
                 if( nodesProp.arraySize == 0 )
-                    state.IsTreeExpanded = false;
+                    mainProperty.isExpanded = false;
             }
             EditorGUI.EndDisabledGroup();
 
@@ -114,7 +114,7 @@ namespace Silentor.TreeControl.Editor
                 if ( isEmptyTree )
                 {
                     AddItem( -1,  nodesProp );
-                    state.IsTreeExpanded = true;
+                    mainProperty.isExpanded = true;
                 }
                 else
                 {
@@ -128,11 +128,11 @@ namespace Silentor.TreeControl.Editor
             var prefixLabelRect = headerRect;
             prefixLabelRect.xMax = btnRect.x - 5;
             if( nodesProp.arraySize > 0 )
-                state.IsTreeExpanded = EditorGUI.Foldout( prefixLabelRect, state.IsTreeExpanded, label, true, Resources.HeaderStyle );   
+                mainProperty.isExpanded = EditorGUI.Foldout( prefixLabelRect, mainProperty.isExpanded, label, true, Resources.HeaderStyle );   
             else
             {
                 EditorGUI.Foldout( prefixLabelRect, false, label, true, Resources.HeaderStyle);
-                state.IsTreeExpanded = false;
+                mainProperty.isExpanded = false;
             }
 
             //Draw blue margin if tree value is overriden
@@ -224,11 +224,11 @@ namespace Silentor.TreeControl.Editor
             }
         }
 
-        public override Single GetPropertyHeight(SerializedProperty property, GUIContent label )
+        public override Single GetPropertyHeight( SerializedProperty property, GUIContent label )
         {
             if( _tree == null || !_tree.IsInitialized  )
                 return _headerHeight;
-            if( !GetPersistentTreeViewState( property ).IsTreeExpanded || property.FindPropertyRelative( "SerializableNodes" ).arraySize == 0)
+            if( !property.isExpanded || property.FindPropertyRelative( "SerializableNodes" ).arraySize == 0)
                 return _headerHeight;
 
             return Mathf.Clamp( _tree.totalHeight + _headerHeight, _headerHeight, 500 );
@@ -263,7 +263,7 @@ namespace Silentor.TreeControl.Editor
         private class TreeEditorState
         {
             public TreeViewState TreeViewState = new();
-            public Boolean       IsTreeExpanded;
+            //public Boolean       IsTreeExpanded;
         }
 
         private static class Resources
