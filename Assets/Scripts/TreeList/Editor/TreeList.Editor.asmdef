@@ -1,6 +1,6 @@
 {
     "name": "TreeList.Editor",
-    "rootNamespace": "Silentor.TreeList.Editor",
+    "rootNamespace": "Silentor",
     "references": [
         "GUID:84905b1f2bd0eb74c99ee09384922b63"
     ],

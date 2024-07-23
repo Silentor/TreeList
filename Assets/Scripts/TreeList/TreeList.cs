@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace Silentor.TreeControl
+namespace Silentor.TreeList
 {
     [Serializable]
     public class TreeList<T> : ISerializationCallbackReceiver

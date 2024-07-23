@@ -7,7 +7,7 @@ using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using Object = System.Object;
 
-namespace Silentor.TreeControl.Editor
+namespace Silentor.TreeList.Editor
 {
     [CustomPropertyDrawer( typeof(TreeList<>), true )]
     public class TreeListPropertyDrawer : PropertyDrawer

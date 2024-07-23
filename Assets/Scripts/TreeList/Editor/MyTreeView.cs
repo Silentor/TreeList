@@ -4,14 +4,17 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using Object = System.Object;
 
-namespace Silentor.TreeControl.Editor
+namespace Silentor.TreeList.Editor
 {
     public class MyTreeView : TreeView
     {
         public Boolean IsInitialized => base.isInitialized;
 
         private readonly SerializedProperty _itemsProp;
+        private          Single              _contentHeight;
+        private          Single               _lastContentHeight = -1;
 
         public MyTreeView(TreeViewState state, SerializedProperty itemsProp ) : base( state )
         {
@@ -58,11 +61,18 @@ namespace Silentor.TreeControl.Editor
             }
         }
 
+        protected override void BeforeRowsGUI( )
+        {
+            base.BeforeRowsGUI();
+
+            _contentHeight = 0;
+        }
+
         protected override void RowGUI(RowGUIArgs args )
         {
             var item = args.item;
 
-            for (int i = 0; i < args.GetNumVisibleColumns (); ++i)
+            for (var i = 0; i < args.GetNumVisibleColumns (); ++i)
             {
                 var colIndex = args.GetColumn(i);
 
@@ -91,28 +101,44 @@ namespace Silentor.TreeControl.Editor
                         return;
                     }
 
-                    var oneLineRect = totalRect;
-                    oneLineRect.height = EditorGUIUtility.singleLineHeight;
-
+                    var valuePropRect = totalRect;
                     if ( valueProp.hasVisibleChildren )
                     {
                         var enterChildren = true;
                         var endProp       = valueProp.GetEndProperty();
                         while ( valueProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( valueProp, endProp ) )
                         {
-                            var label =  String.Concat( Enumerable.Repeat( "    ", levelProp.intValue )) + valueProp.displayName;
-                            EditorGUI.PropertyField( oneLineRect, valueProp, new GUIContent( label ) );
-                            enterChildren =  false;
-                            oneLineRect.y += EditorGUIUtility.singleLineHeight;
+                            var label          =  String.Concat( Enumerable.Repeat( "    ", levelProp.intValue )) + valueProp.displayName;
+                            var valuePropLabel = EditorGUIUtility.TrTempContent( label );
+                            var propHeight     = EditorGUI.GetPropertyHeight( valueProp, valuePropLabel );
+                            valuePropRect.height = propHeight;
+                            EditorGUI.PropertyField( valuePropRect, valueProp, valuePropLabel, valueProp.isExpanded );
+                            enterChildren   =  false;
+                            valuePropRect.y += propHeight;
+                            _contentHeight  += propHeight;
                         }
                     }
                     else   //Value is primitive type itself
                     {
                         var label =  String.Concat( Enumerable.Repeat( "    ", levelProp.intValue )) + valueProp.displayName;
-                        EditorGUI.PropertyField( oneLineRect, valueProp, new GUIContent( label ) );
+                        EditorGUI.PropertyField( valuePropRect, valueProp, new GUIContent( label ) );   
                     }
                 }
             }
+        }
+
+        protected override void AfterRowsGUI( )
+        {
+            base.AfterRowsGUI();
+
+            if( _lastContentHeight >= 0 )
+            {
+                if( Math.Abs( _lastContentHeight - _contentHeight ) > 1 )
+                    RefreshCustomRowHeights();
+            }
+
+            _lastContentHeight = _contentHeight;
+            _contentHeight     = 0;
         }
 
         protected override Single GetCustomRowHeight(Int32 row, TreeViewItem item )
@@ -124,15 +150,13 @@ namespace Silentor.TreeControl.Editor
 
             var enterChildren = true;
             var endProp       = valueProp.GetEndProperty();
-            //var count         = 0;
             var height        = 0f;
             while ( valueProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( valueProp, endProp ) )
             {
-                height += EditorGUI.GetPropertyHeight( valueProp, true );
-                //count++;
+                height += EditorGUI.GetPropertyHeight( valueProp, valueProp.isExpanded );
                 enterChildren =  false;
             }
-            //return Math.Max( count, 1) * EditorGUIUtility.singleLineHeight;
+
             return Math.Max( height, EditorGUIUtility.singleLineHeight );
         }
 

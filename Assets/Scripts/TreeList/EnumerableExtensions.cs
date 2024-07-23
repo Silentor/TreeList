@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Silentor.TreeControl
+namespace Silentor.TreeList
 {
     public static class EnumerableExtensions
     {
