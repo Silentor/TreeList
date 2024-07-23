@@ -152,20 +152,88 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PrimitiveTree:
-    SerializableNodes: []
+    SerializableNodes:
+    - Value: test
+      Depth: 0
   PrimitiveTree2:
-    SerializableNodes: []
+    SerializableNodes:
+    - Value: 
+      Depth: 0
   CustomTree:
+    SerializableNodes: []
+  CustomTree2:
     SerializableNodes:
     - Value:
-        CustomText: tesssss
+        CustomText: 
         CustomBool: 0
-        CustomInt: 444
-      Level: 0
-  CustomTree2:
+        CustomInt: 0
+      Depth: 0
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 0
+      Depth: 1
+  VoidTree:
     SerializableNodes: []
-  TestCollection: []
-  TestCollection2: []
+  TestCollection:
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  TestCollection2:
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
+  - CustomText: 
+    CustomBool: 0
+    CustomInt: 0
 --- !u!4 &721503662
 Transform:
   m_ObjectHideFlags: 0
@@ -219,6 +287,8 @@ MonoBehaviour:
   CustomTree:
     SerializableNodes: []
   CustomTree2:
+    SerializableNodes: []
+  VoidTree:
     SerializableNodes: []
   TestCollection: []
   TestCollection2: []
@@ -304,69 +374,113 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
-      propertyPath: TestCollection.Array.size
-      value: 3
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.size
+      value: 11
       objectReference: {fileID: 0}
-    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
-      propertyPath: TestCollection.Array.data[1]
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[1].Depth
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
-      propertyPath: TestCollection.Array.data[2]
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[2].Depth
       value: 2
       objectReference: {fileID: 0}
-    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.size
-      value: 6
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[3].Depth
+      value: 2
       objectReference: {fileID: 0}
-    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
-      propertyPath: TestCollection.Array.data[0].CustomText
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[4].Depth
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[5].Depth
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[6].Depth
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[7].Depth
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
-      propertyPath: TestCollection.Array.data[1].CustomText
-      value: 22
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[8].Depth
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
-      propertyPath: TestCollection.Array.data[2].CustomText
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[9].Depth
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[10].Depth
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[8].Value.CustomInt
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[1].Value.CustomBool
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[1].Value.CustomText
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[2].Value.CustomBool
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[2].Value.CustomText
+      value: c
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[3].Value.CustomBool
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[3].Value.CustomText
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[4].Value.CustomBool
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[4].Value.CustomText
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[5].Value.CustomText
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[6].Value.CustomText
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[7].Value.CustomText
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[8].Value.CustomBool
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[8].Value.CustomText
       value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
-      propertyPath: CustomTree2.SerializableNodes.Array.size
-      value: 1
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[9].Value.CustomText
+      value: 4
       objectReference: {fileID: 0}
-    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[1].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[0].Value
-      value: test
-      objectReference: {fileID: 0}
-    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[0].Value.CustomText
-      value: root
-      objectReference: {fileID: 0}
-    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[1].Value.CustomText
-      value: child1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[2].Value.CustomText
-      value: child2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[3].Value.CustomText
-      value: child3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[4].Value.CustomText
-      value: child4
-      objectReference: {fileID: 0}
-    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[5].Value.CustomText
-      value: child5
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree.SerializableNodes.Array.data[10].Value.CustomText
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5991046166331598666, guid: 0548ac167725c224f985e13de38485fc, type: 3}
       propertyPath: m_LocalPosition.x
@@ -432,362 +546,6 @@ PrefabInstance:
     - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
       propertyPath: TestCollection.Array.size
       value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.size
-      value: 14
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[2].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[3].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[4].Level
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[5].Level
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[6].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[7].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[8].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[9].Level
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[10].Level
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[11].Level
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[12].Level
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[0].Value
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[1].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[1].Value
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[2].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[2].Value
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[3].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[3].Value
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[4].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[4].Value
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[5].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[5].Value
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[6].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[7].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[8].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[9].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[10].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[11].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[12].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[13].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[14].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[15].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[16].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[17].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[18].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[19].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[20].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[21].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[22].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[23].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[24].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[25].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[26].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[27].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[28].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[29].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[30].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[31].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: PrimitiveTree.SerializableNodes.Array.data[32].Level
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[1].Value.CustomInt
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[2].Value.CustomInt
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[3].Value.CustomInt
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[4].Value.CustomInt
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[5].Value.CustomInt
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[6].Value.CustomInt
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[7].Value.CustomInt
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[8].Value.CustomInt
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[9].Value.CustomInt
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[0].Value.CustomBool
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[0].Value.CustomText
-      value: root
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[10].Value.CustomInt
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[11].Value.CustomInt
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[12].Value.CustomInt
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[1].Value.CustomBool
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[1].Value.CustomText
-      value: child1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[2].Value.CustomBool
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[2].Value.CustomText
-      value: child1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[3].Value.CustomBool
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[3].Value.CustomText
-      value: child1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[4].Value.CustomBool
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[4].Value.CustomText
-      value: child1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[5].Value.CustomBool
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[5].Value.CustomText
-      value: child1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[6].Value.CustomBool
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[6].Value.CustomText
-      value: child1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[7].Value.CustomBool
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[7].Value.CustomText
-      value: child1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[8].Value.CustomBool
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[8].Value.CustomText
-      value: child1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[9].Value.CustomBool
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[9].Value.CustomText
-      value: grandChild1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[10].Value.CustomBool
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[10].Value.CustomText
-      value: child2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[11].Value.CustomBool
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[11].Value.CustomText
-      value: child2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[12].Value.CustomBool
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
-      propertyPath: CustomTree.SerializableNodes.Array.data[12].Value.CustomText
-      value: child2
       objectReference: {fileID: 0}
     - target: {fileID: 5902002587104202945, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
       propertyPath: m_LocalPosition.x

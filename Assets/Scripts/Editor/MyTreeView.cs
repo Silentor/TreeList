@@ -33,7 +33,7 @@ namespace Silentor.TreeControl.Editor
             for ( var i = 0; i < _itemsProp.arraySize; i++ )
             {
                 var itemProp = _itemsProp.GetArrayElementAtIndex( i );
-                var depth    = itemProp.FindPropertyRelative( "Level" ).intValue;
+                var depth    = itemProp.FindPropertyRelative( "Depth" ).intValue;
 
                 var semiPermanentId = (depth << 16) | GetIndexForDepth( depth );
                 itemsList.Add( new TreeViewItem { id = semiPermanentId, depth = depth } );
@@ -80,7 +80,7 @@ namespace Silentor.TreeControl.Editor
                 {
                     //Draw serialized property value
                     var (nodeProp, _)  = GetNodePropForId( item.id );
-                    var levelProp = nodeProp.FindPropertyRelative( "Level" );
+                    var levelProp = nodeProp.FindPropertyRelative( "Depth" );
                     var valueProp = nodeProp.FindPropertyRelative( "Value" );
                     var totalRect = args.GetCellRect( i );
 
@@ -156,7 +156,7 @@ namespace Silentor.TreeControl.Editor
             for ( int i = 0; i < _itemsProp.arraySize; i++ )
             {
                 var nodeProp = _itemsProp.GetArrayElementAtIndex( i );
-                var nodeDepth = nodeProp.FindPropertyRelative( "Level" ).intValue;
+                var nodeDepth = nodeProp.FindPropertyRelative( "Depth" ).intValue;
                 if ( nodeDepth == depth )
                 {
                     if ( localIndex++ == indexInDepth )

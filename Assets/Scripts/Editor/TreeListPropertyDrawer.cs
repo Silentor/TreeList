@@ -204,10 +204,21 @@ namespace Silentor.TreeControl.Editor
         {
             if ( parentIndex > -1 )
             {
-                var parentDepth = nodes.GetArrayElementAtIndex( parentIndex ).FindPropertyRelative( "Level" ).intValue;
-                nodes.InsertArrayElementAtIndex( parentIndex + 1 );
-                var newItem = nodes.GetArrayElementAtIndex( parentIndex + 1  );
-                newItem.FindPropertyRelative( "Level" ).intValue = parentDepth + 1;
+                var parentDepth = nodes.GetArrayElementAtIndex( parentIndex ).FindPropertyRelative( "Depth" ).intValue;
+                var childIndex  = nodes.arraySize;
+
+                for ( var i = parentIndex + 1; i < nodes.arraySize; i++ )
+                {
+                    if ( nodes.GetArrayElementAtIndex( i ).FindPropertyRelative( "Depth" ).intValue <= parentDepth )
+                    {
+                        childIndex = i;
+                        break;
+                    }
+                }
+                
+                nodes.InsertArrayElementAtIndex( childIndex );
+                var newItem = nodes.GetArrayElementAtIndex( childIndex  );
+                newItem.FindPropertyRelative( "Depth" ).intValue = parentDepth + 1;
             }
             else
                 nodes.InsertArrayElementAtIndex( 0 );
@@ -216,11 +227,11 @@ namespace Silentor.TreeControl.Editor
         private void RemoveItem( Int32 itemIndex, SerializedProperty nodes )
         {
             //Delete item and all its children based on depth
-            var depth = nodes.GetArrayElementAtIndex( itemIndex ).FindPropertyRelative( "Level" ).intValue;
+            var depth = nodes.GetArrayElementAtIndex( itemIndex ).FindPropertyRelative( "Depth" ).intValue;
             nodes.DeleteArrayElementAtIndex( itemIndex );
             while ( nodes.arraySize > itemIndex )
             {
-                if( nodes.GetArrayElementAtIndex( itemIndex ).FindPropertyRelative( "Level" ).intValue > depth )
+                if( nodes.GetArrayElementAtIndex( itemIndex ).FindPropertyRelative( "Depth" ).intValue > depth )
                     nodes.DeleteArrayElementAtIndex( itemIndex );
                 else
                     break;
@@ -255,7 +266,7 @@ namespace Silentor.TreeControl.Editor
 
             for ( int i = 0; i < nodesProp.arraySize; i++ )
             {
-                var depthProp = nodesProp.GetArrayElementAtIndex( i ).FindPropertyRelative( "Level" );
+                var depthProp = nodesProp.GetArrayElementAtIndex( i ).FindPropertyRelative( "Depth" );
                 hash.Add( depthProp.intValue );
             }
 

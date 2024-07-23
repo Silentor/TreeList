@@ -104,7 +104,7 @@ namespace Silentor.TreeControl.Editor
             var child2_1 = _tree.Nodes.First( n => n.Value.Equals( "child2_1" ) );
 
             Assert.IsTrue( _tree.Move( child1, child2_1 ) == 4 );
-            Assert.IsTrue( child1.Level == 3 );
+            Assert.IsTrue( child1.Depth == 3 );
             Assert.IsTrue( _tree.GetParent( child1) == child2_1 );
             Assert.IsTrue( _tree.GetChildsRecursive( child2_1, false ).Count() == 4 );
             Assert.IsTrue( _tree.GetChilds( _tree.Root, false ).Count() == 1 );
