@@ -1,0 +1,18 @@
+{
+    "name": "TreeList.Editor",
+    "rootNamespace": "Silentor.TreeList.Editor",
+    "references": [
+        "GUID:84905b1f2bd0eb74c99ee09384922b63"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
