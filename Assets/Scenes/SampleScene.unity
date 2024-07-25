@@ -633,6 +633,18 @@ PrefabInstance:
       propertyPath: TestCollection.Array.size
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
+      propertyPath: PrimitiveTree.SerializableNodes.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
+      propertyPath: PrimitiveTree.SerializableNodes.Array.data[2].Depth
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5073800978481021386, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
+      propertyPath: PrimitiveTree.SerializableNodes.Array.data[2].Value
+      value: hhjhj
+      objectReference: {fileID: 0}
     - target: {fileID: 5902002587104202945, guid: 70689df19b1569744a46f0ced9ad989a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
