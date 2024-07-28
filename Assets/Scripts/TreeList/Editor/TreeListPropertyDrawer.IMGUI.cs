@@ -97,7 +97,7 @@ namespace Silentor.TreeList.Editor
             var btnRect      = new Rect( itemsCountRect.x - _headerHeight - 5, headerRect.y, _headerHeight, _headerHeight );
             var isBtnEnabled = mainProperty.isExpanded && _tree.HasSelection();
             EditorGUI.BeginDisabledGroup( !isBtnEnabled );
-            if ( GUI.Button( btnRect, Resources.Minus, Resources.ToolBarBtnStyle ) )
+            if ( GUI.Button( btnRect, ResourcesIMGUI.Minus, ResourcesIMGUI.ToolBarBtnStyle ) )
             {
                 var (_, selectedIndex) = _tree.GetSelectedItem();
                 RemoveItem( selectedIndex, nodesProp );
@@ -111,7 +111,7 @@ namespace Silentor.TreeList.Editor
             var isEmptyTree = nodesProp.arraySize == 0;
             isBtnEnabled = isEmptyTree || _tree.HasSelection();
             EditorGUI.BeginDisabledGroup( !isBtnEnabled );
-            if ( GUI.Button( btnRect, Resources.Plus, Resources.ToolBarBtnStyle  ) )
+            if ( GUI.Button( btnRect, ResourcesIMGUI.Plus, ResourcesIMGUI.ToolBarBtnStyle  ) )
             {
                 if ( isEmptyTree )
                 {
@@ -129,7 +129,7 @@ namespace Silentor.TreeList.Editor
             //Custom prefix label because TreeView with header hides it. wtf?
             var prefixLabelRect = headerRect;
             prefixLabelRect.xMax = btnRect.x - 5;
-            var headerStyle = nodesProp.prefabOverride ? Resources.HeaderOverridenStyle : Resources.HeaderStyle;
+            var headerStyle = nodesProp.prefabOverride ? ResourcesIMGUI.HeaderOverridenStyle : ResourcesIMGUI.HeaderStyle;
             if( nodesProp.arraySize > 0 )
                 mainProperty.isExpanded = EditorGUI.Foldout( prefixLabelRect, mainProperty.isExpanded, label, true, headerStyle );   
             else
@@ -141,7 +141,7 @@ namespace Silentor.TreeList.Editor
             //Draw blue margin if tree value is overriden
             if ( nodesProp.prefabOverride && Event.current.type == EventType.Repaint )
             {
-                EditorGUI.DrawRect( new Rect(headerRect.x - 18, headerRect.y, 2, headerRect.height), Resources.PrefabOverrideMarginColor);
+                EditorGUI.DrawRect( new Rect(headerRect.x - 18, headerRect.y, 2, headerRect.height), ResourcesIMGUI.PrefabOverrideMarginColor);
             }
 
             //Simulate default property context menu
@@ -229,7 +229,7 @@ namespace Silentor.TreeList.Editor
             //public Boolean       IsTreeExpanded;
         }
 
-        private static class Resources
+        private static class ResourcesIMGUI
         {
             public static readonly GUIStyle HeaderStyle = new (EditorStyles.foldoutHeader)
                                                           {

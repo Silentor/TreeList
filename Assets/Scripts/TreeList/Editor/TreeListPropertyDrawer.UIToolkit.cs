@@ -15,88 +15,170 @@ namespace Silentor.TreeList.Editor
     {
         public override VisualElement CreatePropertyGUI( SerializedProperty property )
         {
-            var root = new VisualElement() { style = { flexDirection = FlexDirection.Row } };
-            var foldout = new Foldout( )
-                          {
-                                  text  = property.displayName,
-                                  value = property.isExpanded,
-                                  //bindingPath = property.propertyPath,
-                          };
-
+            var root = ResourcesUITk.TreeViewAsset.CloneTree();
+            var foldout = root.Q<Foldout>("Header");
+            foldout.text = property.displayName;
+            foldout.value = property.isExpanded;
             foldout.BindProperty( property );
-            root.Add( foldout );
 
-            var elementsCounter = new TextField(){ style = { position = Position.Absolute, right = 0, top = 0, width = 50 } };
-            elementsCounter.SetEnabled( false );
-            elementsCounter.BindProperty( property.FindPropertyRelative( "SerializableNodes" ).FindPropertyRelative( "Array.size" ) );
-            root.Add( elementsCounter );
+            // var foldout = new Foldout( )
+            //               {
+            //                       text  = property.displayName,
+            //                       value = property.isExpanded,
+            //                       style = { flexGrow = 1},
+            //                       //bindingPath = property.propertyPath,
+            //               };
 
-            var removeButton = new Button( () =>
-                            {
-                                //AddItem(  );
-                            } )
-                            { text = "-", style = { position = Position.Absolute, right = 55, top = 0, width = EditorGUIUtility.singleLineHeight, height = EditorGUIUtility.singleLineHeight } };
-            root.Add( removeButton );
+            
+            //root.Add( foldout );
 
-            var addButton = new Button( () =>
-                                        {
-                                            //AddItem(  );
-                                        } )
-                            { text = "+", style = { position = Position.Absolute, right = 50 + 5 + EditorGUIUtility.singleLineHeight + 10, top = 0, width = EditorGUIUtility.singleLineHeight, height = EditorGUIUtility.singleLineHeight } };
-            root.Add( addButton );
+            var nodesProp           = property.FindPropertyRelative( "SerializableNodes" );
+            var elementsCounter = root.Q<TextField>( "Counter" );
+            //elementsCounter.SetEnabled( false );
+            elementsCounter.BindProperty( nodesProp.FindPropertyRelative( "Array.size" ) );
+            //root.Add( elementsCounter );
 
-            var tree = new TreeView();
-            tree.makeItem = ( ) => new InspectorElement();
+            var tree = root.Q<TreeView>( "TreeView" );
+            tree.style.maxHeight = Screen.height * 2/3;
+            tree.makeItem             = ( ) => new VisualElement();
             tree.bindItem = ( e, i ) =>
             {
-                var nodes = property.FindPropertyRelative( "SerializableNodes" );
-                var nodeProp = nodes.GetArrayElementAtIndex( i );
-                var valueProp = nodeProp.FindPropertyRelative( "Value" );
-                var levelProp = nodeProp.FindPropertyRelative( "Depth" );
-
+                var  valueProp   = nodesProp.GetArrayElementAtIndex( i ).FindPropertyRelative( "Value" );
+                var treeItem       = e.parent;
+                while ( treeItem.name != "unity-tree-view__item")                
+                    treeItem = treeItem.parent;
+                var toggle = treeItem.Q<Toggle>("unity-tree-view__item-toggle");
+                toggle.value = valueProp.isExpanded;
+                var valuePropCopy = valueProp;
+                toggle.RegisterValueChangedCallback( ce => valuePropCopy.isExpanded = ce.newValue );
+                
                 if ( valueProp.hasVisibleChildren )
                 {
+                    valueProp = valueProp.Copy();
                     var enterChildren = true;
                     var endProp       = valueProp.GetEndProperty();
                     while ( valueProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( valueProp, endProp ) )
                     {
-                        var label          =  String.Concat( Enumerable.Repeat( "    ", levelProp.intValue )) + valueProp.displayName;
-                        var propField      = new PropertyField( valueProp, label );
+                        var label     =  valueProp.displayName;
+                        var propField = new PropertyField( valueProp, label );
+                        propField.BindProperty( valueProp );
                         e.Add( propField );
                         enterChildren   =  false;
                     }
                 }
                 else   //Value is primitive type itself
                 {
-                    var label     =  String.Concat( Enumerable.Repeat( "    ", levelProp.intValue )) + valueProp.displayName;
+                    var label     =  valueProp.displayName;
                     var propField = new PropertyField( valueProp, label );
+                    propField.BindProperty( valueProp );
                     e.Add( propField );
                 }
             };
-            var nodes = property.FindPropertyRelative( "SerializableNodes" );
-            foreach ( var VARIABLE in nodes )
+            tree.unbindItem = ( e, i ) =>
             {
-                
-            }
-            tree.SetRootItems(  );
-            foldout.contentContainer.Add( tree );
+                e.Clear();
+            };
+            
+            var hierarchy = BuildHierarchy( nodesProp ); 
+            tree.SetRootItems( hierarchy );
+            //foldout.contentContainer.Add( tree );
+
+            var removeBtn = root.Q<Button>( "RemoveBtn" );
+            removeBtn.clickable.clicked += () =>
+            {
+                if ( tree.selectedIndex > -1 )
+                {
+                    RemoveItem( tree.selectedIndex, nodesProp );
+                    property.serializedObject.ApplyModifiedProperties();
+                    tree.SetRootItems( BuildHierarchy( nodesProp ) );
+                    tree.Rebuild();
+                }
+            };
+
+            var addBtn = root.Q<Button>( "AddBtn" );
+            addBtn.clickable.clicked += () =>
+            {
+                if ( nodesProp.arraySize == 0 )
+                {
+                    AddItem( -1, nodesProp );
+                    property.serializedObject.ApplyModifiedProperties();
+                    property.isExpanded = true;
+                    tree.SetRootItems( BuildHierarchy( nodesProp ) );
+                    tree.Rebuild();
+                }
+                else if( tree.selectedIndex > -1 )
+                {
+                    var addedIndex = AddItem( tree.selectedIndex, nodesProp );
+                    property.serializedObject.ApplyModifiedProperties();
+                    tree.SetRootItems( BuildHierarchy( nodesProp ) );
+                    tree.Rebuild();
+                }
+            };
 
             return root;
         }
 
-        private IList<TreeViewItemData<SerializedProperty>> GetHierarchy( SerializedProperty nodesProp )
+        private IList<TreeViewItemData<SerializedProperty>> BuildHierarchy( SerializedProperty nodesProp )
         {
-            var nodes = new List<TreeViewItemData<SerializedProperty>>();
-            for ( var i = 0; i < nodesProp.arraySize; i++ )
+            var result   = new List<TreeViewItemData<SerializedProperty>>();
+
+            if ( nodesProp.arraySize > 0 )
             {
-                var nodeProp = nodesProp.GetArrayElementAtIndex( i );
-                var depthProp = nodeProp.FindPropertyRelative( "Depth" );
-                nodes.Add( new TreeViewItemData<SerializedProperty>( i, nodeProp, depthProp.intValue ) );
+                var rootProp = nodesProp.GetArrayElementAtIndex( 0 );
+                var index = 1;
+                var childs = GetChildren( rootProp, ref index );
+                var root = new TreeViewItemData<SerializedProperty>( 0, rootProp.FindPropertyRelative( "Value" ), childs );
+                result.Add( root );
             }
 
-            return nodes;
+            return result;
+
+            List<TreeViewItemData<SerializedProperty>> GetChildren( SerializedProperty parentProp, ref Int32 index )
+            {
+                var result      = new List<TreeViewItemData<SerializedProperty>>();
+                var parentDepth = parentProp.FindPropertyRelative( "Depth" ).intValue;
+                while ( index < nodesProp.arraySize )
+                {
+                    var node       = nodesProp.GetArrayElementAtIndex( index );
+                    var childDepth = node.FindPropertyRelative( "Depth" ).intValue;
+                    if ( childDepth <= parentDepth )                          //Child list is ended
+                        break;
+                    else if ( childDepth == parentDepth + 1 )                     //Child found, add to childs list
+                    {
+                        result.Add( new TreeViewItemData<SerializedProperty>( index++, node.FindPropertyRelative( "Value" ) ) );
+                    }
+                    else if ( childDepth == parentDepth + 2 && result.Count > 0 )              //Grandchild found, get grandchilds list and add to last child
+                    {
+                        var lastChild   = result.Last();
+                        var lastChildProp = nodesProp.GetArrayElementAtIndex( index - 1 );
+                        var grandChilds = GetChildren( lastChildProp, ref index );
+                        result[ ^1 ] = new TreeViewItemData<SerializedProperty>( lastChild.id, lastChild.data, grandChilds );
+                    }
+                    else
+                    {
+                        Debug.LogError( $"Unexpected item, index {index++}" );
+                    }
+                }
+
+                return result;
+            }
         }
+
+        private static class ResourcesUITk
+        {
+            public static readonly VisualTreeAsset TreeViewAsset = Resources.Load<VisualTreeAsset>( "TreeList" );
+            public static readonly Texture2D       Plus          = EditorGUIUtility.IconContent("Toolbar Plus").image as Texture2D;
+            public static readonly Texture2D       Minus         = EditorGUIUtility.IconContent("Toolbar Minus").image as Texture2D;
+            // public static readonly GUIContent Depth =  EditorGUIUtility.isProSkin 
+            //         ? new ("Depth", EditorGUIUtility.IconContent("d_BlendTree Icon").image) 
+            //         : new ("Depth", EditorGUIUtility.IconContent("BlendTree Icon").image) ;
+
+        }
+
+        
     }
+
+    
 
     
 

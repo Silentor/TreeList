@@ -14,7 +14,7 @@ namespace Silentor.TreeList.Editor
         private                 Int32                              _structuralHash;
         private                 String                             _treeTypeHint;
 
-        private void AddItem( Int32 parentIndex, SerializedProperty nodes )
+        private Int32 AddItem( Int32 parentIndex, SerializedProperty nodes )
         {
             if ( parentIndex > -1 )
             {
@@ -31,10 +31,12 @@ namespace Silentor.TreeList.Editor
                 nodes.InsertArrayElementAtIndex( childIndex );
                 var newItem = nodes.GetArrayElementAtIndex( childIndex  );
                 newItem.FindPropertyRelative( "Depth" ).intValue = parentDepth + 1;
+                return childIndex;
             }
             else
             {
                 nodes.InsertArrayElementAtIndex( 0 );
+                return 0;
             }
         }
 
