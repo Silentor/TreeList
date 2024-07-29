@@ -29,14 +29,13 @@ namespace Silentor.TreeList.Editor
             var tree = root.Q<TreeView>( "TreeView" );
             tree.style.maxHeight               =  Screen.height * 2/3;
             tree.viewDataKey                   =  GetPropertyPersistentString( property );
-            tree.selectionChanged              += objs => Debug.Log( $"selection changed: {objs.Count()}" );
+//            tree.selectionChanged              += objs => Debug.Log( $"selection changed: {objs.Count()}" );
             tree.showAlternatingRowBackgrounds =  AlternatingRowBackground.All;
-            tree.makeItem                      =  ( ) => new VisualElement(){style = { borderBottomColor = Color.black, borderBottomWidth = 1 }};
+            tree.makeItem                      =  ( ) => new VisualElement(){};
             tree.bindItem = ( e, i ) =>
             {
-                var id        = tree.GetIdForIndex( i );
-                e.Add( new Label($"id {id}") );
-                var valueProp = nodesProp.GetArrayElementAtIndex( i ).FindPropertyRelative( "Value" );
+                var treeItemNode = nodesProp.GetArrayElementAtIndex( i );
+                var valueProp           = treeItemNode.FindPropertyRelative( "Value" );
                 
                 if ( valueProp.hasVisibleChildren )
                 {
@@ -59,15 +58,47 @@ namespace Silentor.TreeList.Editor
                     propField.BindProperty( valueProp );
                     e.Add( propField );
                 }
+
+                //Add node depth label
+                var nodeDepth = treeItemNode.FindPropertyRelative( "Depth" ).intValue;
+                if ( nodeDepth > 0 )
+                {
+                    var viewItem   = e;
+                    while ( viewItem.name != "unity-tree-view__item" )                
+                        viewItem = viewItem.parent;
+
+                    var depthLabel = viewItem.Q<Label>( "DepthLabel" );
+                    if ( depthLabel == null )
+                    {
+                        depthLabel = new Label( )
+                                         {
+                                                 name = "DepthLabel",
+                                                 style =
+                                                 {
+                                                         position = Position.Absolute,
+                                                         left     = 2,
+                                                         top      = 3,
+                                                         minWidth = 20,
+                                                         maxWidth = 20
+                                                 }
+                                         };
+                        depthLabel.AddToClassList( "unity-base-field__label" );
+                        viewItem.Add( depthLabel );
+                    }
+                    depthLabel.text = nodeDepth.ToString();
+                }
             };
             tree.unbindItem = ( e, i ) =>
             {
                 e.Clear();
             };
-            tree.itemIndexChanged += ( itemid, parentid ) =>
+            tree.itemIndexChanged += ( oldIndex, newParentIndex ) =>          //Id is equal to index in unmodified tree
             {
-                Debug.Log( $"moved {itemid} to parent {parentid}" );
-                tree.GetChildrenIdsForIndex(  )
+                var newChildIndex = tree.viewController.GetChildIndexForId( oldIndex );
+                MoveItem( oldIndex, newParentIndex, newChildIndex, nodesProp );
+                nodesProp.serializedObject.ApplyModifiedProperties();
+                tree.SetRootItems( BuildHierarchy( nodesProp ) );
+                tree.Rebuild();
             };
             
             var hierarchy = BuildHierarchy( nodesProp ); 
