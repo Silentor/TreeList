@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Search;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -21,36 +22,17 @@ namespace Silentor.TreeList.Editor
             foldout.value = property.isExpanded;
             foldout.BindProperty( property );
 
-            // var foldout = new Foldout( )
-            //               {
-            //                       text  = property.displayName,
-            //                       value = property.isExpanded,
-            //                       style = { flexGrow = 1},
-            //                       //bindingPath = property.propertyPath,
-            //               };
-
-            
-            //root.Add( foldout );
-
             var nodesProp           = property.FindPropertyRelative( "SerializableNodes" );
             var elementsCounter = root.Q<TextField>( "Counter" );
-            //elementsCounter.SetEnabled( false );
             elementsCounter.BindProperty( nodesProp.FindPropertyRelative( "Array.size" ) );
-            //root.Add( elementsCounter );
-
+            
             var tree = root.Q<TreeView>( "TreeView" );
             tree.style.maxHeight = Screen.height * 2/3;
-            tree.makeItem             = ( ) => new VisualElement();
+            tree.viewDataKey     = GetPropertyPersistentString( property );
+            tree.makeItem        = ( ) => new VisualElement();
             tree.bindItem = ( e, i ) =>
             {
                 var  valueProp   = nodesProp.GetArrayElementAtIndex( i ).FindPropertyRelative( "Value" );
-                var treeItem       = e.parent;
-                while ( treeItem.name != "unity-tree-view__item")                
-                    treeItem = treeItem.parent;
-                var toggle = treeItem.Q<Toggle>("unity-tree-view__item-toggle");
-                toggle.value = valueProp.isExpanded;
-                var valuePropCopy = valueProp;
-                toggle.RegisterValueChangedCallback( ce => valuePropCopy.isExpanded = ce.newValue );
                 
                 if ( valueProp.hasVisibleChildren )
                 {
@@ -81,8 +63,7 @@ namespace Silentor.TreeList.Editor
             
             var hierarchy = BuildHierarchy( nodesProp ); 
             tree.SetRootItems( hierarchy );
-            //foldout.contentContainer.Add( tree );
-
+                    
             var removeBtn = root.Q<Button>( "RemoveBtn" );
             removeBtn.clickable.clicked += () =>
             {
@@ -118,6 +99,11 @@ namespace Silentor.TreeList.Editor
             return root;
         }
 
+        /// <summary>
+        /// Convert TreeNodeSerializable's to TreeViewItemData's
+        /// </summary>
+        /// <param name="nodesProp"></param>
+        /// <returns></returns>
         private IList<TreeViewItemData<SerializedProperty>> BuildHierarchy( SerializedProperty nodesProp )
         {
             var result   = new List<TreeViewItemData<SerializedProperty>>();
@@ -162,6 +148,18 @@ namespace Silentor.TreeList.Editor
 
                 return result;
             }
+        }
+
+        private String GetPropertyPersistentString( SerializedProperty treeListProperty )
+        {
+            var target = treeListProperty.serializedObject.targetObject;
+            if ( target is MonoBehaviour mb )
+            {
+                var go = mb.gameObject;
+                return $"{GetType().FullName}.{SearchUtils.GetHierarchyPath( go )}.{mb.GetType().Name}.{treeListProperty.propertyPath}";
+            }
+            else
+                return $"{GetType().FullName}.{target.name}.{treeListProperty.propertyPath}";
         }
 
         private static class ResourcesUITk

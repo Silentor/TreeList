@@ -263,7 +263,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CustomTree2:
-    SerializableNodes: []
+    SerializableNodes:
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 0
+      Depth: 0
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 0
+      Depth: 1
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 0
+      Depth: 1
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 0
+      Depth: 1
   ComplexValue:
     FoldoutValue:
       m_Left: 0
