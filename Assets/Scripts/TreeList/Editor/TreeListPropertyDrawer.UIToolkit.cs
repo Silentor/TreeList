@@ -27,12 +27,16 @@ namespace Silentor.TreeList.Editor
             elementsCounter.BindProperty( nodesProp.FindPropertyRelative( "Array.size" ) );
             
             var tree = root.Q<TreeView>( "TreeView" );
-            tree.style.maxHeight = Screen.height * 2/3;
-            tree.viewDataKey     = GetPropertyPersistentString( property );
-            tree.makeItem        = ( ) => new VisualElement();
+            tree.style.maxHeight               =  Screen.height * 2/3;
+            tree.viewDataKey                   =  GetPropertyPersistentString( property );
+            tree.selectionChanged              += objs => Debug.Log( $"selection changed: {objs.Count()}" );
+            tree.showAlternatingRowBackgrounds =  AlternatingRowBackground.All;
+            tree.makeItem                      =  ( ) => new VisualElement(){style = { borderBottomColor = Color.black, borderBottomWidth = 1 }};
             tree.bindItem = ( e, i ) =>
             {
-                var  valueProp   = nodesProp.GetArrayElementAtIndex( i ).FindPropertyRelative( "Value" );
+                var id        = tree.GetIdForIndex( i );
+                e.Add( new Label($"id {id}") );
+                var valueProp = nodesProp.GetArrayElementAtIndex( i ).FindPropertyRelative( "Value" );
                 
                 if ( valueProp.hasVisibleChildren )
                 {
@@ -59,6 +63,11 @@ namespace Silentor.TreeList.Editor
             tree.unbindItem = ( e, i ) =>
             {
                 e.Clear();
+            };
+            tree.itemIndexChanged += ( itemid, parentid ) =>
+            {
+                Debug.Log( $"moved {itemid} to parent {parentid}" );
+                tree.GetChildrenIdsForIndex(  )
             };
             
             var hierarchy = BuildHierarchy( nodesProp ); 

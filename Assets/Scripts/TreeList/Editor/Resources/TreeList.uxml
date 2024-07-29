@@ -1,7 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Assets/Scripts/TreeList/Editor/Resources/TreeListStyles.uss?fileID=7433441132597879392&amp;guid=e57be1481d9af0a4e93fad302e026467&amp;type=3#TreeListStyles" />
     <ui:Foldout text="PropertyName" name="Header" style="flex-grow: 1;">
-        <ui:TreeView name="TreeView" virtualization-method="DynamicHeight" show-border="true" />
+        <ui:TreeView name="TreeView" virtualization-method="DynamicHeight" show-border="true" show-alternating-row-backgrounds="All" reorderable="true" />
     </ui:Foldout>
     <ui:TextField picking-mode="Ignore" value="0" readonly="true" name="Counter" class="header__counter" />
     <ui:Button text="+" parse-escape-sequences="true" display-tooltip-when-elided="true" name="AddBtn" class="header__tool-btn" style="right: 85px;" />
