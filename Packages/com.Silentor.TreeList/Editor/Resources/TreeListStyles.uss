@@ -39,8 +39,17 @@
     font-size: 10px;
     white-space: nowrap;
     -unity-text-align: middle-left;
+    color: grey;
 }
 
 .header__separator {
     width: 5px;
+}
+
+Foldout#Header > Toggle {
+    margin-left: 0;
+}
+
+.value-container {
+    padding-left: 6px;
 }

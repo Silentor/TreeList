@@ -23,8 +23,9 @@ namespace Silentor.TreeList.Editor
 
         public ImguiTreeView(TreeViewState state, MultiColumnHeader multiColumnHeader, SerializedProperty itemsProp  ) : base( state , multiColumnHeader  )
         {
-            _itemsProp                   = itemsProp;
-            showBorder                   = true;
+            _itemsProp                    = itemsProp;
+            showBorder                    = true;
+            showAlternatingRowBackgrounds = true;
         }
 
         protected override TreeViewItem BuildRoot( )

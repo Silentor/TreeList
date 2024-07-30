@@ -20,7 +20,7 @@ public class TreeListTestComponent : MonoBehaviour
     public TreeList<VoidNode>           VoidTree;
 
     public CustomNode[] TestCollection;
-    public CustomNode[] TestCollection2;
+    public TestComplexValue[] TestCollection2;
 
     private void Awake( )
     {

@@ -38,10 +38,15 @@ namespace Silentor.TreeList.Editor
             _treeUI.style.maxHeight               =  Screen.height * 2/3;
             _treeUI.viewDataKey                   =  GetPropertyPersistentString( property );
             _treeUI.showAlternatingRowBackgrounds =  AlternatingRowBackground.All;
-            _treeUI.makeItem                      =  ( ) => new VisualElement(){};
+            _treeUI.makeItem                      =  ( ) =>
+            {
+                var result =  new VisualElement() { };
+                result.AddToClassList( "value-container" );
+                return result;
+            };
             _treeUI.bindItem = ( e, i ) =>
             {
-                var treeItemProp = nodesProp.GetArrayElementAtIndex( i );
+                var treeItemProp = _treeUI.GetItemDataForIndex<SerializedProperty>( i );
                 var valueProp    = treeItemProp.FindPropertyRelative( "Value" );
 
                 //Draw content
@@ -52,7 +57,7 @@ namespace Silentor.TreeList.Editor
                 }
                 else if ( valueProp.hasVisibleChildren )
                 {
-                    valueProp = valueProp.Copy();
+                    //valueProp = valueProp.Copy();
                     var enterChildren = true;
                     var endProp       = valueProp.GetEndProperty();
                     while ( valueProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( valueProp, endProp ) )
@@ -74,33 +79,29 @@ namespace Silentor.TreeList.Editor
 
                 //Add node depth label
                 var nodeDepth = treeItemProp.FindPropertyRelative( "Depth" ).intValue;
-                if ( nodeDepth > 0 )
+                var viewItem  = e;
+                while ( viewItem.name != "unity-tree-view__item" )                
+                    viewItem = viewItem.parent;
+                var depthLabel = viewItem.Q<Label>( "DepthLabel" );
+                if ( depthLabel == null )
                 {
-                    var viewItem   = e;
-                    while ( viewItem.name != "unity-tree-view__item" )                
-                        viewItem = viewItem.parent;
-
-                    var depthLabel = viewItem.Q<Label>( "DepthLabel" );
-                    if ( depthLabel == null )
-                    {
-                        depthLabel = new Label( )
+                    depthLabel = new Label( )
+                                 {
+                                         name = "DepthLabel",
+                                         style =
                                          {
-                                                 name = "DepthLabel",
-                                                 style =
-                                                 {
-                                                         position = Position.Absolute,
-                                                         left     = 2,
-                                                         top      = 3,
-                                                         minWidth = 20,
-                                                         maxWidth = 20
-                                                 }
-                                         };
-                        depthLabel.AddToClassList( "unity-base-field__label" );
-                        depthLabel.AddToClassList( "hint-label" );
-                        viewItem.Add( depthLabel );
-                    }
-                    depthLabel.text = nodeDepth.ToString();
+                                                 position = Position.Absolute,
+                                                 left     = 2,
+                                                 top      = 3,
+                                                 minWidth = 20,
+                                                 maxWidth = 20
+                                         }
+                                 };
+                    depthLabel.AddToClassList( "unity-base-field__label" );
+                    depthLabel.AddToClassList( "hint-label" );
+                    viewItem.Add( depthLabel );
                 }
+                depthLabel.text = nodeDepth > 0 ? nodeDepth.ToString() : String.Empty;
             };
             _treeUI.unbindItem = ( e, i ) =>
             {
@@ -215,7 +216,7 @@ namespace Silentor.TreeList.Editor
                 var rootProp = nodesProp.GetArrayElementAtIndex( 0 );
                 var index = 1;
                 var childs = GetChildren( rootProp, ref index );
-                var root = new TreeViewItemData<SerializedProperty>( 0, rootProp.FindPropertyRelative( "Value" ), childs );
+                var root = new TreeViewItemData<SerializedProperty>( 0, rootProp, childs );
                 result.Add( root );
             }
 
@@ -233,7 +234,7 @@ namespace Silentor.TreeList.Editor
                         break;
                     else if ( childDepth == parentDepth + 1 )                     //Child found, add to childs list
                     {
-                        result.Add( new TreeViewItemData<SerializedProperty>( index++, node.FindPropertyRelative( "Value" ) ) );
+                        result.Add( new TreeViewItemData<SerializedProperty>( index++, node ) );
                     }
                     else if ( childDepth == parentDepth + 2 && result.Count > 0 )              //Grandchild found, get grandchilds list and add to last child
                     {
