@@ -154,11 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FirstInspector: 0
   PrimitiveTree:
-    SerializableNodes:
-    - Value: test
-      Depth: 0
-    - Value: test
-      Depth: 1
+    SerializableNodes: []
   PrimitiveTree2:
     SerializableNodes:
     - Value: 
@@ -178,7 +174,10 @@ MonoBehaviour:
         CustomInt: 0
       Depth: 0
   VoidTree:
-    SerializableNodes: []
+    SerializableNodes:
+    - Depth: 0
+    - Depth: 1
+    - Depth: 1
   TestCollection:
   - CustomText: 
     CustomBool: 0
@@ -900,6 +899,46 @@ PrefabInstance:
     - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
       propertyPath: CustomTree.SerializableNodes.Array.data[10].Value.CustomText
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: VoidTree.SerializableNodes.Array.size
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree2.SerializableNodes.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: VoidTree.SerializableNodes.Array.data[2].Depth
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: VoidTree.SerializableNodes.Array.data[3].Depth
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: VoidTree.SerializableNodes.Array.data[4].Depth
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: VoidTree.SerializableNodes.Array.data[5].Depth
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: VoidTree.SerializableNodes.Array.data[6].Depth
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree2.SerializableNodes.Array.data[0].Value.CustomInt
+      value: 5555555
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree2.SerializableNodes.Array.data[0].Value.CustomBool
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree2.SerializableNodes.Array.data[0].Value.CustomText
+      value: tttrrrraaa
       objectReference: {fileID: 0}
     - target: {fileID: 5991046166331598666, guid: 0548ac167725c224f985e13de38485fc, type: 3}
       propertyPath: m_LocalPosition.x
