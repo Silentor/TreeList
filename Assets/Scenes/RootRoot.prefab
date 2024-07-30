@@ -45,8 +45,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a192a6427afd6194992aaa04e3a1bc86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CustomTree:
+  CustomTree2:
     SerializableNodes: []
+  ComplexValue:
+    FoldoutValue:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    TwoLined:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    VariableHeightValue: 0
+    CustomNode:
+      CustomText: 
+      CustomBool: 0
+      CustomInt: 0
 --- !u!1001 &5580540733181650645
 PrefabInstance:
   m_ObjectHideFlags: 0

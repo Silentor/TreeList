@@ -104,8 +104,7 @@ namespace Silentor.TreeList.Editor
                 var newChildIndex = _treeUI.viewController.GetChildIndexForId( oldIndex );
                 MoveItem( oldIndex, newParentIndex, newChildIndex, nodesProp );
                 nodesProp.serializedObject.ApplyModifiedProperties();
-                _treeUI.SetRootItems( BuildHierarchy( nodesProp ) );
-                _treeUI.Rebuild();
+                RebuildTree( nodesProp );
             };
             _treeUI.selectionChanged += _ => { RefreshButtons(); };
             
@@ -119,8 +118,7 @@ namespace Silentor.TreeList.Editor
                 {
                     RemoveItem( _treeUI.selectedIndex, nodesProp );
                     property.serializedObject.ApplyModifiedProperties();
-                    _treeUI.SetRootItems( BuildHierarchy( nodesProp ) );
-                    _treeUI.Rebuild();
+                    RebuildTree( nodesProp );
                     RefreshButtons();
                 }
             };
@@ -133,17 +131,17 @@ namespace Silentor.TreeList.Editor
                     AddItem( -1, nodesProp );
                     property.serializedObject.ApplyModifiedProperties();
                     property.isExpanded = true;
-                    _treeUI.SetRootItems( BuildHierarchy( nodesProp ) );
-                    _treeUI.Rebuild();
+                    RebuildTree( nodesProp );
+                    _treeUI.selectedIndex = 0;
+                    RefreshButtons();
                 }
                 else if( _treeUI.selectedIndex > -1 )
                 {
                     var addedIndex = AddItem( _treeUI.selectedIndex, nodesProp );
                     property.serializedObject.ApplyModifiedProperties();
-                    _treeUI.SetRootItems( BuildHierarchy( nodesProp ) );
-                    _treeUI.Rebuild();
+                    RebuildTree( nodesProp );
+                    RefreshButtons();
                 }
-                RefreshButtons();
             };
 
             _copyBtn = root.Q<Button>( "CopyBtn" );
@@ -169,7 +167,29 @@ namespace Silentor.TreeList.Editor
 
             RefreshButtons();
 
+            //Catch background tree structural changes (for example by undo or prefab revert)
+            _structuralHash = GetStructuralHash( nodesProp );
+            root.schedule.Execute( _ =>
+            {
+                var actualHash = GetStructuralHash( nodesProp );
+                if ( actualHash != _structuralHash )
+                {
+                    //Debug.Log( $"hash mismatch, rebuild tree" );
+                    _structuralHash = actualHash;
+                    _treeUI.SetRootItems( BuildHierarchy( nodesProp ) );
+                    _treeUI.Rebuild();
+                    RefreshButtons();
+                }
+            } ).Every( 500 );
+
             return root;
+        }
+
+        private void RebuildTree( SerializedProperty nodesProp )
+        {
+            _treeUI.SetRootItems( BuildHierarchy( nodesProp ) );
+            _treeUI.Rebuild();
+            _structuralHash = GetStructuralHash( nodesProp );
         }
 
         /// <summary>
