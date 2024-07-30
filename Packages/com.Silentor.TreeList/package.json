@@ -1,0 +1,23 @@
+{
+  "name": "com.silentor.treelist",
+  "version": "0.1.0",
+  "displayName": "TreeList",
+  "description": "Generic tree runtime data type + IMGUI/UIToolkit Unity editor",
+  "unity": "2019.1",
+  "documentationUrl": "https://example.com/",
+  "changelogUrl": "https://example.com/changelog.html",
+  "licensesUrl": "MIT",
+  "dependencies": {
+ },
+ "keywords": [
+    "tree",
+    "runtime",
+    "editor",
+    "imgui",
+    "uitoolkit"
+  ],
+  "author": {
+    "name": "Silentor",
+    "url": "https://github.com/Silentor"
+  }
+}

@@ -901,6 +901,10 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: TestCollection2.Array.size
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033169773959903264, guid: 0548ac167725c224f985e13de38485fc, type: 3}
       propertyPath: VoidTree.SerializableNodes.Array.size
       value: 7
       objectReference: {fileID: 0}

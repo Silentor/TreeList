@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.silentor.treelist": {
+      "version": "file:com.Silentor.TreeList",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.ext.nunit": {
       "version": "1.0.6",
       "depth": 1,
