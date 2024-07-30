@@ -85,7 +85,7 @@ namespace Silentor.TreeList.Editor
             var contentRect = new Rect( totalRect.x, totalRect.y + _headerHeight, totalRect.width, totalRect.height - _headerHeight );
 
             //Draw header hint
-            GUI.Label( headerRect, GetTreeHint( nodesProp ), EditorStyles.centeredGreyMiniLabel );
+            GUI.Label( headerRect, GetTreeHint( _treeIM.HasSelection() ? 0 : -1, nodesProp ), EditorStyles.centeredGreyMiniLabel );
 
             //Draw items count
             var itemsCountRect = new Rect( headerRect.x + headerRect.width - 50, headerRect.y, 50, _headerHeight );
@@ -247,9 +247,9 @@ namespace Silentor.TreeList.Editor
 
             public static readonly GUIContent Plus  = new  (EditorGUIUtility.IconContent("Toolbar Plus").image, "Add child node") ;
             public static readonly GUIContent Minus = new  (EditorGUIUtility.IconContent("Toolbar Minus").image, "Remove node") ;
-            public static readonly GUIContent Depth =  EditorGUIUtility.isProSkin 
-                    ? new ("Depth", EditorGUIUtility.IconContent("d_BlendTree Icon").image) 
-                    : new ("Depth", EditorGUIUtility.IconContent("BlendTree Icon").image) ;
+            // public static readonly GUIContent Depth =  EditorGUIUtility.isProSkin 
+            //         ? new ("Depth", EditorGUIUtility.IconContent("d_BlendTree Icon").image) 
+            //         : new ("Depth", EditorGUIUtility.IconContent("BlendTree Icon").image) ;
 
             
 

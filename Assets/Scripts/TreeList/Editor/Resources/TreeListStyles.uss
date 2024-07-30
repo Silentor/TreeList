@@ -3,24 +3,18 @@
 }
 
 .header__counter {
-    right: 0;
-    top: 0;
     width: 50px;
     height: 20px;
-    position: absolute;
 }
 
 .header__tool-btn {
     width: 20px;
     height: 20px;
-    position: absolute;
-    right: 50;
-    top: 0;
     -unity-background-scale-mode: scale-to-fit;
     margin-top: 0;
-    margin-right: 0;
+    margin-right: 1px;
     margin-bottom: 0;
-    margin-left: 0;
+    margin-left: 1px;
     padding-top: 0;
     padding-right: 0;
     padding-bottom: 0;
@@ -39,4 +33,14 @@
     background-image: resource('content_copy');
     -unity-background-scale-mode: scale-to-fit;
     -unity-background-image-tint-color: var(--unity-colors-toolbar_button-text);
+}
+
+.hint-label {
+    font-size: 10px;
+    white-space: nowrap;
+    -unity-text-align: middle-left;
+}
+
+.header__separator {
+    width: 5px;
 }

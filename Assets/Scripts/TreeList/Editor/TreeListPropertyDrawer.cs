@@ -12,7 +12,6 @@ namespace Silentor.TreeList.Editor
     public partial class TreeListPropertyDrawer : PropertyDrawer
     {
         private                 Int32                              _structuralHash;
-        private                 String                             _treeTypeHint;
 
         private Int32 AddItem( Int32 parentIndex, SerializedProperty nodes )
         {
@@ -124,29 +123,15 @@ namespace Silentor.TreeList.Editor
             return hash.ToHashCode();
         }
 
-        private String GetTreeHint( SerializedProperty nodesProp )
+        private String GetTreeHint( Int32 selectedItemIndex, SerializedProperty nodesProp )
         {
             if ( nodesProp.arraySize == 0 )
-            {
                 return "Press + to add root item";
-            }
 
-            if ( _treeTypeHint == null )
-            {
-                var node      = nodesProp.GetArrayElementAtIndex( 0 );
-                var valueProp = node.FindPropertyRelative( "Value" );
-                if ( valueProp == null )
-                {
-                    _treeTypeHint = "Value is not serializable";
-                }
-                else
-                {
-                    var valueType = valueProp.type;
-                    _treeTypeHint =  $"Tree of {valueType}";
-                }
-            }
+            if ( selectedItemIndex < 0 )
+                return "Select item to operate tree";
 
-            return _treeTypeHint;
+            return String.Empty;
         }
 
         public static class Clipboard

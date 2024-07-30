@@ -20,6 +20,7 @@ namespace Silentor.TreeList.Editor
         private Button   _copyBtn;
         private Button   _pasteBtn;
         private TreeView _treeUI;
+        private Label    _hint;
 
         public override VisualElement CreatePropertyGUI( SerializedProperty property )
         {
@@ -44,7 +45,12 @@ namespace Silentor.TreeList.Editor
                 var valueProp    = treeItemProp.FindPropertyRelative( "Value" );
 
                 //Draw content
-                if ( valueProp.hasVisibleChildren )
+                if ( valueProp == null )
+                {
+                    var notSerializableValueLbl = new Label( "Value is not serializable" );
+                    e.Add( notSerializableValueLbl );
+                }
+                else if ( valueProp.hasVisibleChildren )
                 {
                     valueProp = valueProp.Copy();
                     var enterChildren = true;
@@ -90,6 +96,7 @@ namespace Silentor.TreeList.Editor
                                                  }
                                          };
                         depthLabel.AddToClassList( "unity-base-field__label" );
+                        depthLabel.AddToClassList( "hint-label" );
                         viewItem.Add( depthLabel );
                     }
                     depthLabel.text = nodeDepth.ToString();
@@ -106,7 +113,7 @@ namespace Silentor.TreeList.Editor
                 nodesProp.serializedObject.ApplyModifiedProperties();
                 RebuildTree( nodesProp );
             };
-            _treeUI.selectionChanged += _ => { RefreshButtons(); };
+            _treeUI.selectionChanged += _ => { RefreshButtons( nodesProp ); };
             
             var hierarchy = BuildHierarchy( nodesProp ); 
             _treeUI.SetRootItems( hierarchy );
@@ -119,7 +126,7 @@ namespace Silentor.TreeList.Editor
                     RemoveItem( _treeUI.selectedIndex, nodesProp );
                     property.serializedObject.ApplyModifiedProperties();
                     RebuildTree( nodesProp );
-                    RefreshButtons();
+                    RefreshButtons( nodesProp );
                 }
             };
 
@@ -133,14 +140,14 @@ namespace Silentor.TreeList.Editor
                     property.isExpanded = true;
                     RebuildTree( nodesProp );
                     _treeUI.selectedIndex = 0;
-                    RefreshButtons();
+                    RefreshButtons( nodesProp );
                 }
                 else if( _treeUI.selectedIndex > -1 )
                 {
                     var addedIndex = AddItem( _treeUI.selectedIndex, nodesProp );
                     property.serializedObject.ApplyModifiedProperties();
                     RebuildTree( nodesProp );
-                    RefreshButtons();
+                    RefreshButtons( nodesProp );
                 }
             };
 
@@ -165,7 +172,9 @@ namespace Silentor.TreeList.Editor
                 }
             };
 
-            RefreshButtons();
+            _hint = root.Q<Label>( "Hint" );
+
+            RefreshButtons( nodesProp );
 
             //Catch background tree structural changes (for example by undo or prefab revert)
             _structuralHash = GetStructuralHash( nodesProp );
@@ -178,7 +187,7 @@ namespace Silentor.TreeList.Editor
                     _structuralHash = actualHash;
                     _treeUI.SetRootItems( BuildHierarchy( nodesProp ) );
                     _treeUI.Rebuild();
-                    RefreshButtons();
+                    RefreshButtons( nodesProp );
                 }
             } ).Every( 500 );
 
@@ -255,23 +264,20 @@ namespace Silentor.TreeList.Editor
                 return $"{GetType().FullName}.{target.name}.{treeListProperty.propertyPath}";
         }
 
-        private void RefreshButtons( )
+        private void RefreshButtons( SerializedProperty nodesProp )
         {
              _copyBtn.SetEnabled( _treeUI.selectedIndex > -1 );
              _pasteBtn.SetEnabled( _treeUI.selectedIndex > -1 );
              _removeBtn.SetEnabled( _treeUI.selectedIndex > -1 );
              _addBtn.SetEnabled( _treeUI.selectedIndex > -1 || _treeUI.GetTreeCount() == 0 );
+
+             _hint.text = GetTreeHint( _treeUI.selectedIndex, nodesProp  );
+
         }
 
         private static class ResourcesUITk
         {
             public static readonly VisualTreeAsset TreeViewAsset = Resources.Load<VisualTreeAsset>( "TreeList" );
-            public static readonly Texture2D       Plus          = EditorGUIUtility.IconContent("Toolbar Plus").image as Texture2D;
-            public static readonly Texture2D       Minus         = EditorGUIUtility.IconContent("Toolbar Minus").image as Texture2D;
-            // public static readonly GUIContent Depth =  EditorGUIUtility.isProSkin 
-            //         ? new ("Depth", EditorGUIUtility.IconContent("d_BlendTree Icon").image) 
-            //         : new ("Depth", EditorGUIUtility.IconContent("BlendTree Icon").image) ;
-
         }
 
         
