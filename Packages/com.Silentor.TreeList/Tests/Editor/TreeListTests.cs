@@ -137,6 +137,14 @@ namespace Silentor.TreeList.Editor
             Console.WriteLine( output );
             Debug.Log( output );
         }
+
+        [Test]
+        public void TestIEnumerable( )
+        {
+            var nodes = _tree.ToArray();
+            Assert.IsTrue( nodes.Length == _tree.Nodes.Count );
+            Assert.IsTrue( nodes.Distinct().Count() == _tree.Count );
+        }
     }
 
     public class TreeString : TreeList<String>

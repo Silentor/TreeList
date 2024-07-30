@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -10,9 +11,10 @@ using UnityEngine.Assertions;
 namespace Silentor.TreeList
 {
     [Serializable]
-    public class TreeList<T> : ISerializationCallbackReceiver
+    public class TreeList<T> : ISerializationCallbackReceiver, IEnumerable<TreeList<T>.TreeNode>
     {
-        public TreeNodeSerializable[] SerializableNodes = Array.Empty<TreeNodeSerializable>();
+        [SerializeField]
+        private TreeNodeSerializable[] SerializableNodes = Array.Empty<TreeNodeSerializable>();
 
         public IReadOnlyList<TreeNode> Nodes => _nodesInternal;
         public TreeNode                Root  => _nodesInternal.Count > 0 ? _nodesInternal[ 0 ] : null;
@@ -295,6 +297,16 @@ namespace Silentor.TreeList
                 else 
                     parentsList[ newNode.Depth ] = newNode;              //Existing level
             }
+        }
+
+        public IEnumerator<TreeNode> GetEnumerator( )
+        {
+            return _nodesInternal.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator( )
+        {
+            return GetEnumerator();
         }
     }
 }
