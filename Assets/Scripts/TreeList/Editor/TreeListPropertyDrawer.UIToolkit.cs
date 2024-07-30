@@ -34,9 +34,10 @@ namespace Silentor.TreeList.Editor
             tree.makeItem                      =  ( ) => new VisualElement(){};
             tree.bindItem = ( e, i ) =>
             {
-                var treeItemNode = nodesProp.GetArrayElementAtIndex( i );
-                var valueProp           = treeItemNode.FindPropertyRelative( "Value" );
-                
+                var treeItemProp = nodesProp.GetArrayElementAtIndex( i );
+                var valueProp    = treeItemProp.FindPropertyRelative( "Value" );
+
+                //Draw content
                 if ( valueProp.hasVisibleChildren )
                 {
                     valueProp = valueProp.Copy();
@@ -60,7 +61,7 @@ namespace Silentor.TreeList.Editor
                 }
 
                 //Add node depth label
-                var nodeDepth = treeItemNode.FindPropertyRelative( "Depth" ).intValue;
+                var nodeDepth = treeItemProp.FindPropertyRelative( "Depth" ).intValue;
                 if ( nodeDepth > 0 )
                 {
                     var viewItem   = e;

@@ -4,6 +4,16 @@
         <ui:TreeView name="TreeView" virtualization-method="DynamicHeight" show-border="true" show-alternating-row-backgrounds="All" reorderable="true" />
     </ui:Foldout>
     <ui:TextField picking-mode="Ignore" value="0" readonly="true" name="Counter" class="header__counter" />
-    <ui:Button text="+" parse-escape-sequences="true" display-tooltip-when-elided="true" name="AddBtn" class="header__tool-btn" style="right: 85px;" />
-    <ui:Button text="-" parse-escape-sequences="true" display-tooltip-when-elided="true" name="RemoveBtn" class="header__tool-btn" style="right: 60px;" />
+    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="AddBtn" tooltip="Add new node to selected parent" class="header__tool-btn" style="right: 85px;">
+        <ui:VisualElement picking-mode="Ignore" class="header__tool-btn__icon" style="background-image: resource(&apos;add&apos;);" />
+    </ui:Button>
+    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="RemoveBtn" tooltip="Remove selected node" class="header__tool-btn" style="right: 60px;">
+        <ui:VisualElement picking-mode="Ignore" class="header__tool-btn__icon" style="background-image: resource(&apos;remove&apos;);" />
+    </ui:Button>
+    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="CopyBtn" tooltip="Copy selected node value" class="header__tool-btn" style="right: 145px;">
+        <ui:VisualElement picking-mode="Ignore" class="header__tool-btn__icon" />
+    </ui:Button>
+    <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="PasteBtn" tooltip="Paste node value" class="header__tool-btn" style="right: 120px;">
+        <ui:VisualElement picking-mode="Ignore" class="header__tool-btn__icon" style="background-image: resource(&apos;content_paste&apos;);" />
+    </ui:Button>
 </ui:UXML>

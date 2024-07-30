@@ -16,8 +16,27 @@
     position: absolute;
     right: 50;
     top: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    justify-content: center;
+    align-items: center;
 }
 
 .unity-tree-view__item-toggle .unity-foldout__checkmark {
     align-self: flex-start;
+}
+
+.header__tool-btn__icon {
+    width: 14px;
+    height: 14px;
+    background-image: resource('content_copy');
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: var(--unity-colors-toolbar_button-text);
 }
