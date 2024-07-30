@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using Object = System.Object;
 
 namespace Silentor.TreeList.Editor
 {
@@ -13,9 +14,10 @@ namespace Silentor.TreeList.Editor
     public partial class TreeListPropertyDrawer
     {                                   
         private static readonly Dictionary<Int32, TreeEditorState> _treeViewStates = new ();
-        private                 ImguiTreeView                         _treeIM;
+        private                 ImguiTreeView                      _treeIM;
         private                 MultiColumnHeaderState             _multiColumnHeaderState;
         private readonly        Single                             _headerHeight = EditorGUIUtility.singleLineHeight + 2;
+        private                 Boolean                            _expandTreeOnInitialize;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label )
         {
@@ -58,6 +60,12 @@ namespace Silentor.TreeList.Editor
                 _structuralHash = GetStructuralHash( nodesProp );
             }
 
+            if( _expandTreeOnInitialize )
+            {
+                _treeIM.ExpandAll();
+                _expandTreeOnInitialize = false;
+            }
+
             //Adjust columns
             var expandedItems = _treeIM.GetRows().Where( tvi => _treeIM.GetExpanded().Contains( tvi.id ) ).ToArray();
             if ( expandedItems.Length > 0 )
@@ -76,8 +84,6 @@ namespace Silentor.TreeList.Editor
 
             _treeIM.OnGUI( position );
         }
-
-        
 
         private Rect DrawHeader( Rect totalRect, GUIContent label, TreeEditorState state, SerializedProperty nodesProp, SerializedProperty mainProperty )
         {
@@ -135,7 +141,10 @@ namespace Silentor.TreeList.Editor
                 if ( !mainProperty.isExpanded )
                 {
                     mainProperty.isExpanded = true;
-                    _treeIM.ExpandAll();
+                    if( _treeIM.IsInitialized )
+                        _treeIM.ExpandAll();
+                    else
+                        _expandTreeOnInitialize = true;
                 }
                 else
                 {
@@ -292,7 +301,7 @@ namespace Silentor.TreeList.Editor
 
             public static readonly GUIContent Plus  = new  (EditorGUIUtility.IconContent("Toolbar Plus").image, "Add child node") ;
             public static readonly GUIContent Minus = new  (EditorGUIUtility.IconContent("Toolbar Minus").image, "Remove node") ;
-            public static readonly GUIContent Expand = new  (Resources.Load<Texture2D>( "expand_all" ), "Expand/collapse tree") ;
+            public static readonly GUIContent Expand = new  (EditorGUIUtility.IconContent("UnityEditor.SceneHierarchyWindow@2x").image, "Expand/collapse tree") ;
             // public static readonly GUIContent Depth =  EditorGUIUtility.isProSkin 
             //         ? new ("Depth", EditorGUIUtility.IconContent("d_BlendTree Icon").image) 
             //         : new ("Depth", EditorGUIUtility.IconContent("BlendTree Icon").image) ;
