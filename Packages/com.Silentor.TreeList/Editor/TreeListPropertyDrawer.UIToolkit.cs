@@ -88,13 +88,14 @@ namespace Silentor.TreeList.Editor
                     depthLabel = new Label( )
                                  {
                                          name = "DepthLabel",
+                                         pickingMode = PickingMode.Ignore,
                                          style =
                                          {
                                                  position = Position.Absolute,
                                                  left     = 2,
                                                  top      = 3,
                                                  minWidth = 20,
-                                                 maxWidth = 20
+                                                 maxWidth = 20,
                                          }
                                  };
                     depthLabel.AddToClassList( "unity-base-field__label" );
