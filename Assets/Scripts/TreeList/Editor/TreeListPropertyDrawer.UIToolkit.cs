@@ -6,6 +6,7 @@ using UnityEditor.Search;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Object = System.Object;
 
 namespace Silentor.TreeList.Editor
 {
@@ -14,6 +15,12 @@ namespace Silentor.TreeList.Editor
     /// </summary>
     public partial class TreeListPropertyDrawer
     {
+        private Button   _removeBtn;
+        private Button   _addBtn;
+        private Button   _copyBtn;
+        private Button   _pasteBtn;
+        private TreeView _treeUI;
+
         public override VisualElement CreatePropertyGUI( SerializedProperty property )
         {
             var root = ResourcesUITk.TreeViewAsset.CloneTree();
@@ -26,13 +33,12 @@ namespace Silentor.TreeList.Editor
             var elementsCounter = root.Q<TextField>( "Counter" );
             elementsCounter.BindProperty( nodesProp.FindPropertyRelative( "Array.size" ) );
             
-            var tree = root.Q<TreeView>( "TreeView" );
-            tree.style.maxHeight               =  Screen.height * 2/3;
-            tree.viewDataKey                   =  GetPropertyPersistentString( property );
-//            tree.selectionChanged              += objs => Debug.Log( $"selection changed: {objs.Count()}" );
-            tree.showAlternatingRowBackgrounds =  AlternatingRowBackground.All;
-            tree.makeItem                      =  ( ) => new VisualElement(){};
-            tree.bindItem = ( e, i ) =>
+            _treeUI = root.Q<TreeView>( "TreeView" );
+            _treeUI.style.maxHeight               =  Screen.height * 2/3;
+            _treeUI.viewDataKey                   =  GetPropertyPersistentString( property );
+            _treeUI.showAlternatingRowBackgrounds =  AlternatingRowBackground.All;
+            _treeUI.makeItem                      =  ( ) => new VisualElement(){};
+            _treeUI.bindItem = ( e, i ) =>
             {
                 var treeItemProp = nodesProp.GetArrayElementAtIndex( i );
                 var valueProp    = treeItemProp.FindPropertyRelative( "Value" );
@@ -89,53 +95,79 @@ namespace Silentor.TreeList.Editor
                     depthLabel.text = nodeDepth.ToString();
                 }
             };
-            tree.unbindItem = ( e, i ) =>
+            _treeUI.unbindItem = ( e, i ) =>
             {
                 e.Clear();
             };
-            tree.itemIndexChanged += ( oldIndex, newParentIndex ) =>          //Id is equal to index in unmodified tree
+            _treeUI.itemIndexChanged += ( oldIndex, newParentIndex ) =>          //Id is equal to index in unmodified tree
             {
-                var newChildIndex = tree.viewController.GetChildIndexForId( oldIndex );
+                var newChildIndex = _treeUI.viewController.GetChildIndexForId( oldIndex );
                 MoveItem( oldIndex, newParentIndex, newChildIndex, nodesProp );
                 nodesProp.serializedObject.ApplyModifiedProperties();
-                tree.SetRootItems( BuildHierarchy( nodesProp ) );
-                tree.Rebuild();
+                _treeUI.SetRootItems( BuildHierarchy( nodesProp ) );
+                _treeUI.Rebuild();
             };
+            _treeUI.selectionChanged += _ => { RefreshButtons(); };
             
             var hierarchy = BuildHierarchy( nodesProp ); 
-            tree.SetRootItems( hierarchy );
+            _treeUI.SetRootItems( hierarchy );
                     
-            var removeBtn = root.Q<Button>( "RemoveBtn" );
-            removeBtn.clickable.clicked += () =>
+            _removeBtn = root.Q<Button>( "RemoveBtn" );
+            _removeBtn.clickable.clicked += () =>
             {
-                if ( tree.selectedIndex > -1 )
+                if ( _treeUI.selectedIndex > -1 )
                 {
-                    RemoveItem( tree.selectedIndex, nodesProp );
+                    RemoveItem( _treeUI.selectedIndex, nodesProp );
                     property.serializedObject.ApplyModifiedProperties();
-                    tree.SetRootItems( BuildHierarchy( nodesProp ) );
-                    tree.Rebuild();
+                    _treeUI.SetRootItems( BuildHierarchy( nodesProp ) );
+                    _treeUI.Rebuild();
+                    RefreshButtons();
                 }
             };
 
-            var addBtn = root.Q<Button>( "AddBtn" );
-            addBtn.clickable.clicked += () =>
+            _addBtn = root.Q<Button>( "AddBtn" );
+            _addBtn.clickable.clicked += () =>
             {
                 if ( nodesProp.arraySize == 0 )
                 {
                     AddItem( -1, nodesProp );
                     property.serializedObject.ApplyModifiedProperties();
                     property.isExpanded = true;
-                    tree.SetRootItems( BuildHierarchy( nodesProp ) );
-                    tree.Rebuild();
+                    _treeUI.SetRootItems( BuildHierarchy( nodesProp ) );
+                    _treeUI.Rebuild();
                 }
-                else if( tree.selectedIndex > -1 )
+                else if( _treeUI.selectedIndex > -1 )
                 {
-                    var addedIndex = AddItem( tree.selectedIndex, nodesProp );
+                    var addedIndex = AddItem( _treeUI.selectedIndex, nodesProp );
                     property.serializedObject.ApplyModifiedProperties();
-                    tree.SetRootItems( BuildHierarchy( nodesProp ) );
-                    tree.Rebuild();
+                    _treeUI.SetRootItems( BuildHierarchy( nodesProp ) );
+                    _treeUI.Rebuild();
+                }
+                RefreshButtons();
+            };
+
+            _copyBtn = root.Q<Button>( "CopyBtn" );
+            _copyBtn.clickable.clicked += () =>
+            {
+                if ( _treeUI.selectedIndex > -1 )
+                {
+                    var valueProp = nodesProp.GetArrayElementAtIndex( _treeUI.selectedIndex ).FindPropertyRelative( "Value" );
+                    Clipboard.Copy( valueProp );
                 }
             };
+
+            _pasteBtn = root.Q<Button>( "PasteBtn" );
+            _pasteBtn.clickable.clicked += () =>
+            {
+                if ( _treeUI.selectedIndex > -1 )
+                {
+                    var valueProp = nodesProp.GetArrayElementAtIndex( _treeUI.selectedIndex ).FindPropertyRelative( "Value" );
+                    Clipboard.Paste( valueProp );
+                    valueProp.serializedObject.ApplyModifiedProperties();
+                }
+            };
+
+            RefreshButtons();
 
             return root;
         }
@@ -201,6 +233,14 @@ namespace Silentor.TreeList.Editor
             }
             else
                 return $"{GetType().FullName}.{target.name}.{treeListProperty.propertyPath}";
+        }
+
+        private void RefreshButtons( )
+        {
+             _copyBtn.SetEnabled( _treeUI.selectedIndex > -1 );
+             _pasteBtn.SetEnabled( _treeUI.selectedIndex > -1 );
+             _removeBtn.SetEnabled( _treeUI.selectedIndex > -1 );
+             _addBtn.SetEnabled( _treeUI.selectedIndex > -1 || _treeUI.GetTreeCount() == 0 );
         }
 
         private static class ResourcesUITk

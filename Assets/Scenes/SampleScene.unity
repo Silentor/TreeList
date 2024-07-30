@@ -152,16 +152,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5941c4588f8cb264596fbd14dddd6217, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FirstInspector: 0
   PrimitiveTree:
     SerializableNodes:
     - Value: test
       Depth: 0
+    - Value: test
+      Depth: 1
   PrimitiveTree2:
     SerializableNodes:
     - Value: 
       Depth: 0
   CustomTree:
-    SerializableNodes: []
+    SerializableNodes:
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 0
+      Depth: 0
   CustomTree2:
     SerializableNodes:
     - Value:
@@ -169,11 +177,6 @@ MonoBehaviour:
         CustomBool: 0
         CustomInt: 0
       Depth: 0
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 1
   VoidTree:
     SerializableNodes: []
   TestCollection:
@@ -271,18 +274,103 @@ MonoBehaviour:
       Depth: 0
     - Value:
         CustomText: 
-        CustomBool: 0
-        CustomInt: 0
+        CustomBool: 1
+        CustomInt: 3
       Depth: 1
     - Value:
         CustomText: 
         CustomBool: 0
-        CustomInt: 0
+        CustomInt: 2
+      Depth: 2
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 1
+      Depth: 3
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 1
+      Depth: 4
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 1
+      Depth: 5
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 1
+      Depth: 5
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 1
+      Depth: 5
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 1
+      Depth: 5
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 1
+      Depth: 3
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 1
+      Depth: 2
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 1
+      Depth: 2
+    - Value:
+        CustomText: 
+        CustomBool: 1
+        CustomInt: 1
+      Depth: 2
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 1
+      Depth: 2
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 1
+      Depth: 2
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 1
+      Depth: 2
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 1
+      Depth: 2
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 1
+      Depth: 2
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 1
       Depth: 1
     - Value:
         CustomText: 
         CustomBool: 0
-        CustomInt: 0
+        CustomInt: 1
+      Depth: 1
+    - Value:
+        CustomText: 
+        CustomBool: 0
+        CustomInt: 1
       Depth: 1
   ComplexValue:
     FoldoutValue:
@@ -332,6 +420,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5941c4588f8cb264596fbd14dddd6217, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FirstInspector: 0
   PrimitiveTree:
     SerializableNodes: []
   PrimitiveTree2:
@@ -513,17 +602,17 @@ MonoBehaviour:
         CustomText: 
         CustomBool: 0
         CustomInt: 0
-      Depth: 2
+      Depth: 3
     - Value:
         CustomText: 
-        CustomBool: 0
+        CustomBool: 1
         CustomInt: 0
-      Depth: 2
+      Depth: 4
     - Value:
         CustomText: 
-        CustomBool: 0
+        CustomBool: 1
         CustomInt: 0
-      Depth: 2
+      Depth: 5
     - Value:
         CustomText: 
         CustomBool: 0
@@ -709,6 +798,10 @@ PrefabInstance:
       value: 11
       objectReference: {fileID: 0}
     - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree2.SerializableNodes.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
       propertyPath: CustomTree.SerializableNodes.Array.data[1].Depth
       value: 1
       objectReference: {fileID: 0}
@@ -746,6 +839,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
       propertyPath: CustomTree.SerializableNodes.Array.data[10].Depth
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+      propertyPath: CustomTree2.SerializableNodes.Array.data[1].Depth
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -9029463677769967879, guid: 0548ac167725c224f985e13de38485fc, type: 3}

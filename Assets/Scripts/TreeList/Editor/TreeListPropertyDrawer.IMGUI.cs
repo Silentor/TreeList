@@ -13,7 +13,7 @@ namespace Silentor.TreeList.Editor
     public partial class TreeListPropertyDrawer
     {                                   
         private static readonly Dictionary<Int32, TreeEditorState> _treeViewStates = new ();
-        private                 ImguiTreeView                         _tree;
+        private                 ImguiTreeView                         _treeIM;
         private                 MultiColumnHeaderState             _multiColumnHeaderState;
         private readonly        Single                             _headerHeight = EditorGUIUtility.singleLineHeight + 2;
 
@@ -26,7 +26,7 @@ namespace Silentor.TreeList.Editor
             if( nodesProp.arraySize == 0 )
                 property.isExpanded = false;
 
-            if ( _tree == null )
+            if ( _treeIM == null )
             {
                 _multiColumnHeaderState = new MultiColumnHeaderState( 
                         new MultiColumnHeaderState.Column[]
@@ -42,7 +42,7 @@ namespace Silentor.TreeList.Editor
                         
                         } );
 
-                _tree = new ImguiTreeView( state.TreeViewState, new MyMultiColumnHeader(_multiColumnHeaderState), nodesProp ) ;
+                _treeIM = new ImguiTreeView( state.TreeViewState, new MyMultiColumnHeader(_multiColumnHeaderState), nodesProp ) ;
             }
 
             position = DrawHeader( position, label, state, nodesProp, property );
@@ -52,14 +52,14 @@ namespace Silentor.TreeList.Editor
                 return;
             }
 
-            if ( !_tree.IsInitialized || _structuralHash != GetStructuralHash( nodesProp ) )
+            if ( !_treeIM.IsInitialized || _structuralHash != GetStructuralHash( nodesProp ) )
             {
-                _tree.Reload();
+                _treeIM.Reload();
                 _structuralHash = GetStructuralHash( nodesProp );
             }
 
             //Adjust columns
-            var expandedItems = _tree.GetRows().Where( tvi => _tree.GetExpanded().Contains( tvi.id ) ).ToArray();
+            var expandedItems = _treeIM.GetRows().Where( tvi => _treeIM.GetExpanded().Contains( tvi.id ) ).ToArray();
             if ( expandedItems.Length > 0 )
             {
                 //Expand foldouts column to fit the deepest expanded item
@@ -74,7 +74,7 @@ namespace Silentor.TreeList.Editor
                     
             _multiColumnHeaderState.columns[1].width = position.width - _multiColumnHeaderState.columns[0].width - 20;  
 
-            _tree.OnGUI( position );
+            _treeIM.OnGUI( position );
         }
 
         
@@ -95,11 +95,11 @@ namespace Silentor.TreeList.Editor
 
             //Draw remove button
             var btnRect      = new Rect( itemsCountRect.x - _headerHeight - 5, headerRect.y, _headerHeight, _headerHeight );
-            var isBtnEnabled = mainProperty.isExpanded && _tree.HasSelection();
+            var isBtnEnabled = mainProperty.isExpanded && _treeIM.HasSelection();
             EditorGUI.BeginDisabledGroup( !isBtnEnabled );
             if ( GUI.Button( btnRect, ResourcesIMGUI.Minus, ResourcesIMGUI.ToolBarBtnStyle ) )
             {
-                var (_, selectedIndex) = _tree.GetSelectedItem();
+                var (_, selectedIndex) = _treeIM.GetSelectedItem();
                 RemoveItem( selectedIndex, nodesProp );
                 if( nodesProp.arraySize == 0 )
                     mainProperty.isExpanded = false;
@@ -109,7 +109,7 @@ namespace Silentor.TreeList.Editor
             //Draw add button
             btnRect = new Rect( btnRect.x - btnRect.width - 15, btnRect.y, btnRect.width, btnRect.height );
             var isEmptyTree = nodesProp.arraySize == 0;
-            isBtnEnabled = isEmptyTree || _tree.HasSelection();
+            isBtnEnabled = isEmptyTree || _treeIM.HasSelection();
             EditorGUI.BeginDisabledGroup( !isBtnEnabled );
             if ( GUI.Button( btnRect, ResourcesIMGUI.Plus, ResourcesIMGUI.ToolBarBtnStyle  ) )
             {
@@ -120,7 +120,7 @@ namespace Silentor.TreeList.Editor
                 }
                 else
                 {
-                    var (_, selectedIndex) = _tree.GetSelectedItem();
+                    var (_, selectedIndex) = _treeIM.GetSelectedItem();
                     AddItem( selectedIndex, nodesProp );
                 }
             };
@@ -202,12 +202,12 @@ namespace Silentor.TreeList.Editor
 
         public override Single GetPropertyHeight( SerializedProperty property, GUIContent label )
         {
-            if( _tree == null || !_tree.IsInitialized  )
+            if( _treeIM == null || !_treeIM.IsInitialized  )
                 return _headerHeight;
             if( !property.isExpanded || property.FindPropertyRelative( "SerializableNodes" ).arraySize == 0)
                 return _headerHeight;
 
-            return Mathf.Clamp( _tree.totalHeight + _headerHeight, _headerHeight, 500 );
+            return Mathf.Clamp( _treeIM.totalHeight + _headerHeight, _headerHeight, 500 );
         }
 
         private TreeEditorState GetPersistentTreeViewState( SerializedProperty prop )

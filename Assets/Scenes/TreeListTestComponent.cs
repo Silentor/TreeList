@@ -8,7 +8,7 @@ using UnityEditor;
 
 public class TreeListTestComponent : MonoBehaviour
 {
-    //public Int32                        FirstInspector;
+    public Int32                        FirstInspector;
     //[HideInInspector]
     public TreeList<String>     PrimitiveTree;
     public TreeList<String>     PrimitiveTree2;
