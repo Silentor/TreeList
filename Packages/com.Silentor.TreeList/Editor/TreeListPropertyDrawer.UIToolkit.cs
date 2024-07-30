@@ -21,14 +21,16 @@ namespace Silentor.TreeList.Editor
         private Button   _pasteBtn;
         private TreeView _treeUI;
         private Label    _hint;
+        private Button   _expandBtn;
+        private Foldout  _foldout;
 
         public override VisualElement CreatePropertyGUI( SerializedProperty property )
         {
             var root = ResourcesUITk.TreeViewAsset.CloneTree();
-            var foldout = root.Q<Foldout>("Header");
-            foldout.text = property.displayName;
-            foldout.value = property.isExpanded;
-            foldout.BindProperty( property );
+            _foldout = root.Q<Foldout>("Header");
+            _foldout.text = property.displayName;
+            _foldout.value = property.isExpanded;
+            _foldout.BindProperty( property );
 
             var nodesProp           = property.FindPropertyRelative( "SerializableNodes" );
             var elementsCounter = root.Q<TextField>( "Counter" );
@@ -119,6 +121,7 @@ namespace Silentor.TreeList.Editor
             
             var hierarchy = BuildHierarchy( nodesProp ); 
             _treeUI.SetRootItems( hierarchy );
+            _treeUI.Rebuild();
                     
             _removeBtn = root.Q<Button>( "RemoveBtn" );
             _removeBtn.clickable.clicked += () =>
@@ -174,9 +177,50 @@ namespace Silentor.TreeList.Editor
                 }
             };
 
+            _expandBtn = root.Q<Button>( "ExpandBtn" );
+            _expandBtn.clickable.clicked += () =>
+            {
+                if( _treeUI.GetTreeCount() == 0 )
+                    return;
+
+                if ( !property.isExpanded )
+                {
+                    property.isExpanded = true;
+                    _foldout.value = true;
+                    _treeUI.ExpandAll();
+                }
+                else
+                {
+                    var expandedCount = 0;
+                    foreach ( var id in _treeUI.viewController.GetAllItemIds(  ) )
+                    {
+                        //Count fully expanded items
+                        var isExpanded = true;
+                        var checkId    = id;
+                        for ( var i = 0; i < 5 && checkId >= 0; i++ )
+                        {
+                            if(  !_treeUI.IsExpanded( checkId ) )
+                            {
+                                isExpanded = false;
+                                break;
+                            }
+                            checkId = _treeUI.viewController.GetParentId( checkId );
+                        }
+                        if ( isExpanded )
+                        {
+                            expandedCount++;
+                        }
+                    }
+                    if(  expandedCount > _treeUI.GetTreeCount() / 2 )
+                        _treeUI.CollapseAll();
+                    else
+                        _treeUI.ExpandAll();
+                }
+            };
+
             _hint = root.Q<Label>( "Hint" );
 
-            RefreshButtons( nodesProp );
+            root.RegisterCallback<GeometryChangedEvent>( _ => RefreshButtons( nodesProp )  );
 
             //Catch background tree structural changes (for example by undo or prefab revert)
             _structuralHash = GetStructuralHash( nodesProp );
@@ -188,7 +232,7 @@ namespace Silentor.TreeList.Editor
                     //Debug.Log( $"hash mismatch, rebuild tree" );
                     _structuralHash = actualHash;
                     _treeUI.SetRootItems( BuildHierarchy( nodesProp ) );
-                    _treeUI.Rebuild();
+                    _treeUI.RefreshItems();
                     RefreshButtons( nodesProp );
                 }
             } ).Every( 500 );
@@ -199,7 +243,7 @@ namespace Silentor.TreeList.Editor
         private void RebuildTree( SerializedProperty nodesProp )
         {
             _treeUI.SetRootItems( BuildHierarchy( nodesProp ) );
-            _treeUI.Rebuild();
+            _treeUI.RefreshItems();
             _structuralHash = GetStructuralHash( nodesProp );
         }
 
@@ -272,9 +316,14 @@ namespace Silentor.TreeList.Editor
              _pasteBtn.SetEnabled( _treeUI.selectedIndex > -1 );
              _removeBtn.SetEnabled( _treeUI.selectedIndex > -1 );
              _addBtn.SetEnabled( _treeUI.selectedIndex > -1 || _treeUI.GetTreeCount() == 0 );
+             _expandBtn.SetEnabled( _treeUI.GetTreeCount() > 0 );
 
-             _hint.text = GetTreeHint( _treeUI.selectedIndex, nodesProp  );
-
+             var foldoutLabelWidth = _foldout.Q<Toggle>().Q<VisualElement>(  ).Q<Label>(  ).worldBound.width;
+             var totalWidth        = _foldout.worldBound.width;
+             if( totalWidth - foldoutLabelWidth > 350 )
+                _hint.text = GetTreeHint( _treeUI.selectedIndex, nodesProp  );
+             else
+                 _hint.text = String.Empty;
         }
 
         private static class ResourcesUITk

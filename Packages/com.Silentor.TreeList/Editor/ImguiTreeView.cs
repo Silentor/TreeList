@@ -46,7 +46,7 @@ namespace Silentor.TreeList.Editor
             // Utility method that initializes the TreeViewItem.children and .parent for all items.
             SetupParentsAndChildrenFromDepths (root, itemsList);
 
-            Debug.Log( "Reload tree" );
+            //Debug.Log( "Reload tree" );
 
             // Return root of the tree
             return root;

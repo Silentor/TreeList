@@ -799,26 +799,6 @@ MonoBehaviour:
         CustomText: 
         CustomBool: 0
         CustomInt: 0
-      Depth: 1
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 1
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 1
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 1
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
       Depth: 2
     - Value:
         CustomText: 

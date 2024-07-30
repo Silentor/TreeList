@@ -126,6 +126,51 @@ namespace Silentor.TreeList.Editor
             };
             EditorGUI.EndDisabledGroup();
 
+            //Draw expand/collapse button
+            btnRect = new Rect( btnRect.x - btnRect.width - 15, btnRect.y, btnRect.width, btnRect.height );
+            isBtnEnabled = !isEmptyTree;
+            EditorGUI.BeginDisabledGroup( !isBtnEnabled );
+            if ( GUI.Button( btnRect, ResourcesIMGUI.Expand, ResourcesIMGUI.ToolBarBtnStyle  ) )
+            {
+                if ( !mainProperty.isExpanded )
+                {
+                    mainProperty.isExpanded = true;
+                    _treeIM.ExpandAll();
+                }
+                else
+                {
+                    var expandable = 0;
+                    var expanded = 0;
+                    foreach ( var row in _treeIM.GetRows() )
+                    {
+                         if( !row.hasChildren )
+                             continue;
+
+                         expandable++;
+                         var isExpanded = true;
+                         var r          = row;
+                         for ( int i = 0; i < 5 && r != null; i++ )
+                         {
+                             if ( !_treeIM.GetExpanded().Contains( r.id ) )
+                             {
+                                 isExpanded = false;
+                                 break;
+                             }
+                             r = r.parent;
+                         }
+
+                         if ( isExpanded )
+                             expanded++;
+                    }
+
+                    if ( expanded > expandable / 2 )
+                        _treeIM.CollapseAll();
+                    else
+                        _treeIM.ExpandAll();
+                }
+            };
+            EditorGUI.EndDisabledGroup();
+
             //Custom prefix label because TreeView with header hides it. wtf?
             var prefixLabelRect = headerRect;
             prefixLabelRect.xMax = btnRect.x - 5;
@@ -247,6 +292,7 @@ namespace Silentor.TreeList.Editor
 
             public static readonly GUIContent Plus  = new  (EditorGUIUtility.IconContent("Toolbar Plus").image, "Add child node") ;
             public static readonly GUIContent Minus = new  (EditorGUIUtility.IconContent("Toolbar Minus").image, "Remove node") ;
+            public static readonly GUIContent Expand = new  (Resources.Load<Texture2D>( "expand_all" ), "Expand/collapse tree") ;
             // public static readonly GUIContent Depth =  EditorGUIUtility.isProSkin 
             //         ? new ("Depth", EditorGUIUtility.IconContent("d_BlendTree Icon").image) 
             //         : new ("Depth", EditorGUIUtility.IconContent("BlendTree Icon").image) ;

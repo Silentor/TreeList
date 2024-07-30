@@ -1,10 +1,14 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
-    <Style src="project://database/Assets/Scripts/TreeList/Editor/Resources/TreeListStyles.uss?fileID=7433441132597879392&amp;guid=e57be1481d9af0a4e93fad302e026467&amp;type=3#TreeListStyles" />
+    <Style src="project://database/Packages/com.silentor.treelist/Editor/Resources/TreeListStyles.uss?fileID=7433441132597879392&amp;guid=e57be1481d9af0a4e93fad302e026467&amp;type=3#TreeListStyles" />
     <ui:Foldout text="PropertyName" name="Header" style="flex-grow: 1;">
         <ui:TreeView name="TreeView" virtualization-method="DynamicHeight" show-border="true" show-alternating-row-backgrounds="All" reorderable="true" />
     </ui:Foldout>
     <ui:VisualElement name="Toolbar" picking-mode="Ignore" style="position: absolute; right: 0; top: 0; flex-direction: row;">
         <ui:Label tabindex="-1" text="Press + button to add root item" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Hint" class="hint-label" />
+        <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="ExpandBtn" tooltip="Expand/collapse tree" class="header__tool-btn">
+            <ui:VisualElement picking-mode="Ignore" class="header__tool-btn__icon" style="background-image: resource(&apos;expand_all&apos;);" />
+        </ui:Button>
+        <ui:VisualElement name="Separator" class="header__separator" />
         <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="CopyBtn" tooltip="Copy selected node value" class="header__tool-btn">
             <ui:VisualElement picking-mode="Ignore" class="header__tool-btn__icon" />
         </ui:Button>
