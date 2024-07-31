@@ -24,7 +24,7 @@ namespace Silentor.TreeList.Editor
             //Debug.Log( $"{property.displayName}, evt {Event.current.type}, hash {this.GetHashCode()}" );
 
             var state     = GetPersistentTreeViewState( property );
-            var nodesProp = property.FindPropertyRelative( "SerializableNodes" );
+            var nodesProp = property.FindPropertyRelative( "_nodes" );
             if( nodesProp.arraySize == 0 )
                 property.isExpanded = false;
 
@@ -258,7 +258,7 @@ namespace Silentor.TreeList.Editor
         {
             if( _treeIM == null || !_treeIM.IsInitialized  )
                 return _headerHeight;
-            if( !property.isExpanded || property.FindPropertyRelative( "SerializableNodes" ).arraySize == 0)
+            if( !property.isExpanded || property.FindPropertyRelative( "_nodes" ).arraySize == 0)
                 return _headerHeight;
 
             return Mathf.Clamp( _treeIM.totalHeight + _headerHeight, _headerHeight, 500 );

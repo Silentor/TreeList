@@ -43,7 +43,7 @@ namespace Silentor.TreeList.Editor
             var child2_1 = _tree.Nodes.First( n => n.Value.Equals( "child2_1" ) );
             var child2 = _tree.Nodes.First( n => n.Value.Equals( "child2" ) );
             Assert.IsTrue( _tree.GetParent( child2_1 ) == child2 );
-            Assert.IsTrue( child2.GetParent() == _tree.Root );
+            Assert.IsTrue( child2.Parent == _tree.Root );
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace Silentor.TreeList.Editor
         public void TestGetChildsRecursive( )
         {
             var child1          = _tree.Nodes.First( n => n.Value.Equals( "child1" ) );
-            var childsRecursive = _tree.GetChildsRecursive( child1, false ).ToArray();
+            var childsRecursive = _tree.GetChilds( child1, false, true ).ToArray();
             Assert.IsTrue( childsRecursive.Count() == 3 );
             CollectionAssert.AreEqual( childsRecursive.Select( n => n.Value ), new Object[]{"child1_1", "child1_1_1", "child1_2" } );
         }
@@ -106,10 +106,36 @@ namespace Silentor.TreeList.Editor
             Assert.IsTrue( _tree.Move( child1, child2_1 ) == 4 );
             Assert.IsTrue( child1.Depth == 3 );
             Assert.IsTrue( _tree.GetParent( child1) == child2_1 );
-            Assert.IsTrue( _tree.GetChildsRecursive( child2_1, false ).Count() == 4 );
-            Assert.IsTrue( _tree.GetChilds( _tree.Root, false ).Count() == 1 );
-            Assert.IsTrue( _tree.GetChilds( _tree.GetParent( child2_1 ), false ).Count() == 2 );
+            Assert.IsTrue( _tree.GetChilds( child2_1, false, true ).Count() == 4 );
+            Assert.IsTrue( _tree.GetChilds( _tree.Root ).Count() == 1 );
+            Assert.IsTrue( _tree.GetChilds( _tree.GetParent( child2_1 ) ).Count() == 2 );
 
+        }
+
+        [Test]
+        public void TestMove2( )
+        {
+            var child1   = _tree.Nodes.First( n => n.Value.Equals( "child1" ) );
+            var child2_1 = _tree.Nodes.First( n => n.Value.Equals( "child2_1" ) );
+
+            Assert.IsTrue( _tree.Move( child2_1, child1 )                 == 1 );
+            Assert.IsTrue( child2_1.Depth                                 == 2 );
+            Assert.IsTrue( _tree.GetParent( child2_1)                     == child1 );
+            Assert.IsTrue( _tree.GetChilds( child1, false, true ).Count() == 4 );
+            Assert.IsTrue( _tree.GetChilds( _tree.Root ).Count()          == 2 );
+        }
+
+        [Test]
+        public void TestMove3( )
+        {
+            var child1   = _tree.Nodes.First( n => n.Value.Equals( "child1" ) );
+            var child2 = _tree.Nodes.First( n => n.Value.Equals( "child2" ) );
+
+            Assert.IsTrue( _tree.Move( child1, child2, 0 )                == 4 );
+            Assert.IsTrue( child1.Depth                                   == 2 );
+            Assert.IsTrue( _tree.GetParent( child1)                       == child2 );
+            Assert.IsTrue( _tree.GetChilds( child2 ).Count() == 3 );
+            Assert.IsTrue( _tree.GetChilds( _tree.Root ).Count()          == 1 );
         }
 
         [Test]
@@ -119,8 +145,8 @@ namespace Silentor.TreeList.Editor
             newTree.Add( "root", null )
                    .AddChild( "child1" )
                         .AddChild( "child1_1" )
-                            .AddChild( "child1_1_1" ).GetParent()
-                        .AddSibling( "child1_2" ).GetParent().GetParent()
+                            .AddChild( "child1_1_1" ).Parent
+                        .AddSibling( "child1_2" ).Parent.Parent
                    .AddChild( "child2" )
                         .AddChild( "child2_1" )
                         .AddSibling( "child2_2" );
@@ -144,6 +170,13 @@ namespace Silentor.TreeList.Editor
             var nodes = _tree.ToArray();
             Assert.IsTrue( nodes.Length == _tree.Nodes.Count );
             Assert.IsTrue( nodes.Distinct().Count() == _tree.Count );
+        }
+
+        [Test]
+        public void TestBFS( )
+        {
+            var result = _tree.GetChildsBreadthFirst( _tree.Root ).ToArray();
+            CollectionAssert.AreEqual( result.Select( n => n.Value ), new Object[]{"child1", "child2", "child1_1", "child1_2", "child2_1", "child2_2", "child1_1_1" } );
         }
     }
 

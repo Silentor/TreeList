@@ -17,11 +17,11 @@ namespace Silentor.TreeList.Editor
         {
             if ( parentIndex > -1 )
             {
-                var parentDepth = nodes.GetArrayElementAtIndex( parentIndex ).FindPropertyRelative( "Depth" ).intValue;
+                var parentDepth = nodes.GetArrayElementAtIndex( parentIndex ).FindPropertyRelative( "_depth" ).intValue;
                 var childIndex  = nodes.arraySize;
 
                 for ( var i = parentIndex + 1; i < nodes.arraySize; i++ )
-                    if ( nodes.GetArrayElementAtIndex( i ).FindPropertyRelative( "Depth" ).intValue <= parentDepth )
+                    if ( nodes.GetArrayElementAtIndex( i ).FindPropertyRelative( "_depth" ).intValue <= parentDepth )
                     {
                         childIndex = i;
                         break;
@@ -29,7 +29,7 @@ namespace Silentor.TreeList.Editor
 
                 nodes.InsertArrayElementAtIndex( childIndex );
                 var newItem = nodes.GetArrayElementAtIndex( childIndex  );
-                newItem.FindPropertyRelative( "Depth" ).intValue = parentDepth + 1;
+                newItem.FindPropertyRelative( "_depth" ).intValue = parentDepth + 1;
                 return childIndex;
             }
             else
@@ -50,15 +50,15 @@ namespace Silentor.TreeList.Editor
 
         private void MoveItem( Int32 itemIndex, Int32 newParentIndex, Int32 newChildIndex, SerializedProperty nodes )
         {
-            var oldDepth = nodes.GetArrayElementAtIndex( itemIndex ).FindPropertyRelative( "Depth" ).intValue;
-            var newDepth = newParentIndex == -1 ? 0 : nodes.GetArrayElementAtIndex( newParentIndex ).FindPropertyRelative( "Depth" ).intValue + 1;
+            var oldDepth = nodes.GetArrayElementAtIndex( itemIndex ).FindPropertyRelative( "_depth" ).intValue;
+            var newDepth = newParentIndex == -1 ? 0 : nodes.GetArrayElementAtIndex( newParentIndex ).FindPropertyRelative( "_depth" ).intValue + 1;
             var deltaDepth = newDepth - oldDepth;
 
             var subtreeSize = GetSubtree( itemIndex, nodes );
             for ( var i = 0; i < subtreeSize; i++ )
             {
                 var movingNode = nodes.GetArrayElementAtIndex( itemIndex + i );
-                movingNode.FindPropertyRelative( "Depth" ).intValue += deltaDepth;
+                movingNode.FindPropertyRelative( "_depth" ).intValue += deltaDepth;
                 nodes.MoveArrayElement( itemIndex + i, newParentIndex + newChildIndex + i + 1 );
             }
         }
@@ -73,12 +73,12 @@ namespace Silentor.TreeList.Editor
             if ( itemIndex == 0 )
                 return -1;
 
-            var depth   = nodes.GetArrayElementAtIndex( itemIndex ).FindPropertyRelative( "Depth" ).intValue;
+            var depth   = nodes.GetArrayElementAtIndex( itemIndex ).FindPropertyRelative( "_depth" ).intValue;
             var counter = 0;
             for ( var i = itemIndex - 1; i >= 0; i-- )
             {
                 var maybeParent = nodes.GetArrayElementAtIndex( i );
-                if( maybeParent.FindPropertyRelative( "Depth" ).intValue == depth - 1 )
+                if( maybeParent.FindPropertyRelative( "_depth" ).intValue == depth - 1 )
                     return counter;
                 counter++;
             }
@@ -97,11 +97,11 @@ namespace Silentor.TreeList.Editor
             if( rootIndex == 0 )
                 return nodes.arraySize;
 
-            var depth      = nodes.GetArrayElementAtIndex( rootIndex ).FindPropertyRelative( "Depth" ).intValue;
+            var depth      = nodes.GetArrayElementAtIndex( rootIndex ).FindPropertyRelative( "_depth" ).intValue;
             var result     = 1;
             for ( var i = rootIndex + 1; i < nodes.arraySize; i++ )
             {
-                if ( nodes.GetArrayElementAtIndex( i ).FindPropertyRelative( "Depth" ).intValue <= depth )
+                if ( nodes.GetArrayElementAtIndex( i ).FindPropertyRelative( "_depth" ).intValue <= depth )
                     break;
 
                 result++;
@@ -116,7 +116,7 @@ namespace Silentor.TreeList.Editor
 
             for ( var i = 0; i < nodesProp.arraySize; i++ )
             {
-                var depthProp = nodesProp.GetArrayElementAtIndex( i ).FindPropertyRelative( "Depth" );
+                var depthProp = nodesProp.GetArrayElementAtIndex( i ).FindPropertyRelative( "_depth" );
                 hash.Add( depthProp.intValue );
             }
 

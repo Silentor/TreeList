@@ -32,7 +32,7 @@ namespace Silentor.TreeList.Editor
             _foldout.value = property.isExpanded;
             _foldout.BindProperty( property );
 
-            var nodesProp           = property.FindPropertyRelative( "SerializableNodes" );
+            var nodesProp           = property.FindPropertyRelative( "_nodes" );
             var elementsCounter = root.Q<TextField>( "Counter" );
             elementsCounter.BindProperty( nodesProp.FindPropertyRelative( "Array.size" ) );
             
@@ -80,7 +80,7 @@ namespace Silentor.TreeList.Editor
                 }
 
                 //Add node depth label
-                var nodeDepth = treeItemProp.FindPropertyRelative( "Depth" ).intValue;
+                var nodeDepth = treeItemProp.FindPropertyRelative( "_depth" ).intValue;
                 var viewItem  = e;
                 while ( viewItem.name != "unity-tree-view__item" )                
                     viewItem = viewItem.parent;
@@ -270,11 +270,11 @@ namespace Silentor.TreeList.Editor
             List<TreeViewItemData<SerializedProperty>> GetChildren( SerializedProperty parentProp, ref Int32 index )
             {
                 var result      = new List<TreeViewItemData<SerializedProperty>>();
-                var parentDepth = parentProp.FindPropertyRelative( "Depth" ).intValue;
+                var parentDepth = parentProp.FindPropertyRelative( "_depth" ).intValue;
                 while ( index < nodesProp.arraySize )
                 {
                     var node       = nodesProp.GetArrayElementAtIndex( index );
-                    var childDepth = node.FindPropertyRelative( "Depth" ).intValue;
+                    var childDepth = node.FindPropertyRelative( "_depth" ).intValue;
                     if ( childDepth <= parentDepth )                          //Child list is ended
                         break;
                     else if ( childDepth == parentDepth + 1 )                     //Child found, add to childs list

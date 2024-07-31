@@ -11,67 +11,102 @@ using UnityEngine.Assertions;
 namespace Silentor.TreeList
 {
     [Serializable]
-    public class TreeList<T> : ISerializationCallbackReceiver, IEnumerable<TreeList<T>.TreeNode>
+    public class TreeList<T> : ISerializationCallbackReceiver, IEnumerable<TreeList<T>.Node>
     {
+        public IReadOnlyList<Node> Nodes => _nodes;
+        public Node                Root  => _nodes.Count > 0 ? _nodes[ 0 ] : null;
+        public Int32               Count => _nodes.Count;
+
         [SerializeField]
-        private TreeNodeSerializable[] SerializableNodes = Array.Empty<TreeNodeSerializable>();
+        private List<Node> _nodes = new();
 
-        public IReadOnlyList<TreeNode> Nodes => _nodesInternal;
-        public TreeNode                Root  => _nodesInternal.Count > 0 ? _nodesInternal[ 0 ] : null;
-        public Int32                   Count => _nodesInternal.Count;
-
-        private List<TreeNode> _nodesInternal = new ();
-
-        public TreeNode Add( T value, TreeNode parent )
+        public Node Add( T value, Node parent )
         {
             if ( parent == null )
             {
-                if ( _nodesInternal.Count > 0 )
+                if ( _nodes.Count > 0 )
                     throw new InvalidOperationException( "Root node already exists" );
-                var newNode = new TreeNode ( null, this ) { Value = value };
-                _nodesInternal.Add( newNode );
+                var newNode = new Node ( 0, 0, this ) { Value = value };
+                _nodes.Add( newNode );
                 return newNode;
             }
             else
             {
                 CheckNodeBelongsTree( parent, nameof(parent) );
-                var (parentIndex, childIndex) = GetIndexToAppendChild( parent );
-                var newNode = new TreeNode( parent, this ){ Value = value };
-                _nodesInternal.Insert( childIndex, newNode );
+                var newChildIndex      = parent._index + GetSubtreeSize( parent );
+                var newNode            = new Node( newChildIndex, parent.Depth + 1, this ){ Value = value };
+                _nodes.Insert( newChildIndex, newNode );
+                FixIndices( newChildIndex + 1 );
 
                 return newNode;
             }
         }
 
-        public IEnumerable<TreeNode> GetChilds( [NotNull] TreeNode node, Boolean includeItself )
+        public IEnumerable<Node> GetChilds( [NotNull] Node node, Boolean includeItself = false, Boolean recursive = false )
         {
-            var index = CheckNodeBelongsTree( node, nameof(node) );
+            CheckNodeBelongsTree( node, nameof(node) );
             
             if ( includeItself )
                 yield return node;
-            for ( int i = index + 1; i < _nodesInternal.Count && _nodesInternal[ i ].Depth >= node.Depth + 1; i++ )
-                if( _nodesInternal[i].Depth == node.Depth + 1 )
-                    yield return _nodesInternal[ i ];
+
+            if ( recursive )
+            {
+                for ( int i = node._index + 1; i < _nodes.Count && _nodes[ i ].Depth > node.Depth; i++ )
+                    yield return _nodes[ i ];
+            }
+            else
+            {
+                for ( int i = node._index + 1; i < _nodes.Count && _nodes[ i ].Depth > node.Depth; i++ )
+                    if( _nodes[i].Depth == node.Depth + 1 )
+                        yield return _nodes[ i ];
+            }
         }
 
-        public IEnumerable<TreeNode> GetChildsRecursive( [NotNull] TreeNode node, Boolean includeItself )
-        {
-            var index = CheckNodeBelongsTree( node, nameof(node) );
-
-            if ( includeItself )
-                yield return node;
-            for ( int i = index + 1; i < _nodesInternal.Count && _nodesInternal[ i ].Depth >= node.Depth + 1; i++ )
-                yield return _nodesInternal[ i ];
-        }
-
-        public TreeNode GetParent( [NotNull] TreeNode node )
+        public IEnumerable<Node> GetChildsBreadthFirst( [NotNull] Node node, Boolean includeItself = false )
         {
             CheckNodeBelongsTree( node, nameof(node) );
 
-            return node.Depth == 0 ? null : node.Parent;
+            if ( includeItself )
+                yield return node;
+
+            var indexFrom = node._index + 1;
+            var indexTo   = GetSubtreeSize( node ) + node._index;
+
+            Boolean isAnyChildFinded ;
+            var  childDepth  = node.Depth + 1;
+            do
+            {
+                isAnyChildFinded = false;
+                for ( int i = indexFrom; i < indexTo; i++ )
+                {
+                    if ( _nodes[ i ].Depth == childDepth )
+                    {
+                        isAnyChildFinded = true;
+                        yield return _nodes[ i ];
+                    }
+                }
+                childDepth++;
+
+            } while ( isAnyChildFinded );
         }
 
-        public IEnumerable<TreeNode> GetParents( [NotNull] TreeNode node )
+        public Node GetParent( [NotNull] Node node )
+        {
+            CheckNodeBelongsTree( node, nameof(node) );
+
+            if ( node == Root )
+                return null;
+
+            for ( var i = node._index - 1; i >= 0; i-- )
+            {
+                if( _nodes[i].Depth == node.Depth - 1 )
+                    return _nodes[i];
+            }
+
+            throw new InvalidOperationException( "Parent not found, invalid tree" );
+        }
+
+        public IEnumerable<Node> GetParents( [NotNull] Node node )
         {
             CheckNodeBelongsTree( node, nameof(node) );
 
@@ -82,55 +117,70 @@ namespace Silentor.TreeList
             }
         }
 
-        public Int32 Move( [NotNull] TreeNode node, [NotNull] TreeNode newParent )
+        public Int32 Move( [NotNull] Node node, [NotNull] Node newParent, Int32 newChildIndex = -1 )
         {
             CheckNodeBelongsTree( node, nameof(node) );
             CheckNodeBelongsTree( newParent, nameof(newParent) );
 
-            //Check if node is not parent of newParent
+            //Cannot move inside of itself
             Assert.IsTrue( node != newParent );
-            Assert.IsFalse( GetParents( newParent ).Contains( node ) ); //Cannot move inside of itself
+            Assert.IsFalse( GetParents( newParent ).Contains( node ) ); 
 
-            var buffer = GetChildsRecursive( node, true ).ToArray();
-            var counter = Remove( node );
-
-            var (parentIndex, childIndex) = GetIndexToAppendChild( newParent );
-            var levelOffset = newParent.Depth + 1 - node.Depth;
-            node.Parent = newParent;
-            foreach ( var b in buffer )
+            Node childToReplace = null;
+            if ( newChildIndex >= 0 )
             {
-                _nodesInternal.Insert( childIndex++, b );
-                b.Depth += levelOffset;
+                using var childsEnumerator = newParent.GetChildren(  ).GetEnumerator();
+                for ( int i = 0; childsEnumerator.MoveNext(); i++ )
+                {
+                    if( i == newChildIndex )        //Find child to replace
+                    {
+                        childToReplace = childsEnumerator.Current;
+                        break;
+                    }
+                }
             }
 
-            return counter;
+            var buffer = GetChilds( node, true, true ).ToArray();
+            Remove( node );
+
+            var toIndex = childToReplace != null ? childToReplace._index : newParent._index + GetSubtreeSize( newParent );
+            var counter = 0;
+            var depthDiff = newParent.Depth + 1 - node.Depth;
+            foreach ( var n in buffer )
+            {
+                n._depth += depthDiff;
+                _nodes.Insert( toIndex + counter++, n );
+            }
+
+            FixIndices( toIndex );
+            return buffer.Length;
         } 
 
-        public Int32 Remove( [NotNull] TreeNode node )
+        public Int32 Remove( [NotNull] Node node )
         {
-            var index = CheckNodeBelongsTree( node, nameof(node) );
+            CheckNodeBelongsTree( node, nameof(node) );
 
-            var childsLevel   = node.Depth + 1;
-            var removeCounter = 1;
-            _nodesInternal.RemoveAt( index );
-            while ( index <= _nodesInternal.Count - 1 && _nodesInternal[index].Depth >= childsLevel )  //Remove childs
+            var removeCount = GetSubtreeSize( node );
+            var i  = removeCount;
+            while ( i-- > 0 )
             {
-                _nodesInternal.RemoveAt( index );
-                removeCounter++;
+                _nodes.RemoveAt( node._index );                
             }
 
-            return removeCounter;
+            FixIndices( node._index );
+
+            return removeCount;
         }
 
         public void Clear( )
         {
-            _nodesInternal.Clear();
+            _nodes.Clear();
         }
 
         public String ToHierarchyString( )
         {
             var sb = new StringBuilder();
-            foreach ( var node in _nodesInternal )
+            foreach ( var node in _nodes )
             {
                 sb.Append( new String( ' ', node.Depth * 2 ) );
                 sb.AppendLine( $"Value = '{node.Value}' (level = {node.Depth}, parent {(node.Depth > 0 ? GetParent( node ).Value : "")})" );
@@ -144,76 +194,76 @@ namespace Silentor.TreeList
             if ( ReferenceEquals( null, other ) ) return false;
             if ( ReferenceEquals( this, other ) ) return true;
 
-            if ( Nodes.Count != other.Nodes.Count ) return false;
+            if ( Count != other.Count ) return false;
 
             for ( int i = 0; i < Nodes.Count; i++ )
             {
-                if(! Nodes[i].StructuralEqual( other.Nodes[i] ) )
-                   return false;
+                if( _nodes[i].Depth != other._nodes[i].Depth || !Equals( _nodes[i].Value, other._nodes[i].Value ) )
+                    return false;
             }
 
             return true;
         }
 
-        private (Int32 parentIndex, Int32 childIndex) GetIndexToAppendChild( TreeNode parentNode )
-        {
-            var parentIndex = _nodesInternal.FindIndex( x => x == parentNode );
-            if ( parentIndex < 0 )
-                throw new InvalidOperationException( "Parent node not found" );
-
-            //To protect childs order
-            if ( parentIndex < _nodesInternal.Count - 1 )
-            {
-                var childIndex = _nodesInternal.FindIndex( parentIndex + 1, x => x.Depth <= parentNode.Depth );
-                if ( childIndex >= 0 )
-                    return ( parentIndex, childIndex );
-            }
-
-            return (parentIndex, _nodesInternal.Count);
-        }
-
-        private Int32 CheckNodeBelongsTree( TreeNode node, String paramName )
+        private void CheckNodeBelongsTree( Node node, String paramName )
         {
             if ( node == null )
                 throw new ArgumentNullException( $"{paramName} is null" );
 
-            var index = _nodesInternal.FindIndex( x => x == node );
-            if ( index < 0 )
-                throw new ArgumentException( $"TreeList node {paramName} not found" );
-
-            return index;
+            if( node.Owner != this )
+                throw new ArgumentException( $"Node {paramName} is not belongs this tree" );
         }
 
-        [Serializable]
-        public class TreeNodeSerializable
+        /// <summary>
+        /// Get subtree count for given node (node itself + count of all children recursively)
+        /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
+        private Int32 GetSubtreeSize( Node root )
         {
-            public T     Value;
-            public Int32 Depth;
-        }
+            if ( root == Root )
+                return _nodes.Count;
 
-        [DebuggerDisplay("{Value}")]
-        public class TreeNode
-        {
-            public T           Value;
-            public TreeNode    Parent { get; internal set; }
-            public Int32       Depth  { get; internal set; }
-            public TreeList<T> Owner  { get;  }
-
-            public TreeNode( TreeNode parent, TreeList<T> owner )
+            var result = 1;
+            for ( var i = root._index + 1; i < _nodes.Count; i++ )
             {
-                Parent = parent;
-                Depth  = parent != null ? parent.Depth + 1 : 0;
-                Owner  = owner;
+                if( _nodes[i].Depth > root.Depth )
+                    result++;
+                else
+                    break;
             }
 
-            public TreeNode AddChild( T value )
+            return result;
+        }
+
+        private void FixIndices( Int32 fromIndex )
+        {
+            for ( var i = fromIndex; i < _nodes.Count; i++ )
+            {
+                _nodes[ i ]._index = i;
+            }
+        }
+
+        [DebuggerDisplay("#{_index}: [{Depth}] {Value}")]
+        [Serializable]
+        public class Node
+        {
+            public T        Value;
+
+            public Int32    Depth => _depth;
+
+            public Node     Parent => Owner.GetParent( this );
+
+            public readonly TreeList<T> Owner;
+
+            public Node AddChild( T value )
             {
                 return Owner.Add( value, this );
             }
 
-            public TreeNode AddSibling( T value )
+            public Node AddSibling( T value )
             {
-                return GetParent().AddChild( value );
+                return Parent.AddChild( value );
             }
 
             public void AddChildren( params T[] values )
@@ -224,17 +274,12 @@ namespace Silentor.TreeList
                 }
             }
 
-            public IEnumerable<TreeNode> GetChildren( Boolean includeSelf )
+            public IEnumerable<Node> GetChildren( Boolean includeSelf = false )
             {
                 return Owner.GetChilds( this, includeSelf );
             }
 
-            public TreeNode GetParent( )
-            {
-                return Owner.GetParent( this );
-            }
-
-            public Boolean StructuralEqual( TreeNode other )
+            public Boolean StructuralEqual( Node other )
             {
                 if ( ReferenceEquals( null, other ) ) return false;
                 if ( ReferenceEquals( this, other ) ) return true;
@@ -242,7 +287,7 @@ namespace Silentor.TreeList
                 return Depth == other.Depth && Equals( Value, other.Value );
             }
 
-            public Boolean ValueEqual( TreeNode other )
+            public Boolean ValueEqual( Node other )
             {
                 if ( ReferenceEquals( null, other ) ) return false;
                 if ( ReferenceEquals( this, other ) ) return true;
@@ -250,58 +295,34 @@ namespace Silentor.TreeList
                 return Equals( Value, other.Value );
             }
 
-            // public override Int32 GetHashCode( )
-            // {
-            //     return HashCode.Combine( Owner.GetHashCode(), ParentIndex, Level, Value.GetHashCode() );
-            // }
-        }
-
-        public void OnBeforeSerialize( )
-        {
-            SerializableNodes = new TreeNodeSerializable[ Nodes.Count ];
-            for ( var i = 0; i < Nodes.Count; i++ )
+            internal Node( Int32 index, Int32 depth, TreeList<T> owner )
             {
-                var node = Nodes[ i ];
-                SerializableNodes[i] = new TreeNodeSerializable { Value = node.Value, Depth = node.Depth };
+                Assert.IsTrue( index >= 0 );
+                Assert.IsTrue( depth >= 0 );
+
+                _depth = depth;
+                _index = index;
+                Owner  = owner;
             }
 
-            //UnityEngine.Debug.Log( $"Serialize to {SerializableNodes.JoinToString( n => $"{n.Value}/{n.ParentIndex}" )}" );
+            [SerializeField]
+            internal Int32 _depth;
+
+            internal Int32 _index;
+        }
+      
+        public void OnBeforeSerialize( )
+        {
         }
 
         public void OnAfterDeserialize( )
         {
-            //UnityEngine.Debug.Log( $"Deserialize from {SerializableNodes.JoinToString( n => $"{n.Value}/{n.ParentIndex}" )}" );
-
-            _nodesInternal.Clear();
-            var parentsList = new List<TreeNode>();
-
-            for ( var i = 0; i < SerializableNodes.Length; i++ )        
-            {
-                //Reconstruct parent from level
-                var      serializedNode = SerializableNodes[ i ];
-                TreeNode newNode;
-                if( serializedNode.Depth == 0 )
-                {
-                    newNode = new TreeNode( null, this ) { Value = serializedNode.Value };
-                    _nodesInternal.Add( newNode );
-                }
-                else
-                {
-                    var parent = parentsList[ serializedNode.Depth - 1 ];
-                    newNode = new TreeNode( parent, this ) { Value = serializedNode.Value };
-                    _nodesInternal.Add( newNode );
-                }
-
-                if( parentsList.Count == newNode.Depth )
-                    parentsList.Add( newNode );                          //New level
-                else 
-                    parentsList[ newNode.Depth ] = newNode;              //Existing level
-            }
+           FixIndices( 0 );
         }
 
-        public IEnumerator<TreeNode> GetEnumerator( )
+        public IEnumerator<Node> GetEnumerator( )
         {
-            return _nodesInternal.GetEnumerator();
+            return _nodes.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator( )

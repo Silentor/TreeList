@@ -154,51 +154,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FirstInspector: 0
   PrimitiveTree:
-    SerializableNodes: []
+    _nodes: []
   PrimitiveTree2:
-    SerializableNodes:
-    - Value: 
-      Depth: 0
-    - Value: 
-      Depth: 1
-    - Value: 
-      Depth: 1
-    - Value: 
-      Depth: 1
+    _nodes: []
   CustomTree:
-    SerializableNodes:
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 0
+    _nodes: []
   CustomTree2:
-    SerializableNodes:
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 0
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 1
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 1
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 1
+    _nodes: []
   VoidTree:
-    SerializableNodes:
-    - Depth: 0
-    - Depth: 1
-    - Depth: 1
+    _nodes: []
   TestCollection: []
   TestCollection2:
   - FoldoutValue:
@@ -517,80 +481,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CustomTree2:
-    SerializableNodes:
+    _nodes:
     - Value:
-        CustomText: 0
+        CustomText: 
         CustomBool: 0
         CustomInt: 0
-      Depth: 0
+      _depth: 0
     - Value:
-        CustomText: 1
+        CustomText: 
         CustomBool: 0
-        CustomInt: 1
-      Depth: 1
+        CustomInt: 0
+      _depth: 1
     - Value:
-        CustomText: 2
+        CustomText: 
         CustomBool: 0
-        CustomInt: 2
-      Depth: 2
+        CustomInt: 0
+      _depth: 2
     - Value:
-        CustomText: 3
+        CustomText: 
         CustomBool: 0
-        CustomInt: 3
-      Depth: 3
-    - Value:
-        CustomText: 4
-        CustomBool: 0
-        CustomInt: 4
-      Depth: 4
-    - Value:
-        CustomText: 2
-        CustomBool: 0
-        CustomInt: 2
-      Depth: 2
-    - Value:
-        CustomText: 2
-        CustomBool: 0
-        CustomInt: 2
-      Depth: 2
+        CustomInt: 0
+      _depth: 1
   ComplexTree:
-    SerializableNodes:
-    - Value:
-        FoldoutValue:
-          m_Left: 0
-          m_Right: 0
-          m_Top: 0
-          m_Bottom: 0
-        TwoLined:
-          serializedVersion: 2
-          x: 0
-          y: 0
-          width: 0
-          height: 0
-        VariableHeightValue: 0
-        CustomNode:
-          CustomText: 
-          CustomBool: 0
-          CustomInt: 0
-      Depth: 0
-    - Value:
-        FoldoutValue:
-          m_Left: 0
-          m_Right: 0
-          m_Top: 0
-          m_Bottom: 0
-        TwoLined:
-          serializedVersion: 2
-          x: 0
-          y: 0
-          width: 0
-          height: 0
-        VariableHeightValue: 0
-        CustomNode:
-          CustomText: 
-          CustomBool: 0
-          CustomInt: 0
-      Depth: 1
+    _nodes:
     - Value:
         FoldoutValue:
           m_Left: 0
@@ -608,7 +521,115 @@ MonoBehaviour:
           CustomText: 
           CustomBool: 0
           CustomInt: 0
-      Depth: 2
+      _depth: 0
+    - Value:
+        FoldoutValue:
+          m_Left: 0
+          m_Right: 0
+          m_Top: 0
+          m_Bottom: 0
+        TwoLined:
+          serializedVersion: 2
+          x: 0
+          y: 0
+          width: 0
+          height: 0
+        VariableHeightValue: 0
+        CustomNode:
+          CustomText: 
+          CustomBool: 0
+          CustomInt: 0
+      _depth: 1
+    - Value:
+        FoldoutValue:
+          m_Left: 0
+          m_Right: 0
+          m_Top: 0
+          m_Bottom: 0
+        TwoLined:
+          serializedVersion: 2
+          x: 0
+          y: 0
+          width: 0
+          height: 0
+        VariableHeightValue: 0
+        CustomNode:
+          CustomText: 
+          CustomBool: 0
+          CustomInt: 0
+      _depth: 1
+    - Value:
+        FoldoutValue:
+          m_Left: 0
+          m_Right: 0
+          m_Top: 0
+          m_Bottom: 0
+        TwoLined:
+          serializedVersion: 2
+          x: 0
+          y: 0
+          width: 0
+          height: 0
+        VariableHeightValue: 0
+        CustomNode:
+          CustomText: 
+          CustomBool: 0
+          CustomInt: 0
+      _depth: 2
+    - Value:
+        FoldoutValue:
+          m_Left: 0
+          m_Right: 0
+          m_Top: 0
+          m_Bottom: 0
+        TwoLined:
+          serializedVersion: 2
+          x: 0
+          y: 0
+          width: 0
+          height: 0
+        VariableHeightValue: 0
+        CustomNode:
+          CustomText: 
+          CustomBool: 0
+          CustomInt: 0
+      _depth: 3
+    - Value:
+        FoldoutValue:
+          m_Left: 0
+          m_Right: 0
+          m_Top: 0
+          m_Bottom: 0
+        TwoLined:
+          serializedVersion: 2
+          x: 0
+          y: 0
+          width: 0
+          height: 0
+        VariableHeightValue: 0
+        CustomNode:
+          CustomText: 
+          CustomBool: 0
+          CustomInt: 0
+      _depth: 4
+    - Value:
+        FoldoutValue:
+          m_Left: 0
+          m_Right: 0
+          m_Top: 0
+          m_Bottom: 0
+        TwoLined:
+          serializedVersion: 2
+          x: 0
+          y: 0
+          width: 0
+          height: 0
+        VariableHeightValue: 0
+        CustomNode:
+          CustomText: 
+          CustomBool: 0
+          CustomInt: 0
+      _depth: 1
   ComplexValue:
     FoldoutValue:
       m_Left: 0
@@ -659,15 +680,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FirstInspector: 0
   PrimitiveTree:
-    SerializableNodes: []
+    _nodes: []
   PrimitiveTree2:
-    SerializableNodes: []
+    _nodes: []
   CustomTree:
-    SerializableNodes: []
+    _nodes: []
   CustomTree2:
-    SerializableNodes: []
+    _nodes: []
   VoidTree:
-    SerializableNodes: []
+    _nodes: []
   TestCollection: []
   TestCollection2: []
 --- !u!81 &1097138000
@@ -774,204 +795,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CustomTree2:
-    SerializableNodes:
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 0
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 1
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 1
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 1
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 2
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 2
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 2
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 2
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 3
-    - Value:
-        CustomText: 
-        CustomBool: 1
-        CustomInt: 0
-      Depth: 4
-    - Value:
-        CustomText: 
-        CustomBool: 1
-        CustomInt: 0
-      Depth: 5
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 2
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 2
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 2
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 2
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 3
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 3
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 3
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 3
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 3
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 3
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 3
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 3
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 3
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 3
-    - Value:
-        CustomText: 
-        CustomBool: 0
-        CustomInt: 0
-      Depth: 3
-    - Value:
-        CustomText: 
-        CustomBool: 1
-        CustomInt: 0
-      Depth: 3
-    - Value:
-        CustomText: 
-        CustomBool: 1
-        CustomInt: 0
-      Depth: 4
-    - Value:
-        CustomText: 
-        CustomBool: 1
-        CustomInt: 0
-      Depth: 4
-    - Value:
-        CustomText: 
-        CustomBool: 1
-        CustomInt: 0
-      Depth: 4
-    - Value:
-        CustomText: 
-        CustomBool: 1
-        CustomInt: 0
-      Depth: 4
-    - Value:
-        CustomText: 
-        CustomBool: 1
-        CustomInt: 0
-      Depth: 4
-    - Value:
-        CustomText: 
-        CustomBool: 1
-        CustomInt: 0
-      Depth: 4
-    - Value:
-        CustomText: 
-        CustomBool: 1
-        CustomInt: 0
-      Depth: 4
-    - Value:
-        CustomText: 
-        CustomBool: 1
-        CustomInt: 0
-      Depth: 4
-    - Value:
-        CustomText: 
-        CustomBool: 1
-        CustomInt: 0
-      Depth: 4
-    - Value:
-        CustomText: 
-        CustomBool: 1
-        CustomInt: 0
-      Depth: 4
-    - Value:
-        CustomText: 
-        CustomBool: 1
-        CustomInt: 0
-      Depth: 4
-    - Value:
-        CustomText: 
-        CustomBool: 1
-        CustomInt: 0
-      Depth: 4
+    _nodes: []
   ComplexTree:
-    SerializableNodes: []
+    _nodes: []
   ComplexValue:
     FoldoutValue:
       m_Left: 0
