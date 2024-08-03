@@ -15,6 +15,8 @@ public class TreeListTestComponent2 : MonoBehaviour
     //public TreeList<TestComplexValue>         CustomTree;
     public TreeList<CustomNode>         CustomTree2;
     public TreeList<TestComplexValue>   ComplexTree;
+
+    public TreeList<Int32> BigTree;
     //[HideInInspector]
     //public TreeList<VoidNode>           VoidTree;
 

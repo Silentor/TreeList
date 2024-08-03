@@ -79,26 +79,25 @@ namespace Silentor.TreeList.Editor
 
                 if ( colIndex == 0 )
                 {
-                    base.RowGUI( args );                    //Foldout
+                    base.RowGUI( args );                    //Draw foldout toggle
 
-                    //Print depth also
-                    var rect = args.GetCellRect( i );
+                    //Print depth label
+                    var totalRect = args.GetCellRect( i );
                     
-                    if( item.depth > 0 )
-                        DefaultGUI.Label( rect, item.depth.ToString(), args.selected, args.focused );     
-                }
-                else
-                {
-                    //Draw serialized property value
+                    if( item.depth > 0 && Event.current.type == EventType.Repaint ) 
+                        Resources.DepthLabelStyle.Draw( totalRect,  new GUIContent(item.depth.ToString()), false, false, args.selected, args.focused );
+
+                    //Draw  value
                     var (nodeProp, _)  = GetNodePropForId( item.id );
                     var levelProp = nodeProp.FindPropertyRelative( "_depth" );
                     var valueProp = nodeProp.FindPropertyRelative( "Value" );
-                    var totalRect = args.GetCellRect( i );
+
+                    //Make indent for content
+                    totalRect.xMin += (14 * levelProp.intValue) + 30;
 
                     if ( valueProp == null )
                     {
-                        var label =  String.Concat( Enumerable.Repeat( "    ", levelProp.intValue )) + "Value is not serializable";
-                        GUI.Label( totalRect, label );
+                        GUI.Label( totalRect, "Value is not serializable" );
                         return;
                     }
 
@@ -109,8 +108,7 @@ namespace Silentor.TreeList.Editor
                         var endProp       = valueProp.GetEndProperty();
                         while ( valueProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( valueProp, endProp ) )
                         {
-                            var label          =  String.Concat( Enumerable.Repeat( "    ", levelProp.intValue )) + valueProp.displayName;
-                            var valuePropLabel = EditorGUIUtility.TrTempContent( label );
+                            var valuePropLabel = new GUIContent( valueProp.displayName );
                             var propHeight     = EditorGUI.GetPropertyHeight( valueProp, valuePropLabel );
                             valuePropRect.height = propHeight;
                             EditorGUI.PropertyField( valuePropRect, valueProp, valuePropLabel, valueProp.isExpanded );
@@ -121,8 +119,7 @@ namespace Silentor.TreeList.Editor
                     }
                     else   //Value is primitive type itself
                     {
-                        var label =  String.Concat( Enumerable.Repeat( "    ", levelProp.intValue )) + valueProp.displayName;
-                        EditorGUI.PropertyField( valuePropRect, valueProp, new GUIContent( label ) );   
+                        EditorGUI.PropertyField( valuePropRect, valueProp, new GUIContent( valueProp.displayName ) );
                     }
                 }
             }
@@ -195,6 +192,12 @@ namespace Silentor.TreeList.Editor
 
         private static class Resources
         {
+            public static readonly GUIStyle DepthLabelStyle = new (TreeView.DefaultStyles.label)
+                                                              {
+                                                                      fontSize = 9,
+                                                                      normal = {textColor = Color.gray}
+                                                              };
+
             // public static readonly GUIStyle DepthLabelStyle0 = new (GUI.skin.label) {alignment = TextAnchor.UpperRight, 
             //                                                                                 normal = new GUIStyleState(){textColor = Color.gray},
             //                                                                                 hover = new GUIStyleState(){textColor = Color.gray},

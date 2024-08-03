@@ -4,7 +4,7 @@ using NUnit.Framework;
 using UnityEngine;
 using Object = System.Object;
 
-namespace Silentor.TreeList.Editor
+namespace Silentor.TreeList.Tests.Editor
 {
     [TestFixture]
     public class TreeListTests

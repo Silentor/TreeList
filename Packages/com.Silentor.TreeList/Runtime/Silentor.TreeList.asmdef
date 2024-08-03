@@ -1,6 +1,6 @@
 {
     "name": "TreeList",
-    "rootNamespace": "Silentor",
+    "rootNamespace": "Silentor.TreeList",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

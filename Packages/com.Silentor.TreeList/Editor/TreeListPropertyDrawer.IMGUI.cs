@@ -35,13 +35,9 @@ namespace Silentor.TreeList.Editor
                         {
                                 new ()
                                 {
-                                        autoResize            = false,
+                                        autoResize            = true,
+                                        width = position.width - 20,
                                 },
-                                new ()
-                                {
-                                        autoResize            = false,
-                                },
-                        
                         } );
 
                 _treeIM = new ImguiTreeView( state.TreeViewState, new MyMultiColumnHeader(_multiColumnHeaderState), nodesProp ) ;
@@ -65,22 +61,6 @@ namespace Silentor.TreeList.Editor
                 _treeIM.ExpandAll();
                 _expandTreeOnInitialize = false;
             }
-
-            //Adjust columns
-            var expandedItems = _treeIM.GetRows().Where( tvi => _treeIM.GetExpanded().Contains( tvi.id ) ).ToArray();
-            if ( expandedItems.Length > 0 )
-            {
-                //Expand foldouts column to fit the deepest expanded item
-                var deepestExpandedItem = expandedItems.MaxBy( tvi => tvi.depth );
-                var depth               = deepestExpandedItem.depth * 15 + 30;
-                _multiColumnHeaderState.columns[0].width = depth;
-            }
-            else
-            {
-                _multiColumnHeaderState.columns[0].width           = 30;
-            }
-                    
-            _multiColumnHeaderState.columns[1].width = position.width - _multiColumnHeaderState.columns[0].width - 20;  
 
             _treeIM.OnGUI( position );
         }
@@ -298,7 +278,7 @@ namespace Silentor.TreeList.Editor
                                                                                             fontSize = 16,
                                                                                             padding = new RectOffset()
                                                                                     };
-
+           
             public static readonly GUIContent Plus  = new  (EditorGUIUtility.IconContent("Toolbar Plus").image, "Add child node") ;
             public static readonly GUIContent Minus = new  (EditorGUIUtility.IconContent("Toolbar Minus").image, "Remove node") ;
             public static readonly GUIContent Expand = new  (EditorGUIUtility.IconContent("UnityEditor.SceneHierarchyWindow@2x").image, "Expand/collapse tree") ;
