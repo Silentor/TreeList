@@ -15,14 +15,16 @@ namespace Silentor.TreeList.Editor
     /// </summary>
     public partial class TreeListPropertyDrawer
     {
-        private Button   _removeBtn;
-        private Button   _addBtn;
-        private Button   _copyBtn;
-        private Button   _pasteBtn;
-        private TreeView _treeUI;
-        private Label    _hint;
-        private Button   _expandBtn;
-        private Foldout  _foldout;
+        private Button    _removeBtn;
+        private Button    _addBtn;
+        private Button    _copyBtn;
+        private Button    _pasteBtn;
+        private TreeView  _treeUI;
+        private Label     _hint;
+        private Button    _expandBtn;
+        private Foldout   _foldout;
+        private Button    _searchBtn;
+        private TextField _searchValue;
 
         public override VisualElement CreatePropertyGUI( SerializedProperty property )
         {
@@ -215,6 +217,31 @@ namespace Silentor.TreeList.Editor
                         _treeUI.CollapseAll();
                     else
                         _treeUI.ExpandAll();
+                }
+            };
+
+            _searchValue = root.Q<TextField>( "SearchValue" );
+            _searchBtn = root.Q<Button>( "SearchBtn" );
+            _searchBtn.clickable.clicked += () =>
+            {
+                if( _searchValue.value.Length == 0 )
+                    return;
+
+                var startIndex = _treeUI.selectedIndex < 0 ? 0 : _treeUI.selectedIndex + 1;
+                var itemId   = SearchValue( _searchValue.value, startIndex, nodesProp );
+                if ( itemId >= 0 )
+                {
+                    //Expand finded item to the root
+                    var parentId = itemId;
+                    while ( parentId != 0 )
+                    {
+                        parentId = _treeUI.viewController.GetParentId( parentId );
+                        _treeUI.ExpandItem( parentId );                        
+                    }
+                    _treeUI.Focus();
+                    var treeIndex = _treeUI.viewController.GetIndexForId( itemId );
+                    _treeUI.ScrollToItem( treeIndex );
+                    _treeUI.selectedIndex = treeIndex;
                 }
             };
 

@@ -151,9 +151,20 @@ namespace Silentor.TreeList.Tests.Editor
                         .AddChild( "child2_1" )
                         .AddSibling( "child2_2" );
 
+            var newTree2 = new TreeString();
+            newTree.Add( "root_another", null )
+                   .AddChild( "child1" )
+                        .AddChild( "child1_1" )
+                            .AddChild( "child1_1_1" ).Parent
+                        .AddSibling( "child1_2" ).Parent.Parent
+                   .AddChild( "child2" )
+                        .AddChild( "child2_1" )
+                        .AddSibling( "child2_2" );
+
             Debug.Log( newTree.ToHierarchyString() );
 
             Assert.IsTrue( _tree.Equals( newTree ) );
+            Assert.IsFalse( _tree.Equals( newTree2 ) );
         }
 
         [Test]

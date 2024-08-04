@@ -108,11 +108,11 @@ namespace Silentor.TreeList.Editor
                         var endProp       = valueProp.GetEndProperty();
                         while ( valueProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( valueProp, endProp ) )
                         {
+                            enterChildren   =  false;
                             var valuePropLabel = new GUIContent( valueProp.displayName );
                             var propHeight     = EditorGUI.GetPropertyHeight( valueProp, valuePropLabel );
                             valuePropRect.height = propHeight;
                             EditorGUI.PropertyField( valuePropRect, valueProp, valuePropLabel, valueProp.isExpanded );
-                            enterChildren   =  false;
                             valuePropRect.y += propHeight;
                             _contentHeight  += propHeight;
                         }

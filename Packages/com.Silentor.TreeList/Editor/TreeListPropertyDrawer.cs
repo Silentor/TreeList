@@ -63,6 +63,90 @@ namespace Silentor.TreeList.Editor
             }
         }
 
+        private Int32 SearchValue( String searchString, Int32 fromIndex, SerializedProperty nodes)
+        {
+            for ( var i = 0; i < nodes.arraySize; i++ )
+            {
+                var index     = ( fromIndex + i ) % nodes.arraySize;
+                var node      = nodes.GetArrayElementAtIndex( index );
+                var valueProp = node.FindPropertyRelative( "Value" );
+                if ( valueProp == null )
+                    continue;
+                else if ( !valueProp.hasVisibleChildren )
+                {
+                    if ( CheckProperty( valueProp, searchString ) )
+                        return index;
+                }
+                else
+                {
+                    var enterChildren = true;
+                    var endProp       = valueProp.GetEndProperty();
+                    while ( valueProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( valueProp, endProp ) )
+                    {
+                        enterChildren = false;
+                        if ( CheckProperty( valueProp, searchString ) )
+                            return index;
+                    }
+                }
+            }
+
+            return -1;
+
+            static Boolean CheckProperty( SerializedProperty prop, String searchString )
+                {
+                    switch ( prop.propertyType )
+                    {
+                        case SerializedPropertyType.Integer:
+                            return prop.intValue.ToString() == searchString;
+                        case SerializedPropertyType.Boolean:
+                            return prop.boolValue.ToString().Equals( searchString, StringComparison.OrdinalIgnoreCase );
+                        case SerializedPropertyType.Float:
+                            return prop.floatValue.ToString().StartsWith( searchString );
+                        case SerializedPropertyType.String:
+                            return prop.stringValue.Contains( searchString );
+                        case SerializedPropertyType.ObjectReference:
+                            return prop.objectReferenceValue.name.Contains( searchString ) || prop.objectReferenceValue.GetType().Name.Contains( searchString );
+                        case SerializedPropertyType.Enum:
+                        {
+                            var enumIndex = prop.enumValueIndex;
+                            if( enumIndex >= 0 && enumIndex < prop.enumDisplayNames.Length )
+                                return prop.enumDisplayNames[enumIndex].Contains( searchString );
+                            else
+                                return prop.enumValueIndex.ToString() == searchString ;
+                        }
+                        case SerializedPropertyType.Vector2:
+                            return prop.vector2Value.ToString().Contains( searchString );
+                        case SerializedPropertyType.Vector3:
+                            return prop.vector3Value.ToString().Contains( searchString );
+                        case SerializedPropertyType.Vector4:
+                            return prop.vector4Value.ToString().Contains( searchString );
+                        case SerializedPropertyType.Rect:
+                            return prop.rectValue.ToString().Contains( searchString );
+                        case SerializedPropertyType.Character:
+                            return ((Char)prop.intValue).ToString() == searchString;
+                        case SerializedPropertyType.Bounds:
+                            return prop.boundsValue.ToString().Contains( searchString );
+                        case SerializedPropertyType.Quaternion:
+                            return prop.quaternionValue.ToString().Contains( searchString );
+                        case SerializedPropertyType.Vector2Int:
+                            return prop.vector2IntValue.ToString().Contains( searchString );
+                        case SerializedPropertyType.Vector3Int:
+                            return prop.vector3IntValue.ToString().Contains( searchString );
+                        case SerializedPropertyType.RectInt:
+                            return prop.rectIntValue.ToString().Contains( searchString );
+                        case SerializedPropertyType.BoundsInt:
+                            return prop.boundsIntValue.ToString().Contains( searchString );
+                        case SerializedPropertyType.ManagedReference:
+                            return prop.managedReferenceFullTypename.Contains( searchString );
+                        case SerializedPropertyType.Hash128:
+                            return prop.hash128Value.ToString().Contains( searchString );
+                        default:
+                            return false;
+                    }
+                }
+        }
+
+
         /// <summary>
         /// Get index of given item relative to parent node
         /// </summary>

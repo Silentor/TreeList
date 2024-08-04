@@ -5,6 +5,13 @@
     </ui:Foldout>
     <ui:VisualElement name="Toolbar" picking-mode="Ignore" style="position: absolute; right: 0; top: 0; flex-direction: row;">
         <ui:Label tabindex="-1" text="Press + button to add root item" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Hint" class="hint-label" />
+        <ui:VisualElement name="SearchField" style="flex-grow: 1; flex-direction: row;">
+            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" tooltip="Search values" name="SearchBtn" class="header__tool-btn" style="margin-right: 0;">
+                <ui:VisualElement picking-mode="Ignore" class="header__tool-btn__icon" style="background-image: resource(&apos;search&apos;);" />
+            </ui:Button>
+            <ui:TextField name="SearchValue" style="margin-left: 0; min-width: 30px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="Separator" class="header__separator" />
         <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="ExpandBtn" tooltip="Expand/collapse tree" class="header__tool-btn">
             <ui:VisualElement picking-mode="Ignore" class="header__tool-btn__icon" style="background-image: resource(&apos;expand_all&apos;);" />
         </ui:Button>

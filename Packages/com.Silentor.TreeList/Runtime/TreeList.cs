@@ -90,7 +90,7 @@ namespace Silentor.TreeList
             } while ( isAnyChildFinded );
         }
 
-        public Node GetParent( [NotNull] Node node )
+        public Node  GetParent( [NotNull] Node node )
         {
             CheckNodeBelongsTree( node, nameof(node) );
 
