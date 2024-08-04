@@ -13,8 +13,9 @@ namespace Silentor.TreeList.Editor
         public Boolean IsInitialized => base.isInitialized;
 
         private readonly SerializedProperty _itemsProp;
-        private          Single              _contentHeight;
-        private          Single               _lastContentHeight = -1;
+        private          Single             _contentHeight;
+        private          Single             _lastContentHeight = -1;
+        private readonly List<Int32>        _idLevelList       = new ( 16 );
 
         public ImguiTreeView(TreeViewState state, SerializedProperty itemsProp ) : base( state )
         {
@@ -32,8 +33,8 @@ namespace Silentor.TreeList.Editor
         {
             var root = new TreeViewItem { id = -1, depth = -1, displayName = "Root" };
 
-            var idLevelList = new List<Int32>( 16 );
             var itemsList   = new List<TreeViewItem>();
+            _idLevelList.Clear();
             for ( var i = 0; i < _itemsProp.arraySize; i++ )
             {
                 var itemProp = _itemsProp.GetArrayElementAtIndex( i );
@@ -50,16 +51,6 @@ namespace Silentor.TreeList.Editor
 
             // Return root of the tree
             return root;
-
-            Int32 GetIndexForDepth( Int32 depth )
-            {
-                while( idLevelList.Count <= depth )
-                    idLevelList.Add( 0 );
-                
-                var id = idLevelList[ depth ];
-                idLevelList[ depth ] += 1;
-                return id;
-            }
         }
 
         protected override void BeforeRowsGUI( )
@@ -88,7 +79,7 @@ namespace Silentor.TreeList.Editor
                         Resources.DepthLabelStyle.Draw( totalRect,  new GUIContent(item.depth.ToString()), false, false, args.selected, args.focused );
 
                     //Draw  value
-                    var (nodeProp, _)  = GetNodePropForId( item.id );
+                    var (nodeProp, _)  = GetIndexFromId( item.id );
                     var levelProp = nodeProp.FindPropertyRelative( "_depth" );
                     var valueProp = nodeProp.FindPropertyRelative( "Value" );
 
@@ -142,7 +133,7 @@ namespace Silentor.TreeList.Editor
 
         protected override Single GetCustomRowHeight(Int32 row, TreeViewItem item )
         {
-            var (nodeProp, _) = GetNodePropForId( item.id );
+            var (nodeProp, _) = GetIndexFromId( item.id );
             var valueProp     = nodeProp.FindPropertyRelative( "Value" );
             if( valueProp == null )              //Value is not serializable
                 return EditorGUIUtility.singleLineHeight;
@@ -164,14 +155,37 @@ namespace Silentor.TreeList.Editor
             if ( HasSelection() )
             {
                 var id       = GetSelection().First();
-                var nodeProp = GetNodePropForId( id );
+                var nodeProp = GetIndexFromId( id );
                 return nodeProp;
             }
 
             return (null, -1);
         }
 
-        private (SerializedProperty nodeProp, Int32 index) GetNodePropForId( Int32 id )
+        public void SetSelectedItem( Int32 index )
+        {
+            var id = GetIdFromIndex( index );
+            SetSelection( new[] { id } );
+            FrameItem( id );
+        }
+
+        private Int32 GetIdFromIndex( Int32 index )
+        {
+            _idLevelList.Clear();
+            for ( var i = 0; i < _itemsProp.arraySize; i++ )
+            {
+                var itemProp = _itemsProp.GetArrayElementAtIndex( i );
+                var depth    = itemProp.FindPropertyRelative( "_depth" ).intValue;
+
+                var semiPermanentId = (depth << 16) | GetIndexForDepth( depth );
+                if ( i == index )
+                    return semiPermanentId;
+            }
+
+            return -1;
+        }
+
+        private (SerializedProperty nodeProp, Int32 index) GetIndexFromId( Int32 id )
         {
             var depth        = id >> 16;
             var indexInDepth = id & 0xFFFF;
@@ -188,6 +202,16 @@ namespace Silentor.TreeList.Editor
             }
 
             return (null, -1);
+        }
+
+        private Int32 GetIndexForDepth( Int32 depth )
+        {
+            while( _idLevelList.Count <= depth )
+                _idLevelList.Add( 0 );
+                
+            var id = _idLevelList[ depth ];
+            _idLevelList[ depth ] += 1;
+            return id;
         }
 
         private static class Resources

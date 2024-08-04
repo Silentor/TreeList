@@ -103,9 +103,11 @@ namespace Silentor.TreeList.Editor
                         case SerializedPropertyType.Float:
                             return prop.floatValue.ToString().StartsWith( searchString );
                         case SerializedPropertyType.String:
-                            return prop.stringValue.Contains( searchString );
+                            return prop.stringValue.Contains( searchString, StringComparison.OrdinalIgnoreCase );
                         case SerializedPropertyType.ObjectReference:
-                            return prop.objectReferenceValue.name.Contains( searchString ) || prop.objectReferenceValue.GetType().Name.Contains( searchString );
+                            return prop.objectReferenceValue 
+                                   && (prop.objectReferenceValue.name.Contains( searchString, StringComparison.OrdinalIgnoreCase ) 
+                                       || prop.objectReferenceValue.GetType().Name.Contains( searchString, StringComparison.OrdinalIgnoreCase ));
                         case SerializedPropertyType.Enum:
                         {
                             var enumIndex = prop.enumValueIndex;
@@ -137,7 +139,11 @@ namespace Silentor.TreeList.Editor
                         case SerializedPropertyType.BoundsInt:
                             return prop.boundsIntValue.ToString().Contains( searchString );
                         case SerializedPropertyType.ManagedReference:
-                            return prop.managedReferenceFullTypename.Contains( searchString );
+                        {
+                            if ( prop.managedReferenceValue != null )
+                                return prop.managedReferenceValue.GetType().Name.Contains( searchString, StringComparison.OrdinalIgnoreCase );
+                            return false;
+                        }
                         case SerializedPropertyType.Hash128:
                             return prop.hash128Value.ToString().Contains( searchString );
                         default:

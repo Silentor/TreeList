@@ -347,7 +347,7 @@ namespace Silentor.TreeList.Editor
 
              var foldoutLabelWidth = _foldout.Q<Toggle>().Q<VisualElement>(  ).Q<Label>(  ).worldBound.width;
              var totalWidth        = _foldout.worldBound.width;
-             if( totalWidth - foldoutLabelWidth > 350 )
+             if( totalWidth - foldoutLabelWidth > 375 )
                 _hint.text = GetTreeHint( _treeUI.selectedIndex, nodesProp  );
              else
                  _hint.text = String.Empty;

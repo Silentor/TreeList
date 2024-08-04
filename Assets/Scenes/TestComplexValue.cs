@@ -10,6 +10,7 @@ public class TestComplexValue
     [VariableHeight]
     public Boolean    VariableHeightValue;
     public CustomNode CustomNode;
+    public GameObject TestGO;
 }
 
 public class VariableHeightAttribute : PropertyAttribute{}

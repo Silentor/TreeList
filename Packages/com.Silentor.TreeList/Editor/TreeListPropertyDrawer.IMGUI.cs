@@ -93,7 +93,7 @@ namespace Silentor.TreeList.Editor
             EditorGUI.EndDisabledGroup();
 
             //Draw add button
-            btnRect = new Rect( btnRect.x - btnRect.width - 15, btnRect.y, btnRect.width, btnRect.height );
+            btnRect = new Rect( btnRect.x - btnRect.width - 5, btnRect.y, btnRect.width, btnRect.height );
             var isEmptyTree = nodesProp.arraySize == 0;
             isBtnEnabled = isEmptyTree || _treeIM.HasSelection();
             EditorGUI.BeginDisabledGroup( !isBtnEnabled );
@@ -113,7 +113,7 @@ namespace Silentor.TreeList.Editor
             EditorGUI.EndDisabledGroup();
 
             //Draw expand/collapse button
-            btnRect = new Rect( btnRect.x - btnRect.width - 15, btnRect.y, btnRect.width, btnRect.height );
+            btnRect = new Rect( btnRect.x - btnRect.width - 5, btnRect.y, btnRect.width, btnRect.height );
             isBtnEnabled = !isEmptyTree;
             EditorGUI.BeginDisabledGroup( !isBtnEnabled );
             if ( GUI.Button( btnRect, ResourcesIMGUI.Expand, ResourcesIMGUI.ToolBarBtnStyle  ) )
@@ -159,6 +159,26 @@ namespace Silentor.TreeList.Editor
                 }
             };
             EditorGUI.EndDisabledGroup();
+
+            //Draw search field
+            var searchStringContent = new GUIContent( state.SearchString );
+            var searchStringWidth   = Mathf.Clamp( GUI.skin.textField.CalcSize( searchStringContent ).x, 30, 100 );
+            var searchFieldRect     = new Rect( btnRect.x - searchStringWidth - 5, btnRect.y, searchStringWidth, btnRect.height );
+            state.SearchString = GUI.TextField( searchFieldRect, state.SearchString );
+            btnRect            = new Rect( searchFieldRect.x - btnRect.width, searchFieldRect.y, btnRect.height, btnRect.height );
+            if ( GUI.Button( btnRect, ResourcesIMGUI.Search, ResourcesIMGUI.ToolBarBtnStyle ) )
+            {
+                if ( state.SearchString.Length > 0 )
+                {
+                    var searchFromIndex = _treeIM.HasSelection() ? _treeIM.GetSelectedItem().index : 0;
+                    var newIndex        = SearchValue( state.SearchString, searchFromIndex + 1, nodesProp );
+                    if ( newIndex >= 0 )
+                    {
+                        _treeIM.SetFocusAndEnsureSelectedItem();
+                        _treeIM.SetSelectedItem( newIndex );
+                    }
+                }
+            }
 
             //Custom prefix label because TreeView with header hides it. wtf?
             var prefixLabelRect = headerRect;
@@ -260,7 +280,7 @@ namespace Silentor.TreeList.Editor
         private class TreeEditorState
         {
             public TreeViewState TreeViewState = new();
-            //public Boolean       IsTreeExpanded;
+            public String        SearchString;
         }
 
         private static class ResourcesIMGUI
@@ -282,6 +302,7 @@ namespace Silentor.TreeList.Editor
             public static readonly GUIContent Plus  = new  (EditorGUIUtility.IconContent("Toolbar Plus").image, "Add child node") ;
             public static readonly GUIContent Minus = new  (EditorGUIUtility.IconContent("Toolbar Minus").image, "Remove node") ;
             public static readonly GUIContent Expand = new  (EditorGUIUtility.IconContent("UnityEditor.SceneHierarchyWindow@2x").image, "Expand/collapse tree") ;
+            public static readonly GUIContent Search = new  ( EditorGUIUtility.isProSkin ? EditorGUIUtility.IconContent("d_Search Icon").image : EditorGUIUtility.IconContent("Search Icon").image , "Search value") ;
             // public static readonly GUIContent Depth =  EditorGUIUtility.isProSkin 
             //         ? new ("Depth", EditorGUIUtility.IconContent("d_BlendTree Icon").image) 
             //         : new ("Depth", EditorGUIUtility.IconContent("BlendTree Icon").image) ;
