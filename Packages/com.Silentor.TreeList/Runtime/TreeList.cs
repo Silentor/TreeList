@@ -10,16 +10,36 @@ using UnityEngine.Assertions;
 
 namespace Silentor.TreeList
 {
+    /// <summary>
+    /// Generic tree data type, based on List
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [Serializable]
     public class TreeList<T> : ISerializationCallbackReceiver, IEnumerable<TreeList<T>.Node>
     {
+        /// <summary>
+        /// All nodes of the tree
+        /// </summary>
         public IReadOnlyList<Node> Nodes => _nodes;
+        /// <summary>
+        /// Root node or null if tree is empty
+        /// </summary>
         public Node                Root  => _nodes.Count > 0 ? _nodes[ 0 ] : null;
+        /// <summary>
+        /// Count of the nodes
+        /// </summary>
         public Int32               Count => _nodes.Count;
 
         [SerializeField]
         private List<Node> _nodes = new();
 
+        /// <summary>
+        /// Add node to the tree. If parent is null, node will be added as root. If parent is not null, node will be added as child of parent
+        /// </summary>
+        /// <param name="value">Value of the new node</param>
+        /// <param name="parent"></param>
+        /// <returns>Newly added node</returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public Node Add( T value, Node parent )
         {
             if ( parent == null )
@@ -42,25 +62,64 @@ namespace Silentor.TreeList
             }
         }
 
-        public IEnumerable<Node> GetChilds( [NotNull] Node node, Boolean includeItself = false, Boolean recursive = false )
+        /// <summary>
+        /// Get children of given node, order is depth-first. Return enumerator
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="includeItself">Include parent node</param>
+        /// <param name="recursive">Include all children of children</param>
+        /// <returns>Enumerator over children</returns>
+        public IEnumerable<Node> GetChildren( [NotNull] Node parent, Boolean includeItself = false, Boolean recursive = false )
         {
-            CheckNodeBelongsTree( node, nameof(node) );
+            CheckNodeBelongsTree( parent, nameof(parent) );
             
             if ( includeItself )
-                yield return node;
+                yield return parent;
 
             if ( recursive )
             {
-                for ( int i = node._index + 1; i < _nodes.Count && _nodes[ i ].Depth > node.Depth; i++ )
+                for ( int i = parent._index + 1; i < _nodes.Count && _nodes[ i ].Depth > parent.Depth; i++ )
                     yield return _nodes[ i ];
             }
             else
             {
-                for ( int i = node._index + 1; i < _nodes.Count && _nodes[ i ].Depth > node.Depth; i++ )
-                    if( _nodes[i].Depth == node.Depth + 1 )
+                for ( int i = parent._index + 1; i < _nodes.Count && _nodes[ i ].Depth > parent.Depth; i++ )
+                    if( _nodes[i].Depth == parent.Depth + 1 )
                         yield return _nodes[ i ];
             }
         }
+
+        /// <summary>
+        /// Get children of given node, order is depth-first. Fills the given list, doesn't allocate is list capacity is enough
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="result">Fill that list with children nodes, must be non null</param>
+        /// <param name="includeItself">Include parent node</param>
+        /// <param name="recursive">Include all children of children</param>
+        /// <exception cref="ArgumentNullException">If parent node is null or result list is null</exception>
+        public void GetChildren( [NotNull] Node parent, List<Node> result, Boolean includeItself = false, Boolean recursive = false )
+        {
+            CheckNodeBelongsTree( parent, nameof(parent) );
+            if( result == null )  throw new ArgumentNullException( nameof(result) );
+            
+            result.Clear();
+
+            if ( includeItself )
+                result.Add( parent );
+
+            if ( recursive )
+            {
+                for ( int i = parent._index + 1; i < _nodes.Count && _nodes[ i ].Depth > parent.Depth; i++ )
+                    result.Add( _nodes[ i ] );
+            }
+            else
+            {
+                for ( int i = parent._index + 1; i < _nodes.Count && _nodes[ i ].Depth > parent.Depth; i++ )
+                    if( _nodes[i].Depth == parent.Depth + 1 )
+                        result.Add( _nodes[ i ] );
+            }
+        }
+
 
         public IEnumerable<Node> GetChildsBreadthFirst( [NotNull] Node node, Boolean includeItself = false )
         {
@@ -90,6 +149,42 @@ namespace Silentor.TreeList
             } while ( isAnyChildFinded );
         }
 
+        public void GetChildsBreadthFirst( [NotNull] Node node, List<Node> result, Boolean includeItself = false )
+        {
+            CheckNodeBelongsTree( node, nameof(node) );
+            if( result == null )  throw new ArgumentNullException( nameof(result) );
+
+            result.Clear();
+            if ( includeItself )
+                result.Add( node );
+
+            var indexFrom = node._index            + 1;
+            var indexTo   = GetSubtreeSize( node ) + node._index;
+
+            Boolean isAnyChildFinded ;
+            var     childDepth  = node.Depth + 1;
+            do
+            {
+                isAnyChildFinded = false;
+                for ( int i = indexFrom; i < indexTo; i++ )
+                {
+                    if ( _nodes[ i ].Depth == childDepth )
+                    {
+                        isAnyChildFinded = true;
+                        result.Add( _nodes[ i ] );
+                    }
+                }
+                childDepth++;
+
+            } while ( isAnyChildFinded );
+        }
+
+        /// <summary>
+        /// Get parent node of given node
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">Cannot find parent node, tree is invalid</exception>
         public Node  GetParent( [NotNull] Node node )
         {
             CheckNodeBelongsTree( node, nameof(node) );
@@ -106,6 +201,11 @@ namespace Silentor.TreeList
             throw new InvalidOperationException( "Parent not found, invalid tree" );
         }
 
+        /// <summary>
+        /// Get all parents of given node, starting from nearest parent and ending with root
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns>Returns enumerator over parents</returns>
         public IEnumerable<Node> GetParents( [NotNull] Node node )
         {
             CheckNodeBelongsTree( node, nameof(node) );
@@ -117,14 +217,21 @@ namespace Silentor.TreeList
             }
         }
 
+        /// <summary>
+        /// Move node to new parent. If newChildIndex is specified, node will be inserted at that index, otherwise node will be placed at the end of children
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="newParent"></param>
+        /// <param name="newChildIndex"></param>
+        /// <returns>Count of the moved nodes. If 0 moving is impossible, because cannot move node to its own children</returns>
         public Int32 Move( [NotNull] Node node, [NotNull] Node newParent, Int32 newChildIndex = -1 )
         {
             CheckNodeBelongsTree( node, nameof(node) );
             CheckNodeBelongsTree( newParent, nameof(newParent) );
 
             //Cannot move inside of itself
-            Assert.IsTrue( node != newParent );
-            Assert.IsFalse( GetParents( newParent ).Contains( node ) ); 
+            if( node == newParent || GetParents( newParent ).Contains( node ) )
+                return 0;
 
             Node childToReplace = null;
             if ( newChildIndex >= 0 )
@@ -140,7 +247,7 @@ namespace Silentor.TreeList
                 }
             }
 
-            var buffer = GetChilds( node, true, true ).ToArray();
+            var buffer = GetChildren( node, true, true ).ToArray();
             Remove( node );
 
             var toIndex = childToReplace != null ? childToReplace._index : newParent._index + GetSubtreeSize( newParent );
@@ -156,6 +263,11 @@ namespace Silentor.TreeList
             return buffer.Length;
         } 
 
+        /// <summary>
+        /// Remove node and all its children from tree
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns>Count of removed nodes</returns>
         public Int32 Remove( [NotNull] Node node )
         {
             CheckNodeBelongsTree( node, nameof(node) );
@@ -172,11 +284,18 @@ namespace Silentor.TreeList
             return removeCount;
         }
 
+        /// <summary>
+        /// Clear entire tree
+        /// </summary>
         public void Clear( )
         {
             _nodes.Clear();
         }
 
+        /// <summary>
+        /// Generate string representation of tree hierarchy
+        /// </summary>
+        /// <returns></returns>
         public String ToHierarchyString( )
         {
             var sb = new StringBuilder();
@@ -189,6 +308,11 @@ namespace Silentor.TreeList
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Compare to trees by structure and values of nodes
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public Boolean Equals( TreeList<T> other )
         {
             if ( ReferenceEquals( null, other ) ) return false;
@@ -250,22 +374,39 @@ namespace Silentor.TreeList
         {
             public T        Value;
 
+            /// <summary>
+            /// Depth of the node in the tree, root node has 0 depth
+            /// </summary>
             public Int32    Depth => _depth;
 
             public Node     Parent => Owner.GetParent( this );
 
             public readonly TreeList<T> Owner;
 
+            /// <summary>
+            /// Add child node to this node
+            /// </summary>
+            /// <param name="value"></param>
+            /// <returns></returns>
             public Node AddChild( T value )
             {
                 return Owner.Add( value, this );
             }
 
+            /// <summary>
+            /// Add node to the parent of given node
+            /// </summary>
+            /// <param name="value"></param>
+            /// <returns></returns>
             public Node AddSibling( T value )
             {
                 return Parent.AddChild( value );
             }
 
+            /// <summary>
+            /// Add children to this node
+            /// </summary>
+            /// <param name="values"></param>
             public void AddChildren( params T[] values )
             {
                 foreach ( var v in values )
@@ -274,11 +415,22 @@ namespace Silentor.TreeList
                 }
             }
 
-            public IEnumerable<Node> GetChildren( Boolean includeSelf = false )
+            /// <summary>
+            /// Get children of this node. See <see cref="TreeList{T}.GetChildren"/> for non alloc method overload
+            /// </summary>
+            /// <param name="includeSelf">Include this node</param>
+            /// <param name="recursive">Include all children of children</param>
+            /// <returns>Enumerator over children nodes</returns>
+            public IEnumerable<Node> GetChildren( Boolean includeSelf = false, Boolean recursive = false )
             {
-                return Owner.GetChilds( this, includeSelf );
+                return Owner.GetChildren( this, includeSelf, recursive );
             }
 
+            /// <summary>
+            /// Compare depth and value of nodes
+            /// </summary>
+            /// <param name="other"></param>
+            /// <returns></returns>
             public Boolean StructuralEqual( Node other )
             {
                 if ( ReferenceEquals( null, other ) ) return false;
@@ -287,6 +439,11 @@ namespace Silentor.TreeList
                 return Depth == other.Depth && Equals( Value, other.Value );
             }
 
+            /// <summary>
+            /// Compare values of nodes
+            /// </summary>
+            /// <param name="other"></param>
+            /// <returns></returns>
             public Boolean ValueEqual( Node other )
             {
                 if ( ReferenceEquals( null, other ) ) return false;
@@ -310,12 +467,12 @@ namespace Silentor.TreeList
 
             internal Int32 _index;
         }
-      
-        public void OnBeforeSerialize( )
+
+        void ISerializationCallbackReceiver.OnBeforeSerialize( )
         {
         }
 
-        public void OnAfterDeserialize( )
+        void ISerializationCallbackReceiver.OnAfterDeserialize( )
         {
            FixIndices( 0 );
         }

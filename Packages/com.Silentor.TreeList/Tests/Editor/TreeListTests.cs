@@ -50,20 +50,20 @@ namespace Silentor.TreeList.Tests.Editor
         public void TestGetChilds( )
         {
             var root = _tree.Root;
-            Assert.IsTrue( _tree.GetChilds( root, false ).Count() == 2 );
-            var childsOfRoot = _tree.GetChilds( root, false ).Select( n => n.Value ).ToArray();
+            Assert.IsTrue( _tree.GetChildren( root, false ).Count() == 2 );
+            var childsOfRoot = _tree.GetChildren( root, false ).Select( n => n.Value ).ToArray();
             CollectionAssert.AreEqual( childsOfRoot, new Object[]{"child1", "child2"} );
 
             var child1 = _tree.Nodes.First( n => n.Value.Equals( "child1" ) );
-            Assert.IsTrue( _tree.GetChilds( child1, false ).Count() == 2 );
-            CollectionAssert.AreEqual( _tree.GetChilds( child1, false ).Select( n => n.Value ), new Object[]{"child1_1", "child1_2"} );
+            Assert.IsTrue( _tree.GetChildren( child1, false ).Count() == 2 );
+            CollectionAssert.AreEqual( _tree.GetChildren( child1, false ).Select( n => n.Value ), new Object[]{"child1_1", "child1_2"} );
         }
 
         [Test]
         public void TestGetChildsRecursive( )
         {
             var child1          = _tree.Nodes.First( n => n.Value.Equals( "child1" ) );
-            var childsRecursive = _tree.GetChilds( child1, false, true ).ToArray();
+            var childsRecursive = _tree.GetChildren( child1, false, true ).ToArray();
             Assert.IsTrue( childsRecursive.Count() == 3 );
             CollectionAssert.AreEqual( childsRecursive.Select( n => n.Value ), new Object[]{"child1_1", "child1_1_1", "child1_2" } );
         }
@@ -106,9 +106,9 @@ namespace Silentor.TreeList.Tests.Editor
             Assert.IsTrue( _tree.Move( child1, child2_1 ) == 4 );
             Assert.IsTrue( child1.Depth == 3 );
             Assert.IsTrue( _tree.GetParent( child1) == child2_1 );
-            Assert.IsTrue( _tree.GetChilds( child2_1, false, true ).Count() == 4 );
-            Assert.IsTrue( _tree.GetChilds( _tree.Root ).Count() == 1 );
-            Assert.IsTrue( _tree.GetChilds( _tree.GetParent( child2_1 ) ).Count() == 2 );
+            Assert.IsTrue( _tree.GetChildren( child2_1, false, true ).Count() == 4 );
+            Assert.IsTrue( _tree.GetChildren( _tree.Root ).Count() == 1 );
+            Assert.IsTrue( _tree.GetChildren( _tree.GetParent( child2_1 ) ).Count() == 2 );
 
         }
 
@@ -121,8 +121,8 @@ namespace Silentor.TreeList.Tests.Editor
             Assert.IsTrue( _tree.Move( child2_1, child1 )                 == 1 );
             Assert.IsTrue( child2_1.Depth                                 == 2 );
             Assert.IsTrue( _tree.GetParent( child2_1)                     == child1 );
-            Assert.IsTrue( _tree.GetChilds( child1, false, true ).Count() == 4 );
-            Assert.IsTrue( _tree.GetChilds( _tree.Root ).Count()          == 2 );
+            Assert.IsTrue( _tree.GetChildren( child1, false, true ).Count() == 4 );
+            Assert.IsTrue( _tree.GetChildren( _tree.Root ).Count()          == 2 );
         }
 
         [Test]
@@ -134,8 +134,8 @@ namespace Silentor.TreeList.Tests.Editor
             Assert.IsTrue( _tree.Move( child1, child2, 0 )                == 4 );
             Assert.IsTrue( child1.Depth                                   == 2 );
             Assert.IsTrue( _tree.GetParent( child1)                       == child2 );
-            Assert.IsTrue( _tree.GetChilds( child2 ).Count() == 3 );
-            Assert.IsTrue( _tree.GetChilds( _tree.Root ).Count()          == 1 );
+            Assert.IsTrue( _tree.GetChildren( child2 ).Count() == 3 );
+            Assert.IsTrue( _tree.GetChildren( _tree.Root ).Count()          == 1 );
         }
 
         [Test]
