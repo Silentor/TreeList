@@ -5,6 +5,7 @@ TreeList is a simple generic tree data type with editor support for your Unity p
 - Fast iteration, children enumeration (because of the List)
 - Not so fast modification (because of the List)
 - UIToolkit and IMGUI editors (mostly equivalent in functionality)
+- Dark/light skin compatible
 ## Installation
 1. Install a package from a Git URL.
 Please take a look at [Unity Manual](https://docs.unity3d.com/Manual/upm-ui-giturl.html) for instructions and use (https://github.com/Silentor/TreeList.git?path=/Packages/com.Silentor.TreeList) URL in Package Manager to install package
