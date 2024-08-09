@@ -31,7 +31,33 @@ namespace Silentor.TreeList
         public Int32               Count => _nodes.Count;
 
         [SerializeField]
-        private List<Node> _nodes = new();
+        private List<Node>         _nodes;
+
+        /// <summary>
+        /// Create TreeList with default capacity
+        /// </summary>
+        public TreeList( )
+        {
+            _nodes = new List<Node>();
+        }
+
+        /// <summary>
+        /// Create TreeList with specified capacity
+        /// </summary>
+        /// <param name="capacity"></param>
+        public TreeList( Int32 capacity )
+        {
+            _nodes = new List<Node>( capacity );
+        }
+
+        /// <summary>
+        /// Create TreeList with root node
+        /// </summary>
+        /// <param name="rootValue"></param>
+        public TreeList( T rootValue )
+        {
+            _nodes = new List<Node> { new ( 0, 0, this ) { Value = rootValue } };
+        } 
 
         /// <summary>
         /// Add node to the tree. If parent is null, node will be added as root. If parent is not null, node will be added as child of parent
@@ -40,7 +66,7 @@ namespace Silentor.TreeList
         /// <param name="parent"></param>
         /// <returns>Newly added node</returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public Node Add( T value, Node parent )
+        public Node Add( T value, [CanBeNull] Node parent )
         {
             if ( parent == null )
             {
@@ -97,7 +123,7 @@ namespace Silentor.TreeList
         /// <param name="includeItself">Include parent node</param>
         /// <param name="recursive">Include all children of children</param>
         /// <exception cref="ArgumentNullException">If parent node is null or result list is null</exception>
-        public void GetChildren( [NotNull] Node parent, List<Node> result, Boolean includeItself = false, Boolean recursive = false )
+        public void GetChildren( [NotNull] Node parent, [NotNull] List<Node> result, Boolean includeItself = false, Boolean recursive = false )
         {
             CheckNodeBelongsTree( parent, nameof(parent) );
             if( result == null )  throw new ArgumentNullException( nameof(result) );
@@ -149,7 +175,7 @@ namespace Silentor.TreeList
             } while ( isAnyChildFinded );
         }
 
-        public void GetChildsBreadthFirst( [NotNull] Node node, List<Node> result, Boolean includeItself = false )
+        public void GetChildsBreadthFirst( [NotNull] Node node, [NotNull] List<Node> result, Boolean includeItself = false )
         {
             CheckNodeBelongsTree( node, nameof(node) );
             if( result == null )  throw new ArgumentNullException( nameof(result) );
@@ -302,10 +328,15 @@ namespace Silentor.TreeList
             foreach ( var node in _nodes )
             {
                 sb.Append( new String( ' ', node.Depth * 2 ) );
-                sb.AppendLine( $"Value = '{node.Value}' (level = {node.Depth}, parent {(node.Depth > 0 ? GetParent( node ).Value : "")})" );
+                sb.AppendLine( $"Value = '{node.Value}' (level = {node.Depth}, {(node.Depth > 0 ? $"parent '{GetParent( node ).Value}'" : "")})" );
             }
 
             return sb.ToString();
+        }
+
+        public override String ToString( )
+        {
+            return $"{GetType()} ({_nodes.Count})";
         }
 
         /// <summary>
@@ -373,6 +404,9 @@ namespace Silentor.TreeList
         public class Node
         {
             public T        Value;
+
+            [SerializeField]
+            internal Int32 _depth;
 
             /// <summary>
             /// Depth of the node in the tree, root node has 0 depth
@@ -461,10 +495,7 @@ namespace Silentor.TreeList
                 _index = index;
                 Owner  = owner;
             }
-
-            [SerializeField]
-            internal Int32 _depth;
-
+            
             internal Int32 _index;
         }
 

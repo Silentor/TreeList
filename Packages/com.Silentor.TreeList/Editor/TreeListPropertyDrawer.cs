@@ -53,13 +53,14 @@ namespace Silentor.TreeList.Editor
             var oldDepth = nodes.GetArrayElementAtIndex( itemIndex ).FindPropertyRelative( "_depth" ).intValue;
             var newDepth = newParentIndex == -1 ? 0 : nodes.GetArrayElementAtIndex( newParentIndex ).FindPropertyRelative( "_depth" ).intValue + 1;
             var deltaDepth = newDepth - oldDepth;
+            var newItemIndex = ChildIndex2GlobalIndex( newParentIndex, newChildIndex, nodes );
 
             var subtreeSize = GetSubtree( itemIndex, nodes );
             for ( var i = 0; i < subtreeSize; i++ )
             {
                 var movingNode = nodes.GetArrayElementAtIndex( itemIndex + i );
                 movingNode.FindPropertyRelative( "_depth" ).intValue += deltaDepth;
-                nodes.MoveArrayElement( itemIndex + i, newParentIndex + newChildIndex + i + 1 );
+                nodes.MoveArrayElement( itemIndex + i, newItemIndex + i );
             }
         }
 
@@ -196,6 +197,31 @@ namespace Silentor.TreeList.Editor
 
                 result++;
             }
+
+            return result;
+        }
+
+        private Int32 ChildIndex2GlobalIndex( Int32 parentIndex, Int32 childIndex, SerializedProperty nodesProp )
+        {
+            var result      = -1;
+            var parentDepth = nodesProp.GetArrayElementAtIndex( parentIndex ).FindPropertyRelative( "_depth" ).intValue;
+            var i = 0;
+            for ( i = parentIndex + 1; i < nodesProp.arraySize; i++ )
+            {
+                 var childNode = nodesProp.GetArrayElementAtIndex( i );
+                 var childDepth = childNode.FindPropertyRelative( "_depth" ).intValue;
+
+                 if( childDepth == parentDepth + 1 && childIndex-- == 0 )           //Get needed child
+                 {
+                     result = i;
+                     break;
+                 }
+                 else if( childDepth <= parentDepth )                               //No more childs
+                     break;
+            }
+
+            if ( result == -1 )             //childIndex is out of range, select index after last child
+                result = i;
 
             return result;
         }

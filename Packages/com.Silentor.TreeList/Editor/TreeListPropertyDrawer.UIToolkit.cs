@@ -112,9 +112,12 @@ namespace Silentor.TreeList.Editor
             {
                 e.Clear();
             };
-            _treeUI.itemIndexChanged += ( oldIndex, newParentIndex ) =>          //Id is equal to index in unmodified tree
+            _treeUI.itemIndexChanged += ( oldIndex, newParentIndex ) =>          //Id is equal to index in unmodified source tree
             {
-                var newChildIndex = _treeUI.viewController.GetChildIndexForId( oldIndex );
+                var newChildIndex = _treeUI.viewController.GetChildIndexForId( oldIndex );  //viewController already modified, use old child index/id to get new child index
+
+                //Debug.Log( $"[{nameof(TreeListPropertyDrawer)}] [itemIndexChanged] oldIndex {oldIndex}, new parent index {newParentIndex}, new child index {newChildIndex}" );
+
                 MoveItem( oldIndex, newParentIndex, newChildIndex, nodesProp );
                 nodesProp.serializedObject.ApplyModifiedProperties();
                 RebuildTree( nodesProp );
@@ -242,6 +245,7 @@ namespace Silentor.TreeList.Editor
                     var treeIndex = _treeUI.viewController.GetIndexForId( itemId );
                     _treeUI.ScrollToItem( treeIndex );
                     _treeUI.selectedIndex = treeIndex;
+                    property.isExpanded = true;
                 }
             };
 
@@ -317,7 +321,7 @@ namespace Silentor.TreeList.Editor
                     }
                     else
                     {
-                        Debug.LogError( $"Unexpected item, index {index++}" );
+                        Debug.LogError( $"Unexpected item depth {childDepth} after parent depth {parentDepth}, property path {node.propertyPath}, you can take a look using Unity inspector debug mode" );
                     }
                 }
 
