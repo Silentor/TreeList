@@ -299,9 +299,9 @@ namespace Silentor.TreeList.Editor
                                                                                             padding = new RectOffset()
                                                                                     };
            
-            public static readonly GUIContent Plus  = new  (EditorGUIUtility.IconContent("Toolbar Plus").image, "Add child node") ;
-            public static readonly GUIContent Minus = new  (EditorGUIUtility.IconContent("Toolbar Minus").image, "Remove node") ;
-            public static readonly GUIContent Expand = new  (EditorGUIUtility.IconContent("UnityEditor.SceneHierarchyWindow@2x").image, "Expand/collapse tree") ;
+            public static readonly GUIContent Plus  = new  (EditorGUIUtility.isProSkin ? EditorGUIUtility.IconContent("d_Toolbar Plus").image : EditorGUIUtility.IconContent("Toolbar Plus").image, "Add child node") ;
+            public static readonly GUIContent Minus = new  (EditorGUIUtility.isProSkin ? EditorGUIUtility.IconContent("d_Toolbar Minus").image : EditorGUIUtility.IconContent("Toolbar Minus").image, "Remove node") ;
+            public static readonly GUIContent Expand = new  (EditorGUIUtility.isProSkin ? EditorGUIUtility.IconContent("d_UnityEditor.SceneHierarchyWindow").image : EditorGUIUtility.IconContent("UnityEditor.SceneHierarchyWindow").image, "Expand/collapse tree") ;
             public static readonly GUIContent Search = new  ( EditorGUIUtility.isProSkin ? EditorGUIUtility.IconContent("d_Search Icon").image : EditorGUIUtility.IconContent("Search Icon").image , "Search value") ;
             // public static readonly GUIContent Depth =  EditorGUIUtility.isProSkin 
             //         ? new ("Depth", EditorGUIUtility.IconContent("d_BlendTree Icon").image) 

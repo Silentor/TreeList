@@ -6,29 +6,15 @@
     <ui:VisualElement name="Toolbar" picking-mode="Ignore" style="position: absolute; right: 0; top: 0; flex-direction: row;">
         <ui:Label tabindex="-1" text="Press + button to add root item" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Hint" class="hint-label" />
         <ui:VisualElement name="SearchField" style="flex-grow: 1; flex-direction: row;">
-            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" tooltip="Search values" name="SearchBtn" class="header__tool-btn" style="margin-right: 0;">
-                <ui:VisualElement picking-mode="Ignore" class="header__tool-btn__icon" style="background-image: resource(&apos;search&apos;);" />
-            </ui:Button>
+            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" tooltip="Search values" name="SearchBtn" class="header__tool-btn" style="margin-right: 0;" />
             <ui:TextField name="SearchValue" style="margin-left: 0; min-width: 30px;" />
         </ui:VisualElement>
         <ui:VisualElement name="Separator" class="header__separator" />
-        <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="ExpandBtn" tooltip="Expand/collapse tree" class="header__tool-btn">
-            <ui:VisualElement picking-mode="Ignore" class="header__tool-btn__icon" style="background-image: resource(&apos;expand_all&apos;);" />
-        </ui:Button>
+        <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="ExpandBtn" tooltip="Expand/collapse tree" class="header__tool-btn" />
         <ui:VisualElement name="Separator" class="header__separator" />
-        <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="CopyBtn" tooltip="Copy selected node value" class="header__tool-btn">
-            <ui:VisualElement picking-mode="Ignore" class="header__tool-btn__icon" />
-        </ui:Button>
-        <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="PasteBtn" tooltip="Paste node value" class="header__tool-btn">
-            <ui:VisualElement picking-mode="Ignore" class="header__tool-btn__icon" style="background-image: resource(&apos;content_paste&apos;);" />
-        </ui:Button>
         <ui:VisualElement name="Separator" class="header__separator" />
-        <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="AddBtn" tooltip="Add new node to selected parent" class="header__tool-btn">
-            <ui:VisualElement picking-mode="Ignore" class="header__tool-btn__icon" style="background-image: resource(&apos;add&apos;);" />
-        </ui:Button>
-        <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="RemoveBtn" tooltip="Remove selected node" class="header__tool-btn">
-            <ui:VisualElement picking-mode="Ignore" class="header__tool-btn__icon" style="background-image: resource(&apos;remove&apos;);" />
-        </ui:Button>
+        <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="AddBtn" tooltip="Add new node to selected parent" class="header__tool-btn" />
+        <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="RemoveBtn" tooltip="Remove selected node" class="header__tool-btn" />
         <ui:VisualElement name="Separator" class="header__separator" />
         <ui:TextField picking-mode="Ignore" value="0" readonly="true" name="Counter" focusable="false" class="header__counter" />
     </ui:VisualElement>

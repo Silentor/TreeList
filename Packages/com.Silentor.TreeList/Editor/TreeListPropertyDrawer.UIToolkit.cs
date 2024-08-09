@@ -17,8 +17,6 @@ namespace Silentor.TreeList.Editor
     {
         private Button    _removeBtn;
         private Button    _addBtn;
-        private Button    _copyBtn;
-        private Button    _pasteBtn;
         private TreeView  _treeUI;
         private Label     _hint;
         private Button    _expandBtn;
@@ -129,6 +127,7 @@ namespace Silentor.TreeList.Editor
             _treeUI.Rebuild();
                     
             _removeBtn = root.Q<Button>( "RemoveBtn" );
+            _removeBtn.style.backgroundImage = new StyleBackground( ResourcesUITk.Minus );
             _removeBtn.clickable.clicked += () =>
             {
                 if ( _treeUI.selectedIndex > -1 )
@@ -141,6 +140,7 @@ namespace Silentor.TreeList.Editor
             };
 
             _addBtn = root.Q<Button>( "AddBtn" );
+            _addBtn.style.backgroundImage = new StyleBackground( ResourcesUITk.Plus );
             _addBtn.clickable.clicked += () =>
             {
                 if ( nodesProp.arraySize == 0 )
@@ -161,28 +161,8 @@ namespace Silentor.TreeList.Editor
                 }
             };
 
-            _copyBtn = root.Q<Button>( "CopyBtn" );
-            _copyBtn.clickable.clicked += () =>
-            {
-                if ( _treeUI.selectedIndex > -1 )
-                {
-                    var valueProp = nodesProp.GetArrayElementAtIndex( _treeUI.selectedIndex ).FindPropertyRelative( "Value" );
-                    Clipboard.Copy( valueProp );
-                }
-            };
-
-            _pasteBtn = root.Q<Button>( "PasteBtn" );
-            _pasteBtn.clickable.clicked += () =>
-            {
-                if ( _treeUI.selectedIndex > -1 )
-                {
-                    var valueProp = nodesProp.GetArrayElementAtIndex( _treeUI.selectedIndex ).FindPropertyRelative( "Value" );
-                    Clipboard.Paste( valueProp );
-                    valueProp.serializedObject.ApplyModifiedProperties();
-                }
-            };
-
             _expandBtn = root.Q<Button>( "ExpandBtn" );
+            _expandBtn.style.backgroundImage = new StyleBackground( ResourcesUITk.Expand );
             _expandBtn.clickable.clicked += () =>
             {
                 if( _treeUI.GetTreeCount() == 0 )
@@ -225,6 +205,7 @@ namespace Silentor.TreeList.Editor
 
             _searchValue = root.Q<TextField>( "SearchValue" );
             _searchBtn = root.Q<Button>( "SearchBtn" );
+            _searchBtn.style.backgroundImage = new StyleBackground( ResourcesUITk.Search );
             _searchBtn.clickable.clicked += () =>
             {
                 if( _searchValue.value.Length == 0 )
@@ -343,8 +324,6 @@ namespace Silentor.TreeList.Editor
 
         private void RefreshButtons( SerializedProperty nodesProp )
         {
-             _copyBtn.SetEnabled( _treeUI.selectedIndex > -1 );
-             _pasteBtn.SetEnabled( _treeUI.selectedIndex > -1 );
              _removeBtn.SetEnabled( _treeUI.selectedIndex > -1 );
              _addBtn.SetEnabled( _treeUI.selectedIndex > -1 || _treeUI.GetTreeCount() == 0 );
              _expandBtn.SetEnabled( _treeUI.GetTreeCount() > 0 );
@@ -360,13 +339,11 @@ namespace Silentor.TreeList.Editor
         private static class ResourcesUITk
         {
             public static readonly VisualTreeAsset TreeViewAsset = Resources.Load<VisualTreeAsset>( "TreeList" );
+
+            public static readonly Texture2D Plus  = (Texture2D)( EditorGUIUtility.isProSkin ? EditorGUIUtility.IconContent("d_Toolbar Plus").image : EditorGUIUtility.IconContent("Toolbar Plus").image );
+            public static readonly Texture2D Minus =  (Texture2D) (EditorGUIUtility.isProSkin ? EditorGUIUtility.IconContent("d_Toolbar Minus").image : EditorGUIUtility.IconContent("Toolbar Minus").image);
+            public static readonly Texture2D Expand =  (Texture2D) (EditorGUIUtility.isProSkin ? EditorGUIUtility.IconContent("d_UnityEditor.SceneHierarchyWindow").image : EditorGUIUtility.IconContent("UnityEditor.SceneHierarchyWindow").image);
+            public static readonly Texture2D Search =   (Texture2D) (EditorGUIUtility.isProSkin ? EditorGUIUtility.IconContent("d_Search Icon").image : EditorGUIUtility.IconContent("Search Icon").image );
         }
-
-        
     }
-
-    
-
-    
-
 }
