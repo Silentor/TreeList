@@ -18,6 +18,7 @@ namespace Silentor.TreeList.Editor
         private                 MultiColumnHeaderState             _multiColumnHeaderState;
         private readonly        Single                             _headerHeight = EditorGUIUtility.singleLineHeight + 2;
         private                 Boolean                            _expandTreeOnInitialize;
+        private                 Int32                              _selectIndexOnInitialize = -1;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label )
         {
@@ -60,6 +61,13 @@ namespace Silentor.TreeList.Editor
             {
                 _treeIM.ExpandAll();
                 _expandTreeOnInitialize = false;
+            }
+
+            if( _selectIndexOnInitialize >= 0 )
+            {
+                _treeIM.SetFocusAndEnsureSelectedItem();
+                _treeIM.SetSelectedItem( _selectIndexOnInitialize );
+                _selectIndexOnInitialize = -1;
             }
 
             _treeIM.OnGUI( position );
@@ -174,8 +182,9 @@ namespace Silentor.TreeList.Editor
                     var newIndex        = SearchValue( state.SearchString, searchFromIndex + 1, nodesProp );
                     if ( newIndex >= 0 )
                     {
-                        _treeIM.SetFocusAndEnsureSelectedItem();
-                        _treeIM.SetSelectedItem( newIndex );
+                        mainProperty.isExpanded = true;
+                        //Delay selection to next frame to properly init tree if it was collapsed 
+                        _selectIndexOnInitialize = newIndex;
                     }
                 }
             }
@@ -281,7 +290,7 @@ namespace Silentor.TreeList.Editor
         {
             public TreeViewState TreeViewState = new();
             public String        SearchString;
-        }
+        }      
 
         private static class ResourcesIMGUI
         {
