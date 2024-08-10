@@ -64,7 +64,7 @@ namespace Silentor.TreeList.Editor
             }
         }
 
-        private Int32 SearchValue( String searchString, Int32 fromIndex, SerializedProperty nodes)
+        private Int32 SearchValue( String searchString, Int32 fromIndex, SerializedProperty nodes )
         {
             for ( var i = 0; i < nodes.arraySize; i++ )
             {

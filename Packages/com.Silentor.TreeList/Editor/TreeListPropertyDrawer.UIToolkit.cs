@@ -165,7 +165,7 @@ namespace Silentor.TreeList.Editor
             _expandBtn.style.backgroundImage = new StyleBackground( ResourcesUITk.Expand );
             _expandBtn.clickable.clicked += () =>
             {
-                if( _treeUI.GetTreeCount() == 0 )
+                if( nodesProp.arraySize == 0 )
                     return;
 
                 if ( !property.isExpanded )
@@ -215,18 +215,26 @@ namespace Silentor.TreeList.Editor
                 var itemId   = SearchValue( _searchValue.value, startIndex, nodesProp );
                 if ( itemId >= 0 )
                 {
-                    //Expand finded item to the root
+                    property.isExpanded = true;
+                    _foldout.value      = true;
+
+                    //Expand finded item hierarchy to the root
                     var parentId = itemId;
                     while ( parentId != 0 )
                     {
                         parentId = _treeUI.viewController.GetParentId( parentId );
                         _treeUI.ExpandItem( parentId );                        
                     }
+
                     _treeUI.Focus();
                     var treeIndex = _treeUI.viewController.GetIndexForId( itemId );
-                    _treeUI.ScrollToItem( treeIndex );
                     _treeUI.selectedIndex = treeIndex;
-                    property.isExpanded = true;
+
+                    //Delay scrolling because if tree was not expanded and actually binded, it will not scroll properly to the item
+                    _foldout.schedule.Execute( ( ) =>
+                    {
+                        _treeUI.ScrollToItem( treeIndex );
+                    } ).StartingIn( 33 );
                 }
             };
 
