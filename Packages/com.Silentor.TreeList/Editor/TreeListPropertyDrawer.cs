@@ -84,13 +84,39 @@ namespace Silentor.TreeList.Editor
             var deltaDepth   = newDepth - oldDepth;
             var newItemIndex = ChildIndex2GlobalIndex( newParentIndex, newChildIndex, nodes );
 
-            var subtreeSize = GetSubtree( itemIndex, nodes );
-            var buffer = new SerializedProperty[subtreeSize];
-            for ( var i = 0; i < subtreeSize; i++ )
+            var oldClipboardValue = EditorGUIUtility.systemCopyBuffer;
+
+            var subtreeSize       = GetSubtree( itemIndex, nodes );
+            if ( itemIndex < newItemIndex )
             {
-                buffer[i] = nodes.GetArrayElementAtIndex( itemIndex + i ).Copy();
+                for ( var i = 0; i < subtreeSize; i++ )
+                {
+                    var oldNode = nodes.GetArrayElementAtIndex( itemIndex + i );
+                    var oldNodeValue        = oldNode.FindPropertyRelative( "Value" );
+                    var oldNodeDepth        = oldNode.FindPropertyRelative( "_depth" ).intValue;
+                    Clipboard.Copy( oldNodeValue );
+                    nodes.InsertArrayElementAtIndex( newItemIndex + i );
+                    var newNode = nodes.GetArrayElementAtIndex( newItemIndex + i );
+                    Clipboard.Paste( newNode.FindPropertyRelative( "Value" ) );
+                    newNode.FindPropertyRelative( "_depth" ).intValue = oldNodeDepth + deltaDepth;
+                }
+            }
+            else
+            {
+                for ( var i = 0; i < subtreeSize; i++ )
+                {
+                    var oldNode = nodes.GetArrayElementAtIndex( itemIndex + 2*i );
+                    var oldNodeValue  = oldNode.FindPropertyRelative( "Value" );
+                    var oldNodeDepth = oldNode.FindPropertyRelative( "_depth" ).intValue;
+                    Clipboard.Copy( oldNodeValue );
+                    nodes.InsertArrayElementAtIndex( newItemIndex + i );
+                    var newNode = nodes.GetArrayElementAtIndex( newItemIndex + i );
+                    Clipboard.Paste( newNode.FindPropertyRelative( "Value" ) );
+                    newNode.FindPropertyRelative( "_depth" ).intValue = oldNodeDepth + deltaDepth;
+                }
             }
 
+            EditorGUIUtility.systemCopyBuffer = oldClipboardValue;
         }
 
         private Int32 SearchValue( String searchString, Int32 fromIndex, SerializedProperty nodes )

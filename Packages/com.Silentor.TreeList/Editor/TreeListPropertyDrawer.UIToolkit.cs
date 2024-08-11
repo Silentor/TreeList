@@ -59,8 +59,7 @@ namespace Silentor.TreeList.Editor
                 }
                 else if ( valueProp.hasVisibleChildren )
                 {
-                    //valueProp = valueProp.Copy();
-                    var enterChildren = true;
+                    var enterChildren = true;            
                     var endProp       = valueProp.GetEndProperty();
                     while ( valueProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( valueProp, endProp ) )
                     {
@@ -116,7 +115,10 @@ namespace Silentor.TreeList.Editor
 
                 //Debug.Log( $"[{nameof(TreeListPropertyDrawer)}] [itemIndexChanged] oldIndex {oldIndex}, new parent index {newParentIndex}, new child index {newChildIndex}" );
 
-                MoveItem( oldIndex, newParentIndex, newChildIndex, nodesProp );
+                if( Event.current.control )
+                    CopyItem( oldIndex, newParentIndex, newChildIndex, nodesProp );
+                else
+                    MoveItem( oldIndex, newParentIndex, newChildIndex, nodesProp );
                 nodesProp.serializedObject.ApplyModifiedProperties();
                 RebuildTree( nodesProp );
             };

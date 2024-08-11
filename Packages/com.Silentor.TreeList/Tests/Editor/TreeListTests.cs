@@ -103,7 +103,8 @@ namespace Silentor.TreeList.Tests.Editor
             var child1 = _tree.Nodes.First( n => n.Value.Equals( "child1" ) );
             var child2_1 = _tree.Nodes.First( n => n.Value.Equals( "child2_1" ) );
 
-            Assert.IsTrue( _tree.Move( child1, child2_1 )                           == 4 );
+            child1 =  _tree.Move( child1, child2_1 );
+            Assert.IsTrue( _tree.GetChildren( child1, true, true ).Count()          == 4 );
             Assert.IsTrue( _tree.Nodes.Count( n => n.Value == "child1" )          == 1 );
             Assert.IsTrue( child1.Depth                                             == 3 );
             Assert.IsTrue( _tree.GetParent( child1)                                 == child2_1 );
@@ -119,7 +120,8 @@ namespace Silentor.TreeList.Tests.Editor
             var child1   = _tree.Nodes.First( n => n.Value.Equals( "child1" ) );
             var child2_1 = _tree.Nodes.First( n => n.Value.Equals( "child2_1" ) );
 
-            Assert.IsTrue( _tree.Move( child2_1, child1 )                   == 1 );
+            child2_1 = _tree.Move( child2_1, child1 );
+            Assert.IsTrue( _tree.GetChildren( child2_1, true, true ).Count()            == 1 );
             Assert.IsTrue( _tree.Nodes.Count( n => n.Value == "child2_1" ) == 1 );
             Assert.IsTrue( child2_1.Depth                                   == 2 );
             Assert.IsTrue( _tree.GetParent( child2_1)                       == child1 );
@@ -134,13 +136,62 @@ namespace Silentor.TreeList.Tests.Editor
             var child1   = _tree.Nodes.First( n => n.Value.Equals( "child1" ) );
             var child2 = _tree.Nodes.First( n => n.Value.Equals( "child2" ) );
 
-            Assert.IsTrue( _tree.Move( child1, child2, 0 )                 == 4 );
+            child1 = _tree.Move( child1, child2, 0 );
+            Assert.IsTrue( _tree.GetChildren( child1, true, true ).Count() == 4 );
             Assert.IsTrue( _tree.Nodes.Count( n => n.Value == "child1" ) == 1 );
             Assert.IsTrue( child1.Depth                                    == 2 );
             Assert.IsTrue( _tree.GetParent( child1)                        == child2 );
             Assert.IsTrue( _tree.GetChildren( child2 ).Count()             == 3 );
             Assert.IsTrue( _tree.GetChildren( _tree.Root ).Count()         == 1 );
             Assert.IsTrue( _tree.Count                                     == 8 );
+        }
+
+        [Test]
+        public void TestCopy( )
+        {
+            var child1   = _tree.Nodes.First( n => n.Value.Equals( "child1" ) );
+            var child2_1 = _tree.Nodes.First( n => n.Value.Equals( "child2_1" ) );
+
+            child1 =  _tree.Copy( child1, child2_1 );
+            Assert.IsTrue( _tree.GetChildren( child1, true, true ).Count()          == 4 );
+            Assert.IsTrue( _tree.Nodes.Count( n => n.Value == "child1" )            == 2 );
+            Assert.IsTrue( child1.Depth                                             == 3 );
+            Assert.IsTrue( _tree.GetParent( child1)                                 == child2_1 );
+            Assert.IsTrue( _tree.GetChildren( child2_1, false, true ).Count()       == 4 );
+            Assert.IsTrue( _tree.GetChildren( _tree.GetParent( child2_1 ) ).Count() == 2 );         
+            Assert.IsTrue( _tree.Count                                              == 8 + 4 );
+        }
+
+        [Test]
+        public void TestCopy2( )
+        {
+            var child1   = _tree.Nodes.First( n => n.Value.Equals( "child1" ) );
+            var child2_1 = _tree.Nodes.First( n => n.Value.Equals( "child2_1" ) );
+
+            child2_1 = _tree.Move( child2_1, child1 );
+            Assert.IsTrue( _tree.GetChildren( child2_1, true, true ).Count() == 1 );
+            Assert.IsTrue( _tree.Nodes.Count( n => n.Value == "child2_1" )   == 1 );
+            Assert.IsTrue( child2_1.Depth                                    == 2 );
+            Assert.IsTrue( _tree.GetParent( child2_1)                        == child1 );
+            Assert.IsTrue( _tree.GetChildren( child1, false, true ).Count()  == 4 );
+            Assert.IsTrue( _tree.GetChildren( _tree.Root ).Count()           == 2 );
+            Assert.IsTrue( _tree.Count                                       == 8 );
+        }
+
+        [Test]
+        public void TestCopy3( )
+        {
+            var child1 = _tree.Nodes.First( n => n.Value.Equals( "child1" ) );
+            var child2 = _tree.Nodes.First( n => n.Value.Equals( "child2" ) );
+
+            child1 = _tree.Copy( child1, child2, 0 );
+            Assert.IsTrue( _tree.GetChildren( child1, true, true ).Count() == 4 );
+            Assert.IsTrue( _tree.Nodes.Count( n => n.Value == "child1" )   == 2 );
+            Assert.IsTrue( child1.Depth                                    == 2 );
+            Assert.IsTrue( _tree.GetParent( child1)                        == child2 );
+            Assert.IsTrue( _tree.GetChildren( child2 ).Count()             == 3 );
+            Assert.IsTrue( _tree.GetChildren( _tree.Root ).Count()         == 2 );
+            Assert.IsTrue( _tree.Count                                     == 8 + 4 );
         }
 
         [Test]

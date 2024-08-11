@@ -244,20 +244,20 @@ namespace Silentor.TreeList
         }
 
         /// <summary>
-        /// Move node to new parent. If newChildIndex is specified, node will be inserted at that index, otherwise node will be placed at the end of children
+        /// Move node to new parent. If newChildIndex is specified, node will be inserted at that index, otherwise node will be placed after last child
         /// </summary>
         /// <param name="node"></param>
         /// <param name="newParent"></param>
         /// <param name="newChildIndex"></param>
-        /// <returns>Count of the moved nodes. If 0 moving is impossible, because cannot move node to its own children</returns>
-        public Int32 Move( [NotNull] Node node, [NotNull] Node newParent, Int32 newChildIndex = -1 )
+        /// <returns>Moved node</returns>
+        public Node Move( [NotNull] Node node, [NotNull] Node newParent, Int32 newChildIndex = -1 )
         {
             CheckNodeBelongsTree( node,      nameof(node) );
             CheckNodeBelongsTree( newParent, nameof(newParent) );
 
             //Cannot move inside of itself
             if( node == newParent || GetParents( newParent ).Contains( node ) )
-                return 0;
+                return node;
 
             var oldDepth     = node.Depth;
             var newDepth     = newParent.Depth + 1;
@@ -288,7 +288,65 @@ namespace Silentor.TreeList
             }
 
             FixIndices( Math.Min( oldItemIndex, newItemIndex ) );
-            return subtreeSize;
+            return node;
+        }
+        
+        /// <summary>
+        /// Copy node to new parent. If newChildIndex is specified, node will be inserted at that index, otherwise node will be placed after last child
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="newParent"></param>
+        /// <param name="newChildIndex"></param>
+        /// <returns>Copied node</returns>
+        public Node Copy( [NotNull] Node node, [NotNull] Node newParent, Int32 newChildIndex = -1 )
+        {
+            CheckNodeBelongsTree( node,      nameof(node) );
+            CheckNodeBelongsTree( newParent, nameof(newParent) );
+
+            //Cannot copy inside of itself
+            if( node == newParent || GetParents( newParent ).Contains( node ) )
+                return node;
+
+            var oldDepth     = node.Depth;
+            var newDepth     = newParent.Depth + 1;
+            var deltaDepth   = newDepth - oldDepth;
+            var newItemIndex = ChildIndex2GlobalIndex( newParent, newChildIndex );
+            var oldItemIndex = node._index;
+
+            Node result      = null;
+            var  subtreeSize = GetSubtreeSize( node );
+            if ( oldItemIndex < newItemIndex )
+            {
+                for ( var i = 0; i < subtreeSize; i++ )
+                {
+                    var oldNode      = _nodes[ oldItemIndex + i ];
+                    var oldNodeValue = oldNode.Value;
+                    var oldNodeDepth = oldNode.Depth;
+                    _nodes.Insert( newItemIndex + i, new Node( 0, oldNodeDepth + deltaDepth, this ) );
+                    var newNode = _nodes[ newItemIndex + i ];
+                    newNode.Value = oldNodeValue;
+                    if( result == null )
+                        result = newNode;
+                }
+            }
+            else
+            {
+                for ( var i = 0; i < subtreeSize; i++ )
+                {
+                    var oldNode      = _nodes[ oldItemIndex + 2*i ];
+                    var oldNodeValue = oldNode.Value;
+                    var oldNodeDepth = oldNode.Depth;
+                    _nodes.Insert( newItemIndex + i, new Node( 0, oldNodeDepth + deltaDepth, this ) );
+                    var newNode = _nodes[ newItemIndex + i ];
+                    newNode.Value = oldNodeValue;
+                    if( result == null )
+                        result = newNode;
+
+                }
+            }
+
+            FixIndices( Math.Min( oldItemIndex, newItemIndex ) );
+            return result;
         } 
 
         /// <summary>
