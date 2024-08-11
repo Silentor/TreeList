@@ -103,13 +103,14 @@ namespace Silentor.TreeList.Tests.Editor
             var child1 = _tree.Nodes.First( n => n.Value.Equals( "child1" ) );
             var child2_1 = _tree.Nodes.First( n => n.Value.Equals( "child2_1" ) );
 
-            Assert.IsTrue( _tree.Move( child1, child2_1 ) == 4 );
-            Assert.IsTrue( child1.Depth == 3 );
-            Assert.IsTrue( _tree.GetParent( child1) == child2_1 );
-            Assert.IsTrue( _tree.GetChildren( child2_1, false, true ).Count() == 4 );
-            Assert.IsTrue( _tree.GetChildren( _tree.Root ).Count() == 1 );
-            Assert.IsTrue( _tree.GetChildren( _tree.GetParent( child2_1 ) ).Count() == 2 );
-
+            Assert.IsTrue( _tree.Move( child1, child2_1 )                           == 4 );
+            Assert.IsTrue( _tree.Nodes.Count( n => n.Value == "child1" )          == 1 );
+            Assert.IsTrue( child1.Depth                                             == 3 );
+            Assert.IsTrue( _tree.GetParent( child1)                                 == child2_1 );
+            Assert.IsTrue( _tree.GetChildren( child2_1, false, true ).Count()       == 4 );
+            Assert.IsTrue( _tree.GetChildren( _tree.Root ).Count()                  == 1 );
+            Assert.IsTrue( _tree.GetChildren( _tree.GetParent( child2_1 ) ).Count() == 2 );         
+            Assert.IsTrue( _tree.Count                                              == 8 );
         }
 
         [Test]
@@ -118,11 +119,13 @@ namespace Silentor.TreeList.Tests.Editor
             var child1   = _tree.Nodes.First( n => n.Value.Equals( "child1" ) );
             var child2_1 = _tree.Nodes.First( n => n.Value.Equals( "child2_1" ) );
 
-            Assert.IsTrue( _tree.Move( child2_1, child1 )                 == 1 );
-            Assert.IsTrue( child2_1.Depth                                 == 2 );
-            Assert.IsTrue( _tree.GetParent( child2_1)                     == child1 );
+            Assert.IsTrue( _tree.Move( child2_1, child1 )                   == 1 );
+            Assert.IsTrue( _tree.Nodes.Count( n => n.Value == "child2_1" ) == 1 );
+            Assert.IsTrue( child2_1.Depth                                   == 2 );
+            Assert.IsTrue( _tree.GetParent( child2_1)                       == child1 );
             Assert.IsTrue( _tree.GetChildren( child1, false, true ).Count() == 4 );
             Assert.IsTrue( _tree.GetChildren( _tree.Root ).Count()          == 2 );
+            Assert.IsTrue( _tree.Count                                      == 8 );
         }
 
         [Test]
@@ -131,11 +134,13 @@ namespace Silentor.TreeList.Tests.Editor
             var child1   = _tree.Nodes.First( n => n.Value.Equals( "child1" ) );
             var child2 = _tree.Nodes.First( n => n.Value.Equals( "child2" ) );
 
-            Assert.IsTrue( _tree.Move( child1, child2, 0 )                == 4 );
-            Assert.IsTrue( child1.Depth                                   == 2 );
-            Assert.IsTrue( _tree.GetParent( child1)                       == child2 );
-            Assert.IsTrue( _tree.GetChildren( child2 ).Count() == 3 );
-            Assert.IsTrue( _tree.GetChildren( _tree.Root ).Count()          == 1 );
+            Assert.IsTrue( _tree.Move( child1, child2, 0 )                 == 4 );
+            Assert.IsTrue( _tree.Nodes.Count( n => n.Value == "child1" ) == 1 );
+            Assert.IsTrue( child1.Depth                                    == 2 );
+            Assert.IsTrue( _tree.GetParent( child1)                        == child2 );
+            Assert.IsTrue( _tree.GetChildren( child2 ).Count()             == 3 );
+            Assert.IsTrue( _tree.GetChildren( _tree.Root ).Count()         == 1 );
+            Assert.IsTrue( _tree.Count                                     == 8 );
         }
 
         [Test]
@@ -152,7 +157,7 @@ namespace Silentor.TreeList.Tests.Editor
                         .AddSibling( "child2_2" );
 
             var newTree2 = new TreeString();
-            newTree.Add( "root_another", null )
+            newTree2.Add( "root_another", null )
                    .AddChild( "child1" )
                         .AddChild( "child1_1" )
                             .AddChild( "child1_1_1" ).Parent
@@ -188,6 +193,12 @@ namespace Silentor.TreeList.Tests.Editor
         {
             var result = _tree.GetChildsBreadthFirst( _tree.Root ).ToArray();
             CollectionAssert.AreEqual( result.Select( n => n.Value ), new Object[]{"child1", "child2", "child1_1", "child1_2", "child2_1", "child2_2", "child1_1_1" } );
+        }
+
+        [TearDown]
+        public void TestTreeConsistency( )
+        {
+            Assert.IsTrue( _tree.IsTreeConsistent( out _ ) );
         }
     }
 

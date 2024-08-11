@@ -122,6 +122,64 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &157366709
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 157366711}
+  - component: {fileID: 157366710}
+  m_Layer: 0
+  m_Name: Sample
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &157366710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 157366709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbfd5bced4f25c64eb5bb0f9365ce941, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  VectorTree:
+    _nodes:
+    - Value: I am Root
+      _depth: 0
+    - Value: child4
+      _depth: 1
+    - Value: child5
+      _depth: 2
+    - Value: child1
+      _depth: 1
+    - Value: child2
+      _depth: 2
+    - Value: child3
+      _depth: 3
+--- !u!4 &157366711
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 157366709}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &264555265
 GameObject:
   m_ObjectHideFlags: 0
@@ -2228,6 +2286,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
   - FoldoutValue:
       m_Left: 0
       m_Right: 0
@@ -2244,6 +2303,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
   - FoldoutValue:
       m_Left: 0
       m_Right: 0
@@ -2260,6 +2320,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
   - FoldoutValue:
       m_Left: 0
       m_Right: 0
@@ -2276,6 +2337,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
   - FoldoutValue:
       m_Left: 0
       m_Right: 0
@@ -2292,6 +2354,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
   - FoldoutValue:
       m_Left: 0
       m_Right: 0
@@ -2308,6 +2371,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
   - FoldoutValue:
       m_Left: 0
       m_Right: 0
@@ -2324,6 +2388,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
   - FoldoutValue:
       m_Left: 0
       m_Right: 0
@@ -2340,6 +2405,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
   - FoldoutValue:
       m_Left: 0
       m_Right: 0
@@ -2356,6 +2422,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
   - FoldoutValue:
       m_Left: 0
       m_Right: 0
@@ -2372,6 +2439,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
   - FoldoutValue:
       m_Left: 0
       m_Right: 0
@@ -2388,6 +2456,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
   - FoldoutValue:
       m_Left: 0
       m_Right: 0
@@ -2404,6 +2473,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
   - FoldoutValue:
       m_Left: 0
       m_Right: 0
@@ -2420,6 +2490,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
   - FoldoutValue:
       m_Left: 0
       m_Right: 0
@@ -2436,6 +2507,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
   - FoldoutValue:
       m_Left: 0
       m_Right: 0
@@ -2452,6 +2524,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
   - FoldoutValue:
       m_Left: 0
       m_Right: 0
@@ -2468,6 +2541,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
   - FoldoutValue:
       m_Left: 0
       m_Right: 0
@@ -2484,6 +2558,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
   - FoldoutValue:
       m_Left: 0
       m_Right: 0
@@ -2500,6 +2575,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
 --- !u!4 &721503662
 Transform:
   m_ObjectHideFlags: 0
@@ -2568,6 +2644,7 @@ MonoBehaviour:
           CustomText: 
           CustomBool: 0
           CustomInt: 0
+        TestGO: {fileID: 0}
       _depth: 0
     - Value:
         FoldoutValue:
@@ -2586,6 +2663,7 @@ MonoBehaviour:
           CustomText: 
           CustomBool: 0
           CustomInt: 0
+        TestGO: {fileID: 0}
       _depth: 1
     - Value:
         FoldoutValue:
@@ -2604,6 +2682,7 @@ MonoBehaviour:
           CustomText: 
           CustomBool: 0
           CustomInt: 0
+        TestGO: {fileID: 0}
       _depth: 1
     - Value:
         FoldoutValue:
@@ -2622,6 +2701,7 @@ MonoBehaviour:
           CustomText: 
           CustomBool: 0
           CustomInt: 0
+        TestGO: {fileID: 0}
       _depth: 2
     - Value:
         FoldoutValue:
@@ -2640,6 +2720,7 @@ MonoBehaviour:
           CustomText: 
           CustomBool: 0
           CustomInt: 0
+        TestGO: {fileID: 0}
       _depth: 3
     - Value:
         FoldoutValue:
@@ -2658,6 +2739,7 @@ MonoBehaviour:
           CustomText: 
           CustomBool: 0
           CustomInt: 0
+        TestGO: {fileID: 0}
       _depth: 4
     - Value:
         FoldoutValue:
@@ -2676,6 +2758,7 @@ MonoBehaviour:
           CustomText: 
           CustomBool: 0
           CustomInt: 0
+        TestGO: {fileID: 1054705958}
       _depth: 5
     - Value:
         FoldoutValue:
@@ -2694,6 +2777,7 @@ MonoBehaviour:
           CustomText: 
           CustomBool: 0
           CustomInt: 0
+        TestGO: {fileID: 0}
       _depth: 1
   BigTree:
     _nodes:
@@ -4714,6 +4798,12 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
+--- !u!1 &1054705958 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6399767796458867749, guid: 0548ac167725c224f985e13de38485fc, type: 3}
+  m_PrefabInstance: {fileID: 1985298509}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1097137998
 GameObject:
   m_ObjectHideFlags: 0
@@ -4922,6 +5012,7 @@ MonoBehaviour:
           CustomText: 
           CustomBool: 0
           CustomInt: 0
+        TestGO: {fileID: 0}
       _depth: 0
     - Value:
         FoldoutValue:
@@ -4940,6 +5031,7 @@ MonoBehaviour:
           CustomText: 
           CustomBool: 0
           CustomInt: 0
+        TestGO: {fileID: 0}
       _depth: 1
     - Value:
         FoldoutValue:
@@ -4958,6 +5050,7 @@ MonoBehaviour:
           CustomText: 
           CustomBool: 0
           CustomInt: 0
+        TestGO: {fileID: 0}
       _depth: 2
     - Value:
         FoldoutValue:
@@ -4976,6 +5069,7 @@ MonoBehaviour:
           CustomText: 
           CustomBool: 0
           CustomInt: 0
+        TestGO: {fileID: 0}
       _depth: 3
     - Value:
         FoldoutValue:
@@ -4994,6 +5088,7 @@ MonoBehaviour:
           CustomText: 
           CustomBool: 0
           CustomInt: 0
+        TestGO: {fileID: 0}
       _depth: 4
     - Value:
         FoldoutValue:
@@ -5012,6 +5107,7 @@ MonoBehaviour:
           CustomText: 
           CustomBool: 0
           CustomInt: 0
+        TestGO: {fileID: 0}
       _depth: 5
     - Value:
         FoldoutValue:
@@ -5030,6 +5126,7 @@ MonoBehaviour:
           CustomText: 
           CustomBool: 0
           CustomInt: 0
+        TestGO: {fileID: 0}
       _depth: 6
     - Value:
         FoldoutValue:
@@ -5048,6 +5145,7 @@ MonoBehaviour:
           CustomText: 
           CustomBool: 0
           CustomInt: 0
+        TestGO: {fileID: 0}
       _depth: 4
   BigTree:
     _nodes:
@@ -7060,6 +7158,7 @@ MonoBehaviour:
       CustomText: 
       CustomBool: 0
       CustomInt: 0
+    TestGO: {fileID: 0}
 --- !u!4 &1514066616
 Transform:
   m_ObjectHideFlags: 0
@@ -7367,3 +7466,4 @@ SceneRoots:
   - {fileID: 721503662}
   - {fileID: 1514066616}
   - {fileID: 264555266}
+  - {fileID: 157366711}

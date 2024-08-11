@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using UnityEditor;
+using UnityEngine;
 using Object = System.Object;
 
 namespace Silentor.TreeList.Editor
@@ -56,12 +57,40 @@ namespace Silentor.TreeList.Editor
             var newItemIndex = ChildIndex2GlobalIndex( newParentIndex, newChildIndex, nodes );
 
             var subtreeSize = GetSubtree( itemIndex, nodes );
+            if ( itemIndex < newItemIndex )
+            {
+                for ( var i = 0; i < subtreeSize; i++ )
+                {
+                    nodes.MoveArrayElement( itemIndex, newItemIndex - 1 );
+                    var movedNode = nodes.GetArrayElementAtIndex( newItemIndex - 1 );
+                    movedNode.FindPropertyRelative( "_depth" ).intValue += deltaDepth;
+                }
+            }
+            else
+            {
+                for ( var i = 0; i < subtreeSize; i++ )
+                {
+                    nodes.MoveArrayElement( itemIndex + i, newItemIndex + i );
+                    var movedNode = nodes.GetArrayElementAtIndex( newItemIndex + i );
+                    movedNode.FindPropertyRelative( "_depth" ).intValue += deltaDepth;
+                }
+            }
+        }
+
+        private void CopyItem( Int32 itemIndex, Int32 newParentIndex, Int32 newChildIndex, SerializedProperty nodes )
+        {
+            var oldDepth     = nodes.GetArrayElementAtIndex( itemIndex ).FindPropertyRelative( "_depth" ).intValue;
+            var newDepth     = newParentIndex == -1 ? 0 : nodes.GetArrayElementAtIndex( newParentIndex ).FindPropertyRelative( "_depth" ).intValue + 1;
+            var deltaDepth   = newDepth - oldDepth;
+            var newItemIndex = ChildIndex2GlobalIndex( newParentIndex, newChildIndex, nodes );
+
+            var subtreeSize = GetSubtree( itemIndex, nodes );
+            var buffer = new SerializedProperty[subtreeSize];
             for ( var i = 0; i < subtreeSize; i++ )
             {
-                var movingNode = nodes.GetArrayElementAtIndex( itemIndex + i );
-                movingNode.FindPropertyRelative( "_depth" ).intValue += deltaDepth;
-                nodes.MoveArrayElement( itemIndex + i, newItemIndex + i );
+                buffer[i] = nodes.GetArrayElementAtIndex( itemIndex + i ).Copy();
             }
+
         }
 
         private Int32 SearchValue( String searchString, Int32 fromIndex, SerializedProperty nodes )

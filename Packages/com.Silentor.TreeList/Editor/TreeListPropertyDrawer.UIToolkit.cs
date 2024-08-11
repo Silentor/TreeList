@@ -310,7 +310,8 @@ namespace Silentor.TreeList.Editor
                     }
                     else
                     {
-                        Debug.LogError( $"Unexpected item depth {childDepth} after parent depth {parentDepth}, property path {node.propertyPath}, you can take a look using Unity inspector debug mode" );
+                        Debug.LogError( $"Unexpected item depth {childDepth} after parent depth {parentDepth}, property path {node.propertyPath}, you can take a look using Unity inspector debug mode. Skipped item." );
+                        index++;
                     }
                 }
 

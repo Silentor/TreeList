@@ -79,8 +79,8 @@ namespace Silentor.TreeList
             else
             {
                 CheckNodeBelongsTree( parent, nameof(parent) );
-                var newChildIndex      = parent._index + GetSubtreeSize( parent );
-                var newNode            = new Node( newChildIndex, parent.Depth + 1, this ){ Value = value };
+                var newChildIndex = parent._index + GetSubtreeSize( parent );
+                var newNode       = new Node( newChildIndex, parent.Depth + 1, this ){ Value = value };
                 _nodes.Insert( newChildIndex, newNode );
                 FixIndices( newChildIndex + 1 );
 
@@ -154,11 +154,11 @@ namespace Silentor.TreeList
             if ( includeItself )
                 yield return node;
 
-            var indexFrom = node._index + 1;
+            var indexFrom = node._index            + 1;
             var indexTo   = GetSubtreeSize( node ) + node._index;
 
             Boolean isAnyChildFinded ;
-            var  childDepth  = node.Depth + 1;
+            var     childDepth  = node.Depth + 1;
             do
             {
                 isAnyChildFinded = false;
@@ -252,41 +252,43 @@ namespace Silentor.TreeList
         /// <returns>Count of the moved nodes. If 0 moving is impossible, because cannot move node to its own children</returns>
         public Int32 Move( [NotNull] Node node, [NotNull] Node newParent, Int32 newChildIndex = -1 )
         {
-            CheckNodeBelongsTree( node, nameof(node) );
+            CheckNodeBelongsTree( node,      nameof(node) );
             CheckNodeBelongsTree( newParent, nameof(newParent) );
 
             //Cannot move inside of itself
             if( node == newParent || GetParents( newParent ).Contains( node ) )
                 return 0;
 
-            Node childToReplace = null;
-            if ( newChildIndex >= 0 )
+            var oldDepth     = node.Depth;
+            var newDepth     = newParent.Depth + 1;
+            var deltaDepth   = newDepth - oldDepth;
+            var newItemIndex = ChildIndex2GlobalIndex( newParent, newChildIndex );
+            var oldItemIndex = node._index;
+
+            var subtreeSize = GetSubtreeSize( node );
+            if ( oldItemIndex < newItemIndex )
             {
-                using var childsEnumerator = newParent.GetChildren(  ).GetEnumerator();
-                for ( int i = 0; childsEnumerator.MoveNext(); i++ )
+                for ( var i = 0; i < subtreeSize; i++ )
                 {
-                    if( i == newChildIndex )        //Find child to replace
-                    {
-                        childToReplace = childsEnumerator.Current;
-                        break;
-                    }
+                    var movedNode = _nodes[ oldItemIndex ];
+                    movedNode._depth += deltaDepth;
+                    _nodes.Insert( newItemIndex, movedNode );
+                    _nodes.RemoveAt( oldItemIndex );
+                }
+            }
+            else
+            {
+                for ( var i = 0; i < subtreeSize; i++ )
+                {
+                    var movedNode = _nodes[ oldItemIndex + i ];
+                    movedNode._depth += deltaDepth;
+                    _nodes.Insert( newItemIndex + i, movedNode );
+                    _nodes.RemoveAt( oldItemIndex + i + 1 );
                 }
             }
 
-            var buffer = GetChildren( node, true, true ).ToArray();
-            Remove( node );
-
-            var toIndex = childToReplace != null ? childToReplace._index : newParent._index + GetSubtreeSize( newParent );
-            var counter = 0;
-            var depthDiff = newParent.Depth + 1 - node.Depth;
-            foreach ( var n in buffer )
-            {
-                n._depth += depthDiff;
-                _nodes.Insert( toIndex + counter++, n );
-            }
-
-            FixIndices( toIndex );
-            return buffer.Length;
+            FixIndices( Math.Min( oldItemIndex, newItemIndex ) );
+            return subtreeSize;
         } 
 
         /// <summary>
@@ -299,7 +301,7 @@ namespace Silentor.TreeList
             CheckNodeBelongsTree( node, nameof(node) );
 
             var removeCount = GetSubtreeSize( node );
-            var i  = removeCount;
+            var i           = removeCount;
             while ( i-- > 0 )
             {
                 _nodes.RemoveAt( node._index );                
@@ -360,6 +362,42 @@ namespace Silentor.TreeList
             return true;
         }
 
+        public Boolean IsTreeConsistent( out Int32 errorIndex )
+        {
+            if( _nodes.Count == 0 )
+            {
+                errorIndex = -1;
+                return true;
+            }
+
+            for ( var i = 0; i < _nodes.Count; i++ )
+            {
+                if ( i != _nodes[ i ]._index )
+                {
+                    errorIndex = i;
+                    return false;
+                }
+            }
+
+            if ( _nodes[ 0 ]._depth != 0 )
+            {
+                errorIndex = 0;
+                return false;
+            }
+
+            for ( var i = 1; i < _nodes.Count; i++ )
+            {
+                if( _nodes[i]._depth > _nodes[i - 1]._depth + 1 || _nodes[i]._depth <= 0 )
+                {
+                    errorIndex = i;
+                    return false;
+                }
+            }
+
+            errorIndex = -1;
+            return true;
+        }
+
         private void CheckNodeBelongsTree( Node node, String paramName )
         {
             if ( node == null )
@@ -387,6 +425,31 @@ namespace Silentor.TreeList
                 else
                     break;
             }
+
+            return result;
+        }
+
+        private Int32 ChildIndex2GlobalIndex( Node parent, Int32 childIndex )
+        {
+            var result      = -1;
+            var parentDepth = parent.Depth;
+            var i           = 0;
+            for ( i = parent._index + 1; i < _nodes.Count; i++ )
+            {
+                var childNode  = _nodes[ i ];
+                var childDepth = childNode.Depth;
+
+                if( childDepth == parentDepth + 1 && childIndex-- == 0 )           //Get needed child
+                {
+                    result = i;
+                    break;
+                }
+                else if( childDepth <= parentDepth )                               //No more childs
+                    break;
+            }
+
+            if ( result == -1 )             //childIndex is out of range, select index after last child
+                result = i;
 
             return result;
         }
@@ -505,7 +568,7 @@ namespace Silentor.TreeList
 
         void ISerializationCallbackReceiver.OnAfterDeserialize( )
         {
-           FixIndices( 0 );
+            FixIndices( 0 );
         }
 
         public IEnumerator<Node> GetEnumerator( )
