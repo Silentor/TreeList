@@ -124,6 +124,9 @@ namespace Silentor.TreeList.Editor
             };
             _treeUI.selectionChanged += _ => { RefreshButtons( nodesProp ); };
             
+            _treeUI.RegisterCallback<DragUpdatedEvent>(  _  => RefreshButtons( nodesProp, true ) );
+            _treeUI.RegisterCallback<DragExitedEvent>(  _  => RefreshButtons( nodesProp ) );
+
             var hierarchy = BuildHierarchy( nodesProp ); 
             _treeUI.SetRootItems( hierarchy );
             _treeUI.Rebuild();
@@ -333,7 +336,7 @@ namespace Silentor.TreeList.Editor
                 return $"{GetType().FullName}.{target.name}.{treeListProperty.propertyPath}";
         }
 
-        private void RefreshButtons( SerializedProperty nodesProp )
+        private void RefreshButtons( SerializedProperty nodesProp, Boolean dragging = false )
         {
              _removeBtn.SetEnabled( _treeUI.selectedIndex > -1 );
              _addBtn.SetEnabled( _treeUI.selectedIndex > -1 || _treeUI.GetTreeCount() == 0 );
@@ -342,7 +345,7 @@ namespace Silentor.TreeList.Editor
              var foldoutLabelWidth = _foldout.Q<Toggle>().Q<VisualElement>(  ).Q<Label>(  ).worldBound.width;
              var totalWidth        = _foldout.worldBound.width;
              if( totalWidth - foldoutLabelWidth > 375 )
-                _hint.text = GetTreeHint( _treeUI.selectedIndex, nodesProp  );
+                _hint.text = GetTreeHint( _treeUI.selectedIndex, dragging, nodesProp  );
              else
                  _hint.text = String.Empty;
         }

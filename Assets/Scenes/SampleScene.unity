@@ -155,16 +155,18 @@ MonoBehaviour:
     _nodes:
     - Value: I am Root
       _depth: 0
-    - Value: child4
-      _depth: 1
-    - Value: child5
-      _depth: 2
     - Value: child1
       _depth: 1
     - Value: child2
       _depth: 2
     - Value: child3
+      _depth: 1
+    - Value: child4
+      _depth: 2
+    - Value: child5
       _depth: 3
+    - Value: child6
+      _depth: 2
 --- !u!4 &157366711
 Transform:
   m_ObjectHideFlags: 0

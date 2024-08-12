@@ -10,12 +10,14 @@ namespace Silentor.TreeList.Editor
 {
     public class ImguiTreeView : TreeView
     {
-        public Boolean IsInitialized => base.isInitialized;
+        public Boolean IsInitialized    => base.isInitialized;
+
+        public Boolean IsItemDragged    => _isDragging;
 
         private readonly SerializedProperty _itemsProp;
         private          Single             _contentHeight;
         private          Single             _lastContentHeight = -1;
-        private readonly List<Int32>        _idLevelList       = new ( 16 );
+        private          bool               _isDragging;
 
         public ImguiTreeView(TreeViewState state, SerializedProperty itemsProp ) : base( state )
         {
@@ -29,19 +31,20 @@ namespace Silentor.TreeList.Editor
             showAlternatingRowBackgrounds = true;
         }
 
+        public event Action<Int32, Int32, Int32> MoveNode; 
+        public event Action<Int32, Int32, Int32> CopyNode; 
+
         protected override TreeViewItem BuildRoot( )
         {
             var root = new TreeViewItem { id = -1, depth = -1, displayName = "Root" };
 
             var itemsList   = new List<TreeViewItem>();
-            _idLevelList.Clear();
             for ( var i = 0; i < _itemsProp.arraySize; i++ )
             {
                 var itemProp = _itemsProp.GetArrayElementAtIndex( i );
                 var depth    = itemProp.FindPropertyRelative( "_depth" ).intValue;
-
-                var semiPermanentId = (depth << 16) | GetIndexForDepth( depth );
-                itemsList.Add( new TreeViewItem { id = semiPermanentId, depth = depth } );
+                var id = i;
+                itemsList.Add( new TreeViewItem { id = id, depth = depth } );
             }
             
             // Utility method that initializes the TreeViewItem.children and .parent for all items.
@@ -58,6 +61,8 @@ namespace Silentor.TreeList.Editor
             base.BeforeRowsGUI();
 
             _contentHeight = 0;
+
+            //Debug.Log( $"Before {Event.current.type}" );
         }
 
         protected override void RowGUI(RowGUIArgs args )
@@ -129,6 +134,9 @@ namespace Silentor.TreeList.Editor
 
             _lastContentHeight = _contentHeight;
             _contentHeight     = 0;
+
+            if( Event.current.type == EventType.DragExited )
+                _isDragging = false;
         }
 
         protected override Single GetCustomRowHeight(Int32 row, TreeViewItem item )
@@ -171,47 +179,89 @@ namespace Silentor.TreeList.Editor
 
         private Int32 GetIdFromIndex( Int32 index )
         {
-            _idLevelList.Clear();
-            for ( var i = 0; i < _itemsProp.arraySize; i++ )
-            {
-                var itemProp = _itemsProp.GetArrayElementAtIndex( i );
-                var depth    = itemProp.FindPropertyRelative( "_depth" ).intValue;
-
-                var semiPermanentId = (depth << 16) | GetIndexForDepth( depth );
-                if ( i == index )
-                    return semiPermanentId;
-            }
-
-            return -1;
+            return index;
         }
 
         private (SerializedProperty nodeProp, Int32 index) GetIndexFromId( Int32 id )
         {
-            var depth        = id >> 16;
-            var indexInDepth = id & 0xFFFF;
-            var localIndex        = 0;
-            for ( int i = 0; i < _itemsProp.arraySize; i++ )
-            {
-                var nodeProp = _itemsProp.GetArrayElementAtIndex( i );
-                var nodeDepth = nodeProp.FindPropertyRelative( "_depth" ).intValue;
-                if ( nodeDepth == depth )
-                {
-                    if ( localIndex++ == indexInDepth )
-                        return ( nodeProp, i );
-                }
-            }
-
-            return (null, -1);
+            var node =  _itemsProp.GetArrayElementAtIndex( id );
+            return (node, id);
         }
 
-        private Int32 GetIndexForDepth( Int32 depth )
+        protected override Boolean CanStartDrag(CanStartDragArgs args )
         {
-            while( _idLevelList.Count <= depth )
-                _idLevelList.Add( 0 );
-                
-            var id = _idLevelList[ depth ];
-            _idLevelList[ depth ] += 1;
-            return id;
+            return args.draggedItem.id != 0;
+        }
+
+        protected override void SetupDragAndDrop(SetupDragAndDropArgs args )
+        {
+            //Debug.Log( "Setup drag" );
+
+            if (hasSearch)
+                return;
+
+            _isDragging = true;
+            DragAndDrop.PrepareStartDrag();
+            var draggedTreeViewItem = GetRows().First( item => args.draggedItemIDs.Contains(item.id) );
+            DragAndDrop.SetGenericData( "TreeListDrag", draggedTreeViewItem);
+            DragAndDrop.objectReferences = new UnityEngine.Object[] { }; // this IS required for dragging to work
+            var title = draggedTreeViewItem.displayName;
+            DragAndDrop.StartDrag (title);
+        }
+
+        protected override DragAndDropVisualMode HandleDragAndDrop(DragAndDropArgs args )
+        {
+            if( Event.current.type != EventType.DragUpdated && Event.current.type != EventType.DragPerform )
+                return DragAndDropVisualMode.None;
+
+            var draggedItem = DragAndDrop.GetGenericData( "TreeListDrag" ) as TreeViewItem;
+            if ( draggedItem == null )
+                return DragAndDropVisualMode.None;
+
+            var dropTarget = args.parentItem;
+            if ( dropTarget == null || dropTarget.depth < 0 )
+                return DragAndDropVisualMode.None;
+
+            //var draggedNode = GetIndexFromId( draggedItem.id ).nodeProp;
+            //var dropNode = GetIndexFromId( dropTarget.id ).nodeProp;
+            //Debug.Log( $"item {draggedNode.displayName}, parent {dropNode.displayName}, pos {args.dragAndDropPosition}, child index {args.insertAtIndex}, control {DragAndDrop.activeControlID}, frame {Time.frameCount}" );
+
+            if ( IsParentRecursive( dropTarget, draggedItem ) )
+                return DragAndDropVisualMode.None;
+
+            if ( args.performDrop )
+            {                       
+                var nodeIndex   = GetIndexFromId( draggedItem.id ).index;
+                var parentIndex = GetIndexFromId( dropTarget.id ).index;
+                var childIndex  = args.insertAtIndex;
+
+                if ( Event.current.control )
+                    CopyNode?.Invoke( nodeIndex, parentIndex, childIndex );
+                else
+                    MoveNode?.Invoke( nodeIndex, parentIndex, childIndex );
+
+                Debug.Log( $"Dropped {nodeIndex} to {parentIndex} at {childIndex}" );
+                DragAndDrop.AcceptDrag();
+                Event.current.Use();
+                _isDragging = false;
+                return DragAndDropVisualMode.None;
+            }
+
+            if ( Event.current.control )
+                return DragAndDropVisualMode.Copy;
+            else
+                return DragAndDropVisualMode.Move;
+
+            Boolean IsParentRecursive( TreeViewItem node, TreeViewItem parent )
+            {
+                if ( node == null || parent == null )
+                    return false;
+
+                if ( node.id == parent.id )
+                    return true;
+
+                return IsParentRecursive( node.parent, parent );
+            }
         }
 
         private static class Resources

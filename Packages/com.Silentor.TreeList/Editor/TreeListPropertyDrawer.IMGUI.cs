@@ -41,7 +41,15 @@ namespace Silentor.TreeList.Editor
                                 },
                         } );
 
-                _treeIM = new ImguiTreeView( state.TreeViewState, new MyMultiColumnHeader(_multiColumnHeaderState), nodesProp ) ;
+                _treeIM          =  new ImguiTreeView( state.TreeViewState, new MyMultiColumnHeader(_multiColumnHeaderState), nodesProp ) ;
+                _treeIM.MoveNode += (nodeIndex, parentIndex, childIndex ) =>
+                {
+                    MoveItem( nodeIndex, parentIndex, childIndex, nodesProp );
+                };
+                _treeIM.CopyNode += (nodeIndex, parentIndex, childIndex ) =>
+                {
+                    CopyItem( nodeIndex, parentIndex, childIndex, nodesProp );
+                };
             }
 
             position = DrawHeader( position, label, state, nodesProp, property );
@@ -77,10 +85,7 @@ namespace Silentor.TreeList.Editor
         {
             var headerRect  = new Rect( totalRect.x, totalRect.y,                totalRect.width, _headerHeight );
             var contentRect = new Rect( totalRect.x, totalRect.y + _headerHeight, totalRect.width, totalRect.height - _headerHeight );
-
-            //Draw header hint
-            GUI.Label( headerRect, GetTreeHint( _treeIM.HasSelection() ? 0 : -1, nodesProp ), EditorStyles.centeredGreyMiniLabel );
-
+            
             //Draw items count
             var itemsCountRect = new Rect( headerRect.x + headerRect.width - 50, headerRect.y, 50, _headerHeight );
             GUI.enabled = false;
@@ -193,6 +198,8 @@ namespace Silentor.TreeList.Editor
             var prefixLabelRect = headerRect;
             prefixLabelRect.xMax = btnRect.x - 5;
             var headerStyle = nodesProp.prefabOverride ? ResourcesIMGUI.HeaderOverridenStyle : ResourcesIMGUI.HeaderStyle;
+            //var headerWidth = headerStyle.CalcSize( label ).x;
+            //prefixLabelRect.width = headerWidth;
             if( nodesProp.arraySize > 0 )
                 mainProperty.isExpanded = EditorGUI.Foldout( prefixLabelRect, mainProperty.isExpanded, label, true, headerStyle );   
             else
@@ -200,6 +207,13 @@ namespace Silentor.TreeList.Editor
                 EditorGUI.Foldout( prefixLabelRect, false, label, true, headerStyle );
                 mainProperty.isExpanded = false;
             }
+
+            //Draw header hint
+            var labelRect = headerRect;
+            labelRect.xMin = prefixLabelRect.x + EditorGUIUtility.labelWidth;
+            labelRect.xMax = btnRect.xMin;
+            var isDragging = _treeIM.IsItemDragged;
+            GUI.Label( labelRect, GetTreeHint( _treeIM.HasSelection() ? 0 : -1, isDragging, nodesProp ), ResourcesIMGUI.HintStyle);
 
             //Draw blue margin if tree value is overriden
             if ( nodesProp.prefabOverride && Event.current.type == EventType.Repaint )
@@ -306,6 +320,10 @@ namespace Silentor.TreeList.Editor
                                                                                             alignment = TextAnchor.MiddleCenter,
                                                                                             fontSize = 16,
                                                                                             padding = new RectOffset()
+                                                                                    };
+            public static readonly GUIStyle HintStyle = new (EditorStyles.centeredGreyMiniLabel) 
+                                                                                    {       
+                                                                                            alignment = TextAnchor.MiddleLeft,
                                                                                     };
            
             public static readonly GUIContent Plus  = new  (EditorGUIUtility.isProSkin ? EditorGUIUtility.IconContent("d_Toolbar Plus").image : EditorGUIUtility.IconContent("Toolbar Plus").image, "Add child node") ;

@@ -294,8 +294,11 @@ namespace Silentor.TreeList.Editor
             return hash.ToHashCode();
         }
 
-        private String GetTreeHint( Int32 selectedItemIndex, SerializedProperty nodesProp )
+        private String GetTreeHint( Int32 selectedItemIndex, Boolean dragging, SerializedProperty nodesProp )
         {
+            if( dragging )
+                return "Drag item to move, Ctrl+Drag to copy";
+
             if ( nodesProp.arraySize == 0 )
                 return "Press + to add root item";
 
