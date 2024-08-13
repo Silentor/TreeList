@@ -5,14 +5,14 @@ using UnityEngine;
 
 public class Sample : MonoBehaviour
 {
-    public TreeList<String> VectorTree;
+    public TreeList<String> StringTree;
 
     private void Awake( )
     {
-        VectorTree = new TreeList<String>();
+        StringTree = new TreeList<String>();
 
         //Add root node
-        var rootNode = VectorTree.Add( "I am Root", null );
+        var rootNode = StringTree.Add( "I am Root", null );
         
         //Add children nodes to root node
         rootNode.AddChildren( "child1", "child2", "child3", "child4" );
@@ -24,13 +24,13 @@ public class Sample : MonoBehaviour
         var grandChild = childs[2].AddChild( "grand child" );
 
         //Move 'child1' to the grandchild node as a child
-        VectorTree.Move( childs[0], grandChild );
+        StringTree.Move( childs[0], grandChild );
 
         //Remove node from tree
-        VectorTree.Remove( childs[1] );
+        StringTree.Remove( childs[1] );
 
         //Print tree structure and values
-        Debug.Log( VectorTree.ToHierarchyString() );
+        Debug.Log( StringTree.ToHierarchyString() );
 
         /*
         Value = 'I am Root' (level = 0, )

@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
-using UnityEngine;
 using Object = System.Object;
 
 namespace Silentor.TreeList.Editor
@@ -12,7 +12,8 @@ namespace Silentor.TreeList.Editor
     [CustomPropertyDrawer( typeof(TreeList<>), true )]
     public partial class TreeListPropertyDrawer : PropertyDrawer
     {
-        private                 Int32                              _structuralHash;
+        private                 Int32         _structuralHash;
+        private static readonly Dictionary<String, PropertyDrawerInfo> _propertyDrawersInfoCache = new ();
 
         private Int32 AddItem( Int32 parentIndex, SerializedProperty nodes )
         {
@@ -308,6 +309,42 @@ namespace Silentor.TreeList.Editor
             return String.Empty;
         }
 
+        internal static Boolean HasCustomPropertyDrawer( SerializedProperty property )
+        {
+            switch ( property.propertyType )
+            {
+                case SerializedPropertyType.Generic:
+                {
+                    if ( !_propertyDrawersInfoCache.TryGetValue( property.type, out var info ) )
+                    {
+                        var propValueType = property.boxedValue.GetType();
+                        var drawers       = TypeCache.GetTypesDerivedFrom<PropertyDrawer>();
+                        info  = new PropertyDrawerInfo() { PropertyTypeString = property.type, DrawedType = propValueType};
+                        for ( var i = 0; i < drawers.Count; i++ )
+                        {
+                            var drawer           = drawers[ i ];
+                            var customDrawerAttr = drawer.GetCustomAttribute<CustomPropertyDrawer>();
+                            if( customDrawerAttr == null )
+                                continue;
+                            var drawedType = (Type)CustomPropertyDrawerInternal.TypeField.GetValue( customDrawerAttr );
+
+                            if ( propValueType == drawedType )
+                            {
+                                info.IsCustomDrawerPresent = true;
+                                break;
+                            }
+                        }
+
+                        _propertyDrawersInfoCache.Add( property.type, info );
+                    }
+
+                    return info.IsCustomDrawerPresent;
+                }
+                default:
+                    return true;
+            }
+        }
+
         public static class Clipboard
         {
             private static readonly Type       ClipboardType = typeof(ClipboardUtility).Assembly.GetType( "UnityEditor.Clipboard" );
@@ -334,6 +371,18 @@ namespace Silentor.TreeList.Editor
             {
                 return (Boolean)CheckMethod.Invoke( null, Array.Empty<Object>() );
             }
+        }
+
+        private static class CustomPropertyDrawerInternal
+        {
+            public static readonly FieldInfo TypeField = typeof(CustomPropertyDrawer).GetField( "m_Type", BindingFlags.Instance | BindingFlags.NonPublic );
+        }
+
+        private struct PropertyDrawerInfo
+        {
+            public String  PropertyTypeString;
+            public Type    DrawedType;
+            public Boolean IsCustomDrawerPresent;
         }
     }
 }

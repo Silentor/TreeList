@@ -15,7 +15,7 @@ namespace Silentor.TreeList.Editor
         public Boolean IsItemDragged    => _isDragging;
 
         private readonly SerializedProperty _itemsProp;
-        private          Single             _contentHeight;
+        private          Single             _contentHeight;                  //To catch dynamic content height changes
         private          Single             _lastContentHeight = -1;
         private          bool               _isDragging;
 
@@ -98,24 +98,28 @@ namespace Silentor.TreeList.Editor
                     }
 
                     var valuePropRect = totalRect;
-                    if ( valueProp.hasVisibleChildren )
+                    var propLabel = new GUIContent( valueProp.displayName );
+                    //If custom drawer present or primitive type - let it draw itself
+                    if ( TreeListPropertyDrawer.HasCustomPropertyDrawer( valueProp ) || !valueProp.hasVisibleChildren )
+                    {
+                        var propHeight     = EditorGUI.GetPropertyHeight( valueProp, propLabel );
+                        EditorGUI.PropertyField( valuePropRect, valueProp, propLabel );
+                        _contentHeight += propHeight;
+                    }
+                    else         //Draw all children one by one
                     {
                         var enterChildren = true;
                         var endProp       = valueProp.GetEndProperty();
                         while ( valueProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( valueProp, endProp ) )
                         {
                             enterChildren   =  false;
-                            var valuePropLabel = new GUIContent( valueProp.displayName );
+                            var valuePropLabel = propLabel;
                             var propHeight     = EditorGUI.GetPropertyHeight( valueProp, valuePropLabel );
                             valuePropRect.height = propHeight;
                             EditorGUI.PropertyField( valuePropRect, valueProp, valuePropLabel, valueProp.isExpanded );
                             valuePropRect.y += propHeight;
                             _contentHeight  += propHeight;
                         }
-                    }
-                    else   //Value is primitive type itself
-                    {
-                        EditorGUI.PropertyField( valuePropRect, valueProp, new GUIContent( valueProp.displayName ) );
                     }
                 }
             }
@@ -146,16 +150,24 @@ namespace Silentor.TreeList.Editor
             if( valueProp == null )              //Value is not serializable
                 return EditorGUIUtility.singleLineHeight;
 
-            var enterChildren = true;
-            var endProp       = valueProp.GetEndProperty();
-            var height        = 0f;
-            while ( valueProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( valueProp, endProp ) )
+            if ( TreeListPropertyDrawer.HasCustomPropertyDrawer( valueProp ) || !valueProp.hasVisibleChildren )
             {
-                height += EditorGUI.GetPropertyHeight( valueProp, valueProp.isExpanded );
-                enterChildren =  false;
+                return EditorGUI.GetPropertyHeight( valueProp );
             }
+            else         //Measure all children one by one
+            {
+                var height = 0f;
+                var enterChildren = true;
+                var endProp       = valueProp.GetEndProperty();
+                while ( valueProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( valueProp, endProp ) )
+                {
+                    enterChildren   =  false;
+                    var propHeight     = EditorGUI.GetPropertyHeight( valueProp );
+                    height += propHeight;
+                }
 
-            return Math.Max( height, EditorGUIUtility.singleLineHeight );
+                return height;
+            }
         }
 
         public (SerializedProperty nodeProp, Int32 index) GetSelectedItem( )

@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
-using Object = System.Object;
 
 namespace Silentor.TreeList.Editor
 {

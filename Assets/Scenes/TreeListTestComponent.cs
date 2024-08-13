@@ -11,10 +11,10 @@ public class TreeListTestComponent : MonoBehaviour
     public Int32                        FirstInspector;
     //[HideInInspector]
     public TreeList<String>     PrimitiveTree;
-    public TreeList<String>     PrimitiveTree2;
+    //public TreeList<String>     PrimitiveTree2;
     public TreeList<CustomNode> CustomTree;
 
-    public TreeList<CustomNode> CustomTree2;
+    //public TreeList<CustomNode> CustomTree2;
 
     //[HideInInspector]
     public TreeList<VoidNode>           VoidTree;

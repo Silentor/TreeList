@@ -6,7 +6,6 @@ using UnityEditor.Search;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Object = System.Object;
 
 namespace Silentor.TreeList.Editor
 {
@@ -57,7 +56,14 @@ namespace Silentor.TreeList.Editor
                     var notSerializableValueLbl = new Label( "Value is not serializable" );
                     e.Add( notSerializableValueLbl );
                 }
-                else if ( valueProp.hasVisibleChildren )
+                else if( HasCustomPropertyDrawer( valueProp ) || !valueProp.hasVisibleChildren )     //Has custom property drawer or a primitive type, delegate drawing to it
+                {
+                    var label     =  valueProp.displayName;
+                    var propField = new PropertyField( valueProp, label );
+                    propField.BindProperty( valueProp );
+                    e.Add( propField );
+                }
+                else                                                                        //No custom property drawer, draw all children
                 {
                     var enterChildren = true;            
                     var endProp       = valueProp.GetEndProperty();
@@ -69,13 +75,6 @@ namespace Silentor.TreeList.Editor
                         e.Add( propField );
                         enterChildren   =  false;
                     }
-                }
-                else   //Value is primitive type itself
-                {
-                    var label     =  valueProp.displayName;
-                    var propField = new PropertyField( valueProp, label );
-                    propField.BindProperty( valueProp );
-                    e.Add( propField );
                 }
 
                 //Add node depth label
@@ -349,6 +348,8 @@ namespace Silentor.TreeList.Editor
              else
                  _hint.text = String.Empty;
         }
+
+        
 
         private static class ResourcesUITk
         {
