@@ -6,6 +6,7 @@ using UnityEditor.Search;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Object = System.Object;
 
 namespace Silentor.TreeList.Editor
 {
@@ -22,6 +23,7 @@ namespace Silentor.TreeList.Editor
         private Foldout   _foldout;
         private Button    _searchBtn;
         private TextField _searchValue;
+        private String    _valueTypeLabel;
 
         public override VisualElement CreatePropertyGUI( SerializedProperty property )
         {
@@ -53,13 +55,11 @@ namespace Silentor.TreeList.Editor
                 //Draw content
                 if ( valueProp == null )
                 {
-                    var notSerializableValueLbl = new Label( "Value is not serializable" );
-                    e.Add( notSerializableValueLbl );
+                    e.Add( ResourcesUITk.ValueNotSerializableLabel );
                 }
                 else if( HasCustomPropertyDrawer( valueProp ) || !valueProp.hasVisibleChildren )     //Has custom property drawer or a primitive type, delegate drawing to it
                 {
-                    var label     =  valueProp.displayName;
-                    var propField = new PropertyField( valueProp, label );
+                    var propField = new PropertyField( valueProp, GetValueTypeLabel( valueProp ) );
                     propField.BindProperty( valueProp );
                     e.Add( propField );
                 }
@@ -349,6 +349,13 @@ namespace Silentor.TreeList.Editor
                  _hint.text = String.Empty;
         }
 
+        private String GetValueTypeLabel( SerializedProperty valueProperty )
+        {
+            if ( _valueTypeLabel == null )
+                _valueTypeLabel = ObjectNames.NicifyVariableName( valueProperty.type );
+            return _valueTypeLabel;
+        }
+
         
 
         private static class ResourcesUITk
@@ -359,6 +366,8 @@ namespace Silentor.TreeList.Editor
             public static readonly Texture2D Minus =  (Texture2D) (EditorGUIUtility.isProSkin ? EditorGUIUtility.IconContent("d_Toolbar Minus").image : EditorGUIUtility.IconContent("Toolbar Minus").image);
             public static readonly Texture2D Expand =  (Texture2D) (EditorGUIUtility.isProSkin ? EditorGUIUtility.IconContent("d_UnityEditor.SceneHierarchyWindow").image : EditorGUIUtility.IconContent("UnityEditor.SceneHierarchyWindow").image);
             public static readonly Texture2D Search =   (Texture2D) (EditorGUIUtility.isProSkin ? EditorGUIUtility.IconContent("d_Search Icon").image : EditorGUIUtility.IconContent("Search Icon").image );
+
+            public static readonly Label ValueNotSerializableLabel = new Label("Value is not serializable");
         }
     }
 }

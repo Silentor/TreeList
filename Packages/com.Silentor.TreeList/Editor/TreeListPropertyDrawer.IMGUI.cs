@@ -283,7 +283,7 @@ namespace Silentor.TreeList.Editor
             if( !property.isExpanded || property.FindPropertyRelative( "_nodes" ).arraySize == 0)
                 return _headerHeight;
 
-            return Mathf.Clamp( _treeIM.totalHeight + _headerHeight, _headerHeight, 500 );
+            return Mathf.Clamp( _treeIM.totalHeight + _headerHeight, _headerHeight, Screen.height * 2/3 );
         }
 
         private TreeEditorState GetPersistentTreeViewState( SerializedProperty prop )

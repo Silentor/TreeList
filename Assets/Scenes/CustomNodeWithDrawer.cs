@@ -24,6 +24,7 @@ public class CustomNodeWithDrawerDrawer : PropertyDrawer
     {
         var heightBool = property.FindPropertyRelative( "Bool" );
 
+        label = new GUIContent( $"Completely custom label {label.text}" );
         EditorGUI.BeginProperty( position, label, property );
         GUI.Label( position, label );
         position.x += EditorGUIUtility.labelWidth;
@@ -49,9 +50,9 @@ public class CustomNodeWithDrawerDrawer : PropertyDrawer
 
     public override VisualElement CreatePropertyGUI(SerializedProperty property )
     {
-        var rootUITk = new VisualElement(){ name = "Root" };
-        var label                              = new Label(property.displayName);
-        var boolField                          = new PropertyField(property.FindPropertyRelative("Bool"), String.Empty );
+        var rootUITk  = new VisualElement(){ name = "Root" };
+        var label     = new Label($"Completely custom label {property.displayName}");
+        var boolField = new PropertyField(property.FindPropertyRelative("Bool"), String.Empty );
         boolField.RegisterValueChangeCallback( (evt) => BoolChanged(rootUITk, evt) );
         var intFieldField = new PropertyField(property.FindPropertyRelative("Int"), String.Empty );
         rootUITk.Add( label );

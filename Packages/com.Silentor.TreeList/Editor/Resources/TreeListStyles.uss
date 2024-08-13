@@ -42,6 +42,10 @@
     color: grey;
 }
 
+.unity-tree-view__item.unity-collection-view__item--selected .hint-label{
+    color: whitesmoke;
+}
+
 .header__separator {
     width: 5px;
 }

@@ -18,6 +18,7 @@ namespace Silentor.TreeList.Editor
         private          Single             _contentHeight;                  //To catch dynamic content height changes
         private          Single             _lastContentHeight = -1;
         private          bool               _isDragging;
+        private          GUIContent         _valuePropTypeLabel;
 
         public ImguiTreeView(TreeViewState state, SerializedProperty itemsProp ) : base( state )
         {
@@ -98,12 +99,12 @@ namespace Silentor.TreeList.Editor
                     }
 
                     var valuePropRect = totalRect;
-                    var propLabel = new GUIContent( valueProp.displayName );
-                    //If custom drawer present or primitive type - let it draw itself
-                    if ( TreeListPropertyDrawer.HasCustomPropertyDrawer( valueProp ) || !valueProp.hasVisibleChildren )
+                    if ( !valueProp.hasVisibleChildren || TreeListPropertyDrawer.HasCustomPropertyDrawer( valueProp ))   //Primitive type or has custom drawer
                     {
-                        var propHeight     = EditorGUI.GetPropertyHeight( valueProp, propLabel );
-                        EditorGUI.PropertyField( valuePropRect, valueProp, propLabel );
+                        //Let it draw itself
+                        var valueTypeLabel = GetValuePropTypeLabel( valueProp );
+                        var propHeight         = EditorGUI.GetPropertyHeight( valueProp, valueTypeLabel );
+                        EditorGUI.PropertyField( valuePropRect, valueProp, valueTypeLabel );
                         _contentHeight += propHeight;
                     }
                     else         //Draw all children one by one
@@ -113,7 +114,7 @@ namespace Silentor.TreeList.Editor
                         while ( valueProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( valueProp, endProp ) )
                         {
                             enterChildren   =  false;
-                            var valuePropLabel = propLabel;
+                            var valuePropLabel = new GUIContent( valueProp.displayName );
                             var propHeight     = EditorGUI.GetPropertyHeight( valueProp, valuePropLabel );
                             valuePropRect.height = propHeight;
                             EditorGUI.PropertyField( valuePropRect, valueProp, valuePropLabel, valueProp.isExpanded );
@@ -274,6 +275,13 @@ namespace Silentor.TreeList.Editor
 
                 return IsParentRecursive( node.parent, parent );
             }
+        }
+
+        private GUIContent GetValuePropTypeLabel( SerializedProperty valueProp )
+        {
+            if( _valuePropTypeLabel == null )
+                _valuePropTypeLabel = new GUIContent( ObjectNames.NicifyVariableName( valueProp.type ) );
+            return _valuePropTypeLabel;
         }
 
         private static class Resources
