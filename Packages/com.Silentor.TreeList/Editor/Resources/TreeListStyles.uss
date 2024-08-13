@@ -22,8 +22,7 @@
     justify-content: center;
     align-items: center;
 }
-
-.unity-tree-view__item-toggle .unity-foldout__checkmark {
+.unity-tree-view__item-toggle{
     align-self: flex-start;
 }
 

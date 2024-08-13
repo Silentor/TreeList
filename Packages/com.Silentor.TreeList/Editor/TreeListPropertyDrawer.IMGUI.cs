@@ -14,7 +14,6 @@ namespace Silentor.TreeList.Editor
     {                                   
         private static readonly Dictionary<Int32, TreeEditorState> _treeViewStates = new ();
         private                 ImguiTreeView                      _treeIM;
-        private                 MultiColumnHeaderState             _multiColumnHeaderState;
         private readonly        Single                             _headerHeight = EditorGUIUtility.singleLineHeight + 2;
         private                 Boolean                            _expandTreeOnInitialize;
         private                 Int32                              _selectIndexOnInitialize = -1;
@@ -30,17 +29,7 @@ namespace Silentor.TreeList.Editor
 
             if ( _treeIM == null )
             {
-                _multiColumnHeaderState = new MultiColumnHeaderState( 
-                        new MultiColumnHeaderState.Column[]
-                        {
-                                new ()
-                                {
-                                        autoResize            = true,
-                                        width = position.width - 20,
-                                },
-                        } );
-
-                _treeIM          =  new ImguiTreeView( state.TreeViewState, new MyMultiColumnHeader(_multiColumnHeaderState), nodesProp ) ;
+                _treeIM          =  new ImguiTreeView( state.TreeViewState, nodesProp ) ;
                 _treeIM.MoveNode += (nodeIndex, parentIndex, childIndex ) =>
                 {
                     MoveItem( nodeIndex, parentIndex, childIndex, nodesProp );
@@ -84,7 +73,7 @@ namespace Silentor.TreeList.Editor
         {
             var headerRect  = new Rect( totalRect.x, totalRect.y,                totalRect.width, _headerHeight );
             var contentRect = new Rect( totalRect.x, totalRect.y + _headerHeight, totalRect.width, totalRect.height - _headerHeight );
-            
+                                                    
             //Draw items count
             var itemsCountRect = new Rect( headerRect.x + headerRect.width - 50, headerRect.y, 50, _headerHeight );
             GUI.enabled = false;
@@ -193,7 +182,7 @@ namespace Silentor.TreeList.Editor
                 }
             }
 
-            //Custom prefix label because TreeView with header hides it. wtf?
+            //Custom prefix label with foldout for entire tree
             var prefixLabelRect = headerRect;
             prefixLabelRect.xMax = btnRect.x - 5;
             var headerStyle = nodesProp.prefabOverride ? ResourcesIMGUI.HeaderOverridenStyle : ResourcesIMGUI.HeaderStyle;
@@ -212,7 +201,9 @@ namespace Silentor.TreeList.Editor
             labelRect.xMin = prefixLabelRect.x + EditorGUIUtility.labelWidth;
             labelRect.xMax = btnRect.xMin;
             var isDragging = _treeIM.IsItemDragged;
-            GUI.Label( labelRect, GetTreeHint( _treeIM.HasSelection() ? 0 : -1, isDragging, nodesProp ), ResourcesIMGUI.HintStyle);
+            var hintString = GetTreeHint( _treeIM.HasSelection() ? 0 : -1, isDragging, nodesProp );
+            var hintContent = new GUIContent( hintString, tooltip: hintString );
+            GUI.Label( labelRect, hintContent, ResourcesIMGUI.HintStyle);
 
             //Draw blue margin if tree value is overriden
             if ( nodesProp.prefabOverride && Event.current.type == EventType.Repaint )
@@ -221,59 +212,65 @@ namespace Silentor.TreeList.Editor
             }
 
             //Simulate default property context menu
-            if (Event.current.type == EventType.MouseUp && prefixLabelRect.Contains (Event.current.mousePosition) && Event.current.button == 1)
+            if ( Event.current.type == EventType.ContextClick && prefixLabelRect.Contains (Event.current.mousePosition) )
             {
-                var menu = new GenericMenu();
-                menu.AddItem( new GUIContent( "Copy property path" ), false, () => EditorGUIUtility.systemCopyBuffer = mainProperty.propertyPath );
-                if ( nodesProp.prefabOverride )
-                {
-                    //Find prefabs where this property may be overriden
-                    var  obj     = ((Component)nodesProp.serializedObject.targetObject).gameObject;
-                    var  prefab  = PrefabUtility.GetCorrespondingObjectFromSource( obj );  //Make sure we in prefab space
-
-                    List<GameObject> prefabAssets = new();
-                    do
-                    {
-                        var originalPrefabAsset = PrefabUtility.GetCorrespondingObjectFromOriginalSource( prefab );
-                        if( originalPrefabAsset )
-                            prefabAssets.Add( originalPrefabAsset );
-                        prefab = prefab.transform.parent?.gameObject;
-                    } while ( prefab );
-
-                    prefabAssets.Reverse();
-                    foreach ( var prefabAsset in prefabAssets )
-                    {
-                        var title = prefabAsset == prefabAssets.Last() ? $"Apply to Prefab '{prefabAsset.name}'" : $"Apply as Override in Prefab '{prefabAsset.name}'";
-                        if( prefabAsset == prefabAssets.Last() )
-                            menu.AddItem( new GUIContent( title ), false, 
-                                    () => PrefabUtility.ApplyPropertyOverride( nodesProp, AssetDatabase.GetAssetPath( prefabAsset ), InteractionMode.UserAction ) );
-                        else
-                            menu.AddItem( new GUIContent( title ), false, 
-                                    () => PrefabUtility.ApplyPropertyOverride( nodesProp, AssetDatabase.GetAssetPath( prefabAsset ), InteractionMode.UserAction ) );
-                    }
-
-                    menu.AddItem( new GUIContent( "Revert" ), false, ( ) => nodesProp.prefabOverride = false );
-                }
-                menu.AddSeparator( String.Empty );
-
-                if( !mainProperty.hasMultipleDifferentValues )
-                    menu.AddItem( new GUIContent( "Copy" ), false, () => Clipboard.Copy( mainProperty ) );
-                else
-                    menu.AddDisabledItem( new GUIContent( "Copy" ) );
-                if( !mainProperty.hasMultipleDifferentValues && GUI.enabled && Clipboard.IsPropertyPresent() )
-                    menu.AddItem( new GUIContent( "Paste" ), false, () =>
-                    {
-                        Clipboard.Paste( mainProperty );
-                        mainProperty.serializedObject.ApplyModifiedProperties();
-                    } );
-                else
-                    menu.AddDisabledItem( new GUIContent( "Paste" ) );
-
-                menu.ShowAsContext();
-                Event.current.Use ();
+                ShowPropertyContextMenu( mainProperty );
             }
 
             return contentRect;
+        }
+
+        internal static void ShowPropertyContextMenu( SerializedProperty property )
+        {
+            property = property.Copy();             //Defend against property iteration
+            var menu = new GenericMenu();
+            menu.AddItem( new GUIContent( "Copy property path" ), false, () => EditorGUIUtility.systemCopyBuffer = property.propertyPath );
+            if ( property.prefabOverride )
+            {
+                //Find prefabs where this property may be overriden
+                var obj    = ((Component)property.serializedObject.targetObject).gameObject;
+                var prefab = PrefabUtility.GetCorrespondingObjectFromSource( obj );  //Make sure we in prefab space
+            
+                List<GameObject> prefabAssets = new();
+                do
+                {
+                    var originalPrefabAsset = PrefabUtility.GetCorrespondingObjectFromOriginalSource( prefab );
+                    if( originalPrefabAsset )
+                        prefabAssets.Add( originalPrefabAsset );
+                    prefab = prefab.transform.parent?.gameObject;
+                } while ( prefab );
+            
+                prefabAssets.Reverse();
+                foreach ( var prefabAsset in prefabAssets )
+                {
+                    var title = prefabAsset == prefabAssets.Last() ? $"Apply to Prefab '{prefabAsset.name}'" : $"Apply as Override in Prefab '{prefabAsset.name}'";
+                    if( prefabAsset == prefabAssets.Last() )
+                        menu.AddItem( new GUIContent( title ), false, 
+                                () => PrefabUtility.ApplyPropertyOverride( property, AssetDatabase.GetAssetPath( prefabAsset ), InteractionMode.UserAction ) );
+                    else
+                        menu.AddItem( new GUIContent( title ), false, 
+                                () => PrefabUtility.ApplyPropertyOverride( property, AssetDatabase.GetAssetPath( prefabAsset ), InteractionMode.UserAction ) );
+                }
+            
+                menu.AddItem( new GUIContent( "Revert" ), false, ( ) => property.prefabOverride = false );
+            }
+            menu.AddSeparator( String.Empty );
+            
+            if( !property.hasMultipleDifferentValues )
+                menu.AddItem( new GUIContent( "Copy" ), false, () => Clipboard.Copy( property ) );
+            else
+                menu.AddDisabledItem( new GUIContent( "Copy" ) );
+            if( !property.hasMultipleDifferentValues && GUI.enabled && Clipboard.IsPropertyPresent() )
+                menu.AddItem( new GUIContent( "Paste" ), false, () =>
+                {
+                    Clipboard.Paste( property );
+                    property.serializedObject.ApplyModifiedProperties();
+                } );
+            else
+                menu.AddDisabledItem( new GUIContent( "Paste" ) );
+            
+            menu.ShowAsContext();
+            Event.current.Use ();
         }
 
         public override Single GetPropertyHeight( SerializedProperty property, GUIContent label )

@@ -22,14 +22,18 @@ namespace Silentor.TreeList.Editor
 
         public ImguiTreeView(TreeViewState state, SerializedProperty itemsProp ) : base( state )
         {
-            _itemsProp = itemsProp;
+            _itemsProp                    = itemsProp;
+            showBorder                    = true;
+            showAlternatingRowBackgrounds = true;
+
         }
 
         public ImguiTreeView(TreeViewState state, MultiColumnHeader multiColumnHeader, SerializedProperty itemsProp  ) : base( state , multiColumnHeader  )
         {
-            _itemsProp                    = itemsProp;
-            showBorder                    = true;
-            showAlternatingRowBackgrounds = true;
+            throw new NotImplementedException("MultiColumnHeader is not supported");
+            //_itemsProp                    = itemsProp;
+            //showBorder                    = true;
+            //showAlternatingRowBackgrounds = true;
         }
 
         public event Action<Int32, Int32, Int32> MoveNode; 
@@ -68,60 +72,59 @@ namespace Silentor.TreeList.Editor
 
         protected override void RowGUI(RowGUIArgs args )
         {
-            var item = args.item;
+            base.RowGUI( args );                    //Draw foldout toggle
+            
+            var totalRect = args.rowRect;
+            var item      = args.item;
 
-            for (var i = 0; i < args.GetNumVisibleColumns (); ++i)
+            //Print depth label        
+            if( item.depth > 0 && Event.current.type == EventType.Repaint ) 
+                Resources.DepthLabelStyle.Draw( totalRect,  new GUIContent(item.depth.ToString()), false, false, args.selected, args.focused );
+
+            //Draw  value
+            var (nodeProp, _)  = GetIndexFromId( item.id );
+            var levelProp = nodeProp.FindPropertyRelative( "_depth" );
+            var valueProp = nodeProp.FindPropertyRelative( "Value" );
+
+            //Make indent for content
+            var indentWidth = (14 * levelProp.intValue) + 30;
+            var indentRect  = new Rect( totalRect.x, totalRect.y, indentWidth, totalRect.height );
+            totalRect.xMin += indentWidth;
+
+            if ( valueProp == null )
             {
-                var colIndex = args.GetColumn(i);
+                GUI.Label( totalRect, "Value is not serializable" );
+                return;
+            }
 
-                if ( colIndex == 0 )
+            //Draw value context menu
+            if( Event.current.type == EventType.ContextClick && indentRect.Contains( Event.current.mousePosition ) )
+            {
+                TreeListPropertyDrawer.ShowPropertyContextMenu( valueProp );
+            }
+
+            var valuePropRect = totalRect;
+            if ( !valueProp.hasVisibleChildren || TreeListPropertyDrawer.HasCustomPropertyDrawer( valueProp ))   //Primitive type or has custom drawer
+            {
+                //Let it draw itself
+                var valueTypeLabel = GetValuePropTypeLabel( valueProp );
+                var propHeight     = EditorGUI.GetPropertyHeight( valueProp, valueTypeLabel );
+                EditorGUI.PropertyField( valuePropRect, valueProp, valueTypeLabel );
+                _contentHeight += propHeight;
+            }
+            else         //Draw all children one by one
+            {
+                var enterChildren = true;
+                var endProp       = valueProp.GetEndProperty();
+                while ( valueProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( valueProp, endProp ) )
                 {
-                    base.RowGUI( args );                    //Draw foldout toggle
-
-                    //Print depth label
-                    var totalRect = args.GetCellRect( i );
-                    
-                    if( item.depth > 0 && Event.current.type == EventType.Repaint ) 
-                        Resources.DepthLabelStyle.Draw( totalRect,  new GUIContent(item.depth.ToString()), false, false, args.selected, args.focused );
-
-                    //Draw  value
-                    var (nodeProp, _)  = GetIndexFromId( item.id );
-                    var levelProp = nodeProp.FindPropertyRelative( "_depth" );
-                    var valueProp = nodeProp.FindPropertyRelative( "Value" );
-
-                    //Make indent for content
-                    totalRect.xMin += (14 * levelProp.intValue) + 30;
-
-                    if ( valueProp == null )
-                    {
-                        GUI.Label( totalRect, "Value is not serializable" );
-                        return;
-                    }
-
-                    var valuePropRect = totalRect;
-                    if ( !valueProp.hasVisibleChildren || TreeListPropertyDrawer.HasCustomPropertyDrawer( valueProp ))   //Primitive type or has custom drawer
-                    {
-                        //Let it draw itself
-                        var valueTypeLabel = GetValuePropTypeLabel( valueProp );
-                        var propHeight         = EditorGUI.GetPropertyHeight( valueProp, valueTypeLabel );
-                        EditorGUI.PropertyField( valuePropRect, valueProp, valueTypeLabel );
-                        _contentHeight += propHeight;
-                    }
-                    else         //Draw all children one by one
-                    {
-                        var enterChildren = true;
-                        var endProp       = valueProp.GetEndProperty();
-                        while ( valueProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( valueProp, endProp ) )
-                        {
-                            enterChildren   =  false;
-                            var valuePropLabel = new GUIContent( valueProp.displayName );
-                            var propHeight     = EditorGUI.GetPropertyHeight( valueProp, valuePropLabel );
-                            valuePropRect.height = propHeight;
-                            EditorGUI.PropertyField( valuePropRect, valueProp, valuePropLabel, valueProp.isExpanded );
-                            valuePropRect.y += propHeight;
-                            _contentHeight  += propHeight;
-                        }
-                    }
+                    enterChildren   =  false;
+                    var valuePropLabel = new GUIContent( valueProp.displayName );
+                    var propHeight     = EditorGUI.GetPropertyHeight( valueProp, valuePropLabel );
+                    valuePropRect.height = propHeight;
+                    EditorGUI.PropertyField( valuePropRect, valueProp, valuePropLabel, valueProp.isExpanded );
+                    valuePropRect.y += propHeight;
+                    _contentHeight  += propHeight;
                 }
             }
         }
@@ -253,7 +256,7 @@ namespace Silentor.TreeList.Editor
                 else
                     MoveNode?.Invoke( nodeIndex, parentIndex, childIndex );
 
-                Debug.Log( $"Dropped {nodeIndex} to {parentIndex} at {childIndex}" );
+                //Debug.Log( $"Dropped {nodeIndex} to {parentIndex} at {childIndex}" );
                 DragAndDrop.AcceptDrag();
                 Event.current.Use();
                 _isDragging = false;
@@ -300,16 +303,6 @@ namespace Silentor.TreeList.Editor
             //                                                                                normal = new GUIStyleState(){textColor = Color.gray},
             //                                                                                hover = new GUIStyleState(){textColor = Color.gray},
             //                                                                       };
-        }
-    }
-
-    public class MyMultiColumnHeader : MultiColumnHeader
-    {
-        public MyMultiColumnHeader(MultiColumnHeaderState state) : base(state)
-        {
-            height                        = 0;              //Hide header
-            canSort                       = false;
-            allowDraggingColumnsToReorder = false;
         }
     }
 }
