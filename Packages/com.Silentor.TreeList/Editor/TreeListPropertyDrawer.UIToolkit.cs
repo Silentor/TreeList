@@ -55,7 +55,7 @@ namespace Silentor.TreeList.Editor
                 //Draw content
                 if ( valueProp == null )
                 {
-                    e.Add( ResourcesUITk.ValueNotSerializableLabel );
+                    e.Add( new Label("Value is not serializable") );
                 }
                 else if( HasCustomPropertyDrawer( valueProp ) || !valueProp.hasVisibleChildren )     //Has custom property drawer or a primitive type, delegate drawing to it
                 {
@@ -366,8 +366,6 @@ namespace Silentor.TreeList.Editor
             public static readonly Texture2D Minus =  (Texture2D) (EditorGUIUtility.isProSkin ? EditorGUIUtility.IconContent("d_Toolbar Minus").image : EditorGUIUtility.IconContent("Toolbar Minus").image);
             public static readonly Texture2D Expand =  (Texture2D) (EditorGUIUtility.isProSkin ? EditorGUIUtility.IconContent("d_UnityEditor.SceneHierarchyWindow").image : EditorGUIUtility.IconContent("UnityEditor.SceneHierarchyWindow").image);
             public static readonly Texture2D Search =   (Texture2D) (EditorGUIUtility.isProSkin ? EditorGUIUtility.IconContent("d_Search Icon").image : EditorGUIUtility.IconContent("Search Icon").image );
-
-            public static readonly Label ValueNotSerializableLabel = new Label("Value is not serializable");
         }
     }
 }

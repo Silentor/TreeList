@@ -28,7 +28,7 @@ public class TreeListTestComponent2 : MonoBehaviour
 
     public TestComplexValue     ComplexValue;
     public CustomNode           CustomNode;
-    public CustomNodeWithDrawer CustomNodeWithDrawer;
+    public CustomNodeWithDrawer CustomNodeWithDrawerField;
 
     private void Awake( )
     {

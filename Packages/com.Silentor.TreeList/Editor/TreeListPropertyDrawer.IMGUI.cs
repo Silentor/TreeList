@@ -322,7 +322,7 @@ namespace Silentor.TreeList.Editor
                                                                                     };
             public static readonly GUIStyle HintStyle = new (EditorStyles.centeredGreyMiniLabel) 
                                                                                     {       
-                                                                                            alignment = TextAnchor.MiddleLeft,
+                                                                                            alignment = TextAnchor.LowerLeft,
                                                                                     };
            
             public static readonly GUIContent Plus  = new  (EditorGUIUtility.isProSkin ? EditorGUIUtility.IconContent("d_Toolbar Plus").image : EditorGUIUtility.IconContent("Toolbar Plus").image, "Add child node") ;
