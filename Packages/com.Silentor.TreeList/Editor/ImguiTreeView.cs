@@ -100,7 +100,7 @@ namespace Silentor.TreeList.Editor
             //Draw value context menu
             if( Event.current.type == EventType.ContextClick && indentRect.Contains( Event.current.mousePosition ) )
             {
-                TreeListPropertyDrawer.ShowPropertyContextMenu( valueProp );
+                TreeListPropertyDrawer.ShowPropertyContextMenuIMGUI( valueProp );
             }
 
             var valuePropRect = totalRect;
@@ -115,14 +115,15 @@ namespace Silentor.TreeList.Editor
             else         //Draw all children one by one
             {
                 var enterChildren = true;
-                var endProp       = valueProp.GetEndProperty();
-                while ( valueProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( valueProp, endProp ) )
+                var childProp     = valueProp.Copy();
+                var endProp       = childProp.GetEndProperty();
+                while ( childProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( childProp, endProp ) )
                 {
                     enterChildren   =  false;
-                    var valuePropLabel = new GUIContent( valueProp.displayName );
-                    var propHeight     = EditorGUI.GetPropertyHeight( valueProp, valuePropLabel );
+                    var valuePropLabel = new GUIContent( childProp.displayName );
+                    var propHeight     = EditorGUI.GetPropertyHeight( childProp, valuePropLabel );
                     valuePropRect.height = propHeight;
-                    EditorGUI.PropertyField( valuePropRect, valueProp, valuePropLabel, valueProp.isExpanded );
+                    EditorGUI.PropertyField( valuePropRect, childProp, valuePropLabel, childProp.isExpanded );
                     valuePropRect.y += propHeight;
                     _contentHeight  += propHeight;
                 }

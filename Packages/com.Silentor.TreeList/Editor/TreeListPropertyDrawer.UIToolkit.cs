@@ -66,12 +66,13 @@ namespace Silentor.TreeList.Editor
                 else                                                                        //No custom property drawer, draw all children
                 {
                     var enterChildren = true;            
-                    var endProp       = valueProp.GetEndProperty();
-                    while ( valueProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( valueProp, endProp ) )
+                    var childProp     = valueProp.Copy();
+                    var endProp       = childProp.GetEndProperty();
+                    while ( childProp.NextVisible( enterChildren ) && !SerializedProperty.EqualContents( childProp, endProp ) )
                     {
-                        var label     =  valueProp.displayName;
-                        var propField = new PropertyField( valueProp, label );
-                        propField.BindProperty( valueProp );
+                        var label     =  childProp.displayName;
+                        var propField = new PropertyField( childProp, label );
+                        propField.BindProperty( childProp );
                         e.Add( propField );
                         enterChildren   =  false;
                     }
@@ -83,7 +84,7 @@ namespace Silentor.TreeList.Editor
                 while ( viewItem.name != "unity-tree-view__item" )                
                     viewItem = viewItem.parent;
                 var depthLabel = viewItem.Q<Label>( "DepthLabel" );
-                if ( depthLabel == null )
+                if ( depthLabel == null )             //One time init
                 {
                     depthLabel = new Label( )
                                  {
@@ -103,10 +104,19 @@ namespace Silentor.TreeList.Editor
                     viewItem.Add( depthLabel );
                 }
                 depthLabel.text = nodeDepth > 0 ? nodeDepth.ToString() : String.Empty;
+
+                //Simulate property context menu for entire tree item value
+                if ( valueProp != null ) 
+                    viewItem.RegisterCallback<ContextClickEvent, SerializedProperty>( TreeItemContextClick, valueProp );
             };
-            _treeUI.unbindItem = ( e, i ) =>
+             _treeUI.unbindItem = ( e, i ) =>
             {
                 e.Clear();
+
+                var viewItem  = e;
+                while ( viewItem.name != "unity-tree-view__item" )                
+                    viewItem = viewItem.parent;
+                viewItem.UnregisterCallback<ContextClickEvent, SerializedProperty>( TreeItemContextClick );
             };
             _treeUI.itemIndexChanged += ( oldIndex, newParentIndex ) =>          //Id is equal to index in unmodified source tree
             {
@@ -356,6 +366,62 @@ namespace Silentor.TreeList.Editor
             return _valueTypeLabel;
         }
 
+        private void TreeItemContextClick( ContextClickEvent evt, SerializedProperty valueProp )
+        {
+            ShowPropertyContextMenuUIToolkit( evt, evt.mousePosition, valueProp, _treeUI );
+        }
+
+        private static void ShowPropertyContextMenuUIToolkit( ContextClickEvent evt, Vector2 position, SerializedProperty property, VisualElement owner )
+        {
+            var menu = new GenericDropdownMenu();
+            menu.AddItem( "Copy property path", false, () => EditorGUIUtility.systemCopyBuffer = property.propertyPath );
+            if ( property.prefabOverride )
+            {
+                //Find prefabs where this property may be overriden
+                var obj    = ((Component)property.serializedObject.targetObject).gameObject;
+                var prefab = PrefabUtility.GetCorrespondingObjectFromSource( obj );  //Make sure we in prefab space
+            
+                List<GameObject> prefabAssets = new();
+                do
+                {
+                    var originalPrefabAsset = PrefabUtility.GetCorrespondingObjectFromOriginalSource( prefab );
+                    if( originalPrefabAsset )
+                        prefabAssets.Add( originalPrefabAsset );
+                    prefab = prefab.transform.parent?.gameObject;
+                } while ( prefab );
+            
+                prefabAssets.Reverse();
+                foreach ( var prefabAsset in prefabAssets )
+                {
+                    var title = prefabAsset == prefabAssets.Last() ? $"Apply to Prefab '{prefabAsset.name}'" : $"Apply as Override in Prefab '{prefabAsset.name}'";
+                    if( prefabAsset == prefabAssets.Last() )
+                        menu.AddItem( title, false, 
+                                () => PrefabUtility.ApplyPropertyOverride( property, AssetDatabase.GetAssetPath( prefabAsset ), InteractionMode.UserAction ) );
+                    else
+                        menu.AddItem( title, false, 
+                                () => PrefabUtility.ApplyPropertyOverride( property, AssetDatabase.GetAssetPath( prefabAsset ), InteractionMode.UserAction ) );
+                }
+            
+                menu.AddItem( "Revert", false, ( ) => PrefabUtility.RevertPropertyOverride( property, InteractionMode.UserAction ) );
+            }
+            menu.AddSeparator( String.Empty );
+            
+            if( !property.hasMultipleDifferentValues )
+                menu.AddItem( "Copy", false, () => Clipboard.Copy( property ) );
+            else
+                menu.AddDisabledItem( "Copy", false );
+            if( !property.hasMultipleDifferentValues && GUI.enabled && Clipboard.IsPropertyPresent() )
+                menu.AddItem( "Paste", false, () =>
+                {
+                    Clipboard.Paste( property );
+                    property.serializedObject.ApplyModifiedProperties();
+                } );
+            else
+                menu.AddDisabledItem( "Paste", false );
+            
+            menu.DropDown( new Rect( position, Vector2.zero ), owner );
+            evt.StopPropagation();
+        }
         
 
         private static class ResourcesUITk

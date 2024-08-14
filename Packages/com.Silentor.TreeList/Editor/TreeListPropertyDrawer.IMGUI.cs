@@ -214,13 +214,13 @@ namespace Silentor.TreeList.Editor
             //Simulate default property context menu
             if ( Event.current.type == EventType.ContextClick && prefixLabelRect.Contains (Event.current.mousePosition) )
             {
-                ShowPropertyContextMenu( mainProperty );
+                ShowPropertyContextMenuIMGUI( mainProperty );
             }
 
             return contentRect;
         }
 
-        internal static void ShowPropertyContextMenu( SerializedProperty property )
+        internal static void ShowPropertyContextMenuIMGUI( SerializedProperty property )
         {
             property = property.Copy();             //Defend against property iteration
             var menu = new GenericMenu();
@@ -252,7 +252,7 @@ namespace Silentor.TreeList.Editor
                                 () => PrefabUtility.ApplyPropertyOverride( property, AssetDatabase.GetAssetPath( prefabAsset ), InteractionMode.UserAction ) );
                 }
             
-                menu.AddItem( new GUIContent( "Revert" ), false, ( ) => property.prefabOverride = false );
+                menu.AddItem( new GUIContent( "Revert" ), false, ( ) => PrefabUtility.RevertPropertyOverride( property, InteractionMode.UserAction ) );
             }
             menu.AddSeparator( String.Empty );
             
