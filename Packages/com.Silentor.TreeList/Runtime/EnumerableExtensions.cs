@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace Silentor.TreeList
 {
+    /// <summary>
+    /// Used for some debug logging
+    /// </summary>
     public static class EnumerableExtensions
     {
         public static T MaxBy<T, TKey> ( this IReadOnlyList<T> @this, Func<T, TKey> selector) where TKey : IComparable<TKey>

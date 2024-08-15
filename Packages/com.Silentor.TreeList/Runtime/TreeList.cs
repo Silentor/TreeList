@@ -147,7 +147,7 @@ namespace Silentor.TreeList
         }
 
 
-        public IEnumerable<Node> GetChildsBreadthFirst( [NotNull] Node node, Boolean includeItself = false )
+        public IEnumerable<Node> GetChildrenBFS( [NotNull] Node node, Boolean includeItself = false )
         {
             CheckNodeBelongsTree( node, nameof(node) );
 
@@ -175,7 +175,7 @@ namespace Silentor.TreeList
             } while ( isAnyChildFinded );
         }
 
-        public void GetChildsBreadthFirst( [NotNull] Node node, [NotNull] List<Node> result, Boolean includeItself = false )
+        public void GetChildrenBFS( [NotNull] Node node, [NotNull] List<Node> result, Boolean includeItself = false )
         {
             CheckNodeBelongsTree( node, nameof(node) );
             if( result == null )  throw new ArgumentNullException( nameof(result) );

@@ -242,7 +242,7 @@ namespace Silentor.TreeList.Tests.Editor
         [Test]
         public void TestBFS( )
         {
-            var result = _tree.GetChildsBreadthFirst( _tree.Root ).ToArray();
+            var result = _tree.GetChildrenBFS( _tree.Root ).ToArray();
             CollectionAssert.AreEqual( result.Select( n => n.Value ), new Object[]{"child1", "child2", "child1_1", "child1_2", "child2_1", "child2_2", "child1_1_1" } );
         }
 
