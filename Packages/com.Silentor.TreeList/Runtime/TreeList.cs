@@ -123,7 +123,7 @@ namespace Silentor.TreeList
         /// <param name="includeItself">Include parent node</param>
         /// <param name="recursive">Include all children of children</param>
         /// <exception cref="ArgumentNullException">If parent node is null or result list is null</exception>
-        public void GetChildren( [NotNull] Node parent, [NotNull] List<Node> result, Boolean includeItself = false, Boolean recursive = false )
+        public void GetChildrenNonAlloc( [NotNull] Node parent, [NotNull] List<Node> result, Boolean includeItself = false, Boolean recursive = false )
         {
             CheckNodeBelongsTree( parent, nameof(parent) );
             if( result == null )  throw new ArgumentNullException( nameof(result) );
@@ -175,7 +175,7 @@ namespace Silentor.TreeList
             } while ( isAnyChildFinded );
         }
 
-        public void GetChildrenBFS( [NotNull] Node node, [NotNull] List<Node> result, Boolean includeItself = false )
+        public void GetChildrenBFSNonAlloc( [NotNull] Node node, [NotNull] List<Node> result, Boolean includeItself = false )
         {
             CheckNodeBelongsTree( node, nameof(node) );
             if( result == null )  throw new ArgumentNullException( nameof(result) );

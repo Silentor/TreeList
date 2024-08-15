@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
@@ -60,12 +61,37 @@ namespace Silentor.TreeList.Tests.Editor
         }
 
         [Test]
+        public void TestGetChildsNonAlloc( )
+        {
+            var result = new List<TreeList<String>.Node>();
+            var root   = _tree.Root;
+            _tree.GetChildrenNonAlloc( root, result );
+            Assert.IsTrue( result.Count() == 2 );
+            CollectionAssert.AreEqual( result.Select( n => n.Value ), new Object[]{"child1", "child2"} );
+
+            var child1 = _tree.Nodes.First( n => n.Value.Equals( "child1" ) );
+            _tree.GetChildrenNonAlloc( child1, result );
+            Assert.IsTrue( result.Count == 2 );
+            CollectionAssert.AreEqual( result.Select( n => n.Value ), new Object[]{"child1_1", "child1_2"} );
+        }
+
+        [Test]
         public void TestGetChildsRecursive( )
         {
             var child1          = _tree.Nodes.First( n => n.Value.Equals( "child1" ) );
             var childsRecursive = _tree.GetChildren( child1, false, true ).ToArray();
             Assert.IsTrue( childsRecursive.Count() == 3 );
             CollectionAssert.AreEqual( childsRecursive.Select( n => n.Value ), new Object[]{"child1_1", "child1_1_1", "child1_2" } );
+        }
+
+        [Test]
+        public void TestGetChildsRecursiveNonAlloc( )    
+        {
+            var result = new List<TreeList<String>.Node>();
+            var child1 = _tree.Nodes.First( n => n.Value.Equals( "child1" ) );
+            _tree.GetChildrenNonAlloc( child1, result, recursive: true );
+            Assert.IsTrue( result.Count == 3 );
+            CollectionAssert.AreEqual( result.Select( n => n.Value ), new Object[]{"child1_1", "child1_1_1", "child1_2" } );
         }
 
         [Test]
