@@ -146,19 +146,24 @@ namespace Silentor.TreeList
             }
         }
 
-
-        public IEnumerable<Node> GetChildrenBFS( [NotNull] Node node, Boolean includeItself = false )
+        /// <summary>
+        /// Get children of given node, order is breadth-first
+        /// </summary>
+        /// <param name="parent">Given node</param>
+        /// <param name="includeItself">Should include parent node</param>
+        /// <returns>Enumerator over children</returns>
+        public IEnumerable<Node> GetChildrenBFS( [NotNull] Node parent, Boolean includeItself = false )
         {
-            CheckNodeBelongsTree( node, nameof(node) );
+            CheckNodeBelongsTree( parent, nameof(parent) );
 
             if ( includeItself )
-                yield return node;
+                yield return parent;
 
-            var indexFrom = node._index            + 1;
-            var indexTo   = GetSubtreeSize( node ) + node._index;
+            var indexFrom = parent._index            + 1;
+            var indexTo   = GetSubtreeSize( parent ) + parent._index;
 
             Boolean isAnyChildFinded ;
-            var     childDepth  = node.Depth + 1;
+            var     childDepth  = parent.Depth + 1;
             do
             {
                 isAnyChildFinded = false;
@@ -175,20 +180,27 @@ namespace Silentor.TreeList
             } while ( isAnyChildFinded );
         }
 
-        public void GetChildrenBFSNonAlloc( [NotNull] Node node, [NotNull] List<Node> result, Boolean includeItself = false )
+        /// <summary>
+        /// Get children of given node, order is breadth-first. Fills the given list, doesn't allocate is list capacity is enough
+        /// </summary>
+        /// <param name="parent">Given node</param>
+        /// <param name="result">Fill that list with children nodes, must be non null</param>
+        /// <param name="includeItself">Should include parent node</param>
+        /// <exception cref="ArgumentNullException">Thrown if result list is null</exception>
+        public void GetChildrenBFSNonAlloc( [NotNull] Node parent, [NotNull] List<Node> result, Boolean includeItself = false )
         {
-            CheckNodeBelongsTree( node, nameof(node) );
+            CheckNodeBelongsTree( parent, nameof(parent) );
             if( result == null )  throw new ArgumentNullException( nameof(result) );
 
             result.Clear();
             if ( includeItself )
-                result.Add( node );
+                result.Add( parent );
 
-            var indexFrom = node._index            + 1;
-            var indexTo   = GetSubtreeSize( node ) + node._index;
+            var indexFrom = parent._index            + 1;
+            var indexTo   = GetSubtreeSize( parent ) + parent._index;
 
             Boolean isAnyChildFinded ;
-            var     childDepth  = node.Depth + 1;
+            var     childDepth  = parent.Depth + 1;
             do
             {
                 isAnyChildFinded = false;
@@ -420,6 +432,11 @@ namespace Silentor.TreeList
             return true;
         }
 
+        /// <summary>
+        /// Check undelying list consistency, used as postcondition for tests
+        /// </summary>
+        /// <param name="errorIndex"></param>
+        /// <returns></returns>
         public Boolean IsTreeConsistent( out Int32 errorIndex )
         {
             if( _nodes.Count == 0 )
