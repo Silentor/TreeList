@@ -1,5 +1,5 @@
 # TreeList
-TreeList is a simple generic tree data type with editor support for your Unity projects. It's based on a List<> so its name. 
+TreeList is a simple generic tree data type with editor support (prefabs, nodes copy/paste and drag and drop) for your Unity projects. It's based on a List<> internally so its name. 
 ## Features:
 - Fast serialization/deserialization (only data and depth of the tree node)
 - Fast iteration, children enumeration (because of the List)
@@ -7,25 +7,27 @@ TreeList is a simple generic tree data type with editor support for your Unity p
 - UIToolkit and IMGUI editors (mostly equivalent in functionality)
 - Dark/light skin compatible
 ## Installation
-1. Install a package from a Git URL.
-Please take a look at [Unity Manual](https://docs.unity3d.com/Manual/upm-ui-giturl.html) for instructions and use (https://github.com/Silentor/TreeList.git?path=/Packages/com.Silentor.TreeList) URL in Package Manager to install package
-2. .unitypackage/Zip/tarball? 
+Install a package from a Git URL.
+Please take a look at [Unity Manual](https://docs.unity3d.com/Manual/upm-ui-giturl.html) for instructions and use `https://github.com/Silentor/TreeList.git?path=/Packages/com.Silentor.TreeList` URL in Package Manager to install package.
+
+![Unity_sUXKbHWFpt](https://github.com/user-attachments/assets/a3b460cc-06df-4ffa-82fa-7e86a90834ee)
+
+Or add `"com.silentor.treelist": "https://github.com/Silentor/TreeList.git?path=/Packages/com.Silentor.TreeList"` line to your `Packages/manifest.json` file
+
 ## Usage
-Code examples (add/remove nodes, enumerate children, access node value)
-Gifs of Unity Editor with tree usage (add, remove nodes, expand/collapse, copy/paste, search, drag n drop support in UIToolkit version)
 
 ### Basic code sample
 ```C#
 public class Sample : MonoBehaviour
 {
-    public TreeList<String> VectorTree;
+    public TreeList<String> StringTree;
 
     private void Awake( )
     {
-        VectorTree = new TreeList<String>();
+        StringTree = new TreeList<String>();
 
         //Add root node
-        var rootNode = VectorTree.Add( "I am Root", null );
+        var rootNode = StringTree.Add( "I am Root", null );
         
         //Add children nodes to root node
         rootNode.AddChildren( "child1", "child2", "child3", "child4" );
@@ -33,17 +35,17 @@ public class Sample : MonoBehaviour
         //Enumerate children of root node
         var childs = rootNode.GetChildren(  ).ToArray();
 
-        //Add child to last child (Vector3.right) of root node
+        //Add child to 'child3' node
         var grandChild = childs[2].AddChild( "grand child" );
 
-        //Move first child of root node (Vector3.forward) to the grandchild node as a child
-        VectorTree.Move( childs[0], grandChild );
+        //Move 'child1' to the grandchild node as a child
+        StringTree.Move( childs[0], grandChild );
 
         //Remove node from tree
-        VectorTree.Remove( childs[1] );
+        StringTree.Remove( childs[1] );
 
         //Print tree structure and values
-        Debug.Log( VectorTree.ToHierarchyString() );
+        Debug.Log( StringTree.ToHierarchyString() );
 
         /*
         Value = 'I am Root' (level = 0, )
@@ -55,4 +57,25 @@ public class Sample : MonoBehaviour
     }
 }
 ```
+Methods `GetChildren()` and `GetChildrenBFS()` return IEnumerable so it allocates a little. If you want zero-allocation get-children logic for tight loops please use `GetChildrenNonAlloc()` and `GetChildrenBFSNonAlloc()` methods. They receive List<> parameter for result list and do not allocate if list capacity is enough. 
 
+### Unity inspector
+
+Add/remove nodes (UIToolkit, dark theme)
+
+![AddRemoveUITkdark-ezgif com-optimize](https://github.com/user-attachments/assets/47192d82-100b-4843-ab03-2d7148fa35c5)
+
+Search values in a tree (IMGUI, dark theme)
+
+![SearchIMGUIdark-ezgif com-optimize](https://github.com/user-attachments/assets/5340c2c0-a518-4bd4-b943-3c09645ebe5b)
+
+Drag and drop nodes to move around or copy ( Ctrl+drag ) (IMGUI, light theme). There is a small issue with Ctrl+dragging in UIToolkit implementation, drag icon does not change from "move" to "copy" while copy operation is working.
+
+![DragNDropIMGUIlight-ezgif com-optimize](https://github.com/user-attachments/assets/416cd5cd-a272-4b3f-9035-cbdf4d32c056)
+
+Work with prefabs (apply, revert) and copy/paste of entire tree property, tree node value and properties of complex node levels (UIToolkit, light theme). Sorry for the themed context menu for node values, I didn't find a way to hook up the native context menu without ruining native menu for separate node values.
+
+![PrefabUITklight-ezgif com-optimize](https://github.com/user-attachments/assets/a00fc505-3b18-482f-abb8-81131a39fbc4)
+
+# License
+This library is under the MIT License
