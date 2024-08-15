@@ -1,9 +1,11 @@
 # TreeList
-TreeList is a simple generic tree data type with editor support (prefabs, nodes copy/paste and drag and drop) for your Unity projects. It's based on a List<> internally so its name. 
+TreeList is a simple generic tree data type with Unity Editor support. It's based on a List<> internally so its name. 
 ## Features:
 - Fast serialization/deserialization (only data and depth of the tree node)
 - Fast iteration, children enumeration (because of the List)
 - Not so fast modification (because of the List)
+- Prefab workflow support (Apply/Revert)
+- Copy/Paste/Undo support
 - UIToolkit and IMGUI editors (mostly equivalent in functionality)
 - Dark/light skin compatible
 ## Installation
@@ -76,6 +78,8 @@ Drag and drop nodes to move around or copy ( Ctrl+drag ) (IMGUI, light theme). T
 Work with prefabs (apply, revert) and copy/paste of entire tree property, tree node value and properties of complex node levels (UIToolkit, light theme). Sorry for the themed context menu for node values, I didn't find a way to hook up the native context menu without ruining native menu for separate node values.
 
 ![PrefabUITklight-ezgif com-optimize](https://github.com/user-attachments/assets/a00fc505-3b18-482f-abb8-81131a39fbc4)
+
+I have tested editor performance for a random tree with 1000 nodes and ~15 depth and editor responsiveness was quite good.
 
 # License
 This library is under the MIT License
