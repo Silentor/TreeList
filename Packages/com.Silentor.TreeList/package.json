@@ -4,9 +4,9 @@
   "displayName": "TreeList",
   "description": "Generic tree runtime data type + IMGUI/UIToolkit Unity editor",
   "unity": "2019.1",
-  "documentationUrl": "https://example.com/",
-  "changelogUrl": "https://example.com/changelog.html",
-  "licensesUrl": "MIT",
+  "documentationUrl": "https://github.com/Silentor/TreeList/blob/main/README.md",
+  "changelogUrl": "https://github.com/Silentor/TreeList/releases",
+  "licensesUrl": "https://github.com/Silentor/TreeList/blob/main/LICENSE",
   "dependencies": {
  },
  "keywords": [
