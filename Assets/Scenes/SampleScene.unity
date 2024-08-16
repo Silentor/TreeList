@@ -13893,7 +13893,70 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CustomTypeTree:
-    _nodes: []
+    _nodes:
+    - Value:
+        RectOffset:
+          m_Left: 74
+          m_Right: 141
+          m_Top: 0
+          m_Bottom: 0
+        Rect:
+          serializedVersion: 2
+          x: 0
+          y: 0
+          width: 0
+          height: 0
+        VariableHeightValue: 0
+        CustomClass:
+          CustomText: 
+          CustomBool: 0
+          CustomInt: 179
+        CustomDrawer:
+          Int: 111
+          Bool: 0
+      _depth: 0
+    - Value:
+        RectOffset:
+          m_Left: 0
+          m_Right: 0
+          m_Top: 0
+          m_Bottom: 0
+        Rect:
+          serializedVersion: 2
+          x: 0
+          y: 0
+          width: 0
+          height: 0
+        VariableHeightValue: 1
+        CustomClass:
+          CustomText: 
+          CustomBool: 0
+          CustomInt: 0
+        CustomDrawer:
+          Int: 0
+          Bool: 0
+      _depth: 1
+    - Value:
+        RectOffset:
+          m_Left: 0
+          m_Right: 0
+          m_Top: 0
+          m_Bottom: 0
+        Rect:
+          serializedVersion: 2
+          x: 0
+          y: 0
+          width: 0
+          height: 0
+        VariableHeightValue: 0
+        CustomClass:
+          CustomText: 
+          CustomBool: 0
+          CustomInt: 0
+        CustomDrawer:
+          Int: 0
+          Bool: 0
+      _depth: 1
 --- !u!4 &955046696
 Transform:
   m_ObjectHideFlags: 0
