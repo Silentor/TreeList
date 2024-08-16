@@ -79,7 +79,14 @@ Work with prefabs (apply, revert) and copy/paste of entire tree property, tree n
 
 ![PrefabUITklight-ezgif com-optimize](https://github.com/user-attachments/assets/a00fc505-3b18-482f-abb8-81131a39fbc4)
 
+TreeList inspector tries hard to support custom property drawers for values (dynamic height includes), property attributes like Header etc. Even for IMGUI inspector (dark theme).
+
+![CustomDrawersIMGUIdark-ezgif com-optimize](https://github.com/user-attachments/assets/11e1f6c8-5c1e-486a-89e5-15eb89ea1208)
+
 I have tested editor performance for a random tree with 1000 nodes and ~15 depth and editor responsiveness was quite good.
+
+# Questions?
+Feel free to post your question in [Discussions](https://github.com/Silentor/TreeList/discussions/)
 
 # License
 This library is under the MIT License
