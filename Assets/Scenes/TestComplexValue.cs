@@ -5,12 +5,13 @@ using UnityEngine;
 [Serializable]
 public class TestComplexValue
 {
-    public RectOffset FoldoutValue;
-    public Rect       TwoLined;
+    public RectOffset           RectOffset;
+    public Rect                 Rect;
     [VariableHeight]
-    public Boolean    VariableHeightValue;
-    public CustomNode CustomNode;
-    public GameObject TestGO;
+    public Boolean              VariableHeightValue;
+    [Header("Header attribute")]
+    public CustomNode           CustomClass;
+    public CustomNodeWithDrawer CustomDrawer;
 }
 
 public class VariableHeightAttribute : PropertyAttribute{}
