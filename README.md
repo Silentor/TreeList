@@ -1,13 +1,13 @@
 # TreeList
-TreeList is a simple generic tree data type with Unity Editor support. It's based on a List<> internally so its name. 
+TreeList is a simple, generic tree data type with Unity Editor support. It's internally based on a List<>, hence the name.
 ## Features:
-- Fast serialization/deserialization (only data and depth of the tree node)
-- Fast iteration, children enumeration (because of the List)
-- Not so fast modification (because of the List)
-- Prefab workflow support (Apply/Revert)
-- Copy/Paste/Undo support
-- UIToolkit and IMGUI editors (mostly equivalent in functionality)
-- Dark/light skin compatible
+- **Fast and simple serialization/deserialization**: Only the data and depth of the tree node.
+- **Fast iteration and children enumeration**: Thanks to the underlying List<>.
+- **Moderate modification performance**: Also due to the List<> structure.
+- **Prefab workflow support**: Includes Apply/Revert functionality.
+- **Copy/Paste/Undo support**: Enables streamlined editing.
+- **UIToolkit and IMGUI editors**: Mostly equivalent in functionality.
+- **Dark/light skin compatibility**: Offers seamless UI integration.
 ## Installation
 Install a package from a Git URL.
 Please take a look at [Unity Manual](https://docs.unity3d.com/Manual/upm-ui-giturl.html) for instructions and use `https://github.com/Silentor/TreeList.git?path=/Packages/com.Silentor.TreeList` URL in Package Manager to install package.
@@ -17,8 +17,9 @@ Please take a look at [Unity Manual](https://docs.unity3d.com/Manual/upm-ui-gitu
 Or add `"com.silentor.treelist": "https://github.com/Silentor/TreeList.git?path=/Packages/com.Silentor.TreeList"` line to your `Packages/manifest.json` file
 
 ## Usage
+Tested in Unity 2022.3 LTS and Unity 6.
 
-### Basic code sample
+### Basic code sample for TreeList<> class
 ```C#
 public class Sample : MonoBehaviour
 {
@@ -61,7 +62,7 @@ public class Sample : MonoBehaviour
 ```
 Methods `GetChildren()` and `GetChildrenBFS()` return IEnumerable so it allocates a little. If you want zero-allocation get-children logic for tight loops please use `GetChildrenNonAlloc()` and `GetChildrenBFSNonAlloc()` methods. They receive List<> parameter for result list and do not allocate if list capacity is enough. 
 
-### Unity inspector
+### Unity inspector usage
 
 Add/remove nodes (UIToolkit, dark theme)
 
@@ -71,19 +72,19 @@ Search values in a tree (IMGUI, dark theme)
 
 ![SearchIMGUIdark-ezgif com-optimize](https://github.com/user-attachments/assets/5340c2c0-a518-4bd4-b943-3c09645ebe5b)
 
-Drag and drop nodes to move around or copy ( Ctrl+drag ) (IMGUI, light theme). There is a small issue with Ctrl+dragging in UIToolkit implementation, drag icon does not change from "move" to "copy" while copy operation is working.
+Drag and drop nodes to move or copy ( Ctrl+drag ) (IMGUI, light theme). Note: there is a minor issue with Ctrl+dragging in the UIToolkit implementation—the drag icon does not change from 'move' to 'copy,' even though the copy operation works as expected.
 
 ![DragNDropIMGUIlight-ezgif com-optimize](https://github.com/user-attachments/assets/416cd5cd-a272-4b3f-9035-cbdf4d32c056)
 
-Work with prefabs (apply, revert) and copy/paste of entire tree property, tree node value and properties of complex node levels (UIToolkit, light theme). Sorry for the themed context menu for node values, I didn't find a way to hook up the native context menu without ruining native menu for separate node values.
+Work with prefabs (apply and revert) and copy/paste operations for the entire tree property, individual tree node values, and properties of complex node levels (UIToolkit light theme). Apologies for the custom context menu for node values—I couldn't find a way to integrate the native context menu without disrupting the native menu for separate node values.
 
 ![PrefabUITklight-ezgif com-optimize](https://github.com/user-attachments/assets/a00fc505-3b18-482f-abb8-81131a39fbc4)
 
-TreeList inspector tries hard to support custom property drawers for values (dynamic height includes), property attributes like Header etc. Even for IMGUI inspector (dark theme).
+The TreeList inspector makes a strong effort to support custom property drawers for properties, including dynamic heights, and decorators such as 'Header.' This support is also available for the IMGUI inspector.
 
 ![CustomDrawersIMGUIdark-ezgif com-optimize](https://github.com/user-attachments/assets/11e1f6c8-5c1e-486a-89e5-15eb89ea1208)
 
-I have tested editor performance for a random tree with 1000 nodes and ~15 depth and editor responsiveness was quite good.
+I tested the editor's performance with a randomly generated tree containing 1,000 nodes and approximately 15 levels of depth. The editor's responsiveness was notably good.
 
 # Questions?
 Feel free to post your question in [Discussions](https://github.com/Silentor/TreeList/discussions/)
