@@ -419,7 +419,7 @@ namespace Silentor.TreeList.Editor
             else
                 menu.AddDisabledItem( "Paste", false );
             
-            menu.DropDown( new Rect( position, Vector2.zero ), owner );
+            menu.DropDown( new Rect( position, Vector2.zero ), owner, false );
             evt.StopPropagation();
         }
         

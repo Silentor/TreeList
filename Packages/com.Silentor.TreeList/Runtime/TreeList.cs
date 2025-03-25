@@ -147,7 +147,7 @@ namespace Silentor.TreeList
         }
 
         /// <summary>
-        /// Get children of given node, order is breadth-first
+        /// Get children of given node, in breadth-first order
         /// </summary>
         /// <param name="parent">Given node</param>
         /// <param name="includeItself">Should include parent node</param>
@@ -181,7 +181,7 @@ namespace Silentor.TreeList
         }
 
         /// <summary>
-        /// Get children of given node, order is breadth-first. Fills the given list, doesn't allocate is list capacity is enough
+        /// Get children of given node, in breadth-first order. Fills the given list, doesn't allocate is list capacity is enough
         /// </summary>
         /// <param name="parent">Given node</param>
         /// <param name="result">Fill that list with children nodes, must be non null</param>
